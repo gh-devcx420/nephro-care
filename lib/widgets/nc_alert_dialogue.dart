@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Todo (Optional): Change The Dialogue Function Name & Delete This Line After Reading.
-Future<dynamic> showCustomDialogue({
+Future<dynamic> showNCAlertDialogue({
   required context,
   required titleText,
   required Widget content,
@@ -20,11 +19,11 @@ Future<dynamic> showCustomDialogue({
             ? Theme.of(context).colorScheme.surfaceDim
             : Theme.of(context).colorScheme.surface,
         title: Text(titleText),
-        titlePadding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        titlePadding: const EdgeInsets.fromLTRB(24, 24, 16, 8),
         content: content,
-        contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        contentPadding: const EdgeInsets.fromLTRB(24, 8, 16, 8),
         actions: [action1, action2],
-        actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 8, 16, 16),
       );
     },
   );

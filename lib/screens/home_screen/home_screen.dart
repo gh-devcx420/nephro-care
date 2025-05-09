@@ -14,6 +14,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
     final userName = user?.displayName ?? 'User';
+
     return Scaffold(
       appBar: AppBar(
         leading: Builder(
@@ -26,6 +27,8 @@ class HomeScreen extends ConsumerWidget {
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
+        title: const Text('Nephro Care'),
+        titleSpacing: 0,
         actions: [
           IconButton(
             onPressed: () => Navigator.of(context).push(
@@ -53,26 +56,26 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       drawer: const Drawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(kScaffoldBodyPadding),
+      body: const Padding(
+        padding: EdgeInsets.all(kScaffoldBodyPadding),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Row(
-              children: [
-                hGap16,
-                Text(
-                  'Welcome, $userName',
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     hGap16,
+            //     Text(
+            //       'Welcome, $userName',
+            //       style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+            //             color: Theme.of(context).colorScheme.primary,
+            //           ),
+            //     ),
+            //   ],
+            // ),
+            // vGap10,
+            OverviewCard(),
             vGap10,
-            const OverviewCard(),
-            vGap10,
-            const NotesCard(),
+            NotesCard(),
           ],
         ),
       ),

@@ -42,7 +42,7 @@ final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
         (totalSoFar, intake) => totalSoFar + intake.quantity,
       );
       final lastTime =
-          DateFormat('h:mm a').format(intakes.first.timestamp.toDate());
+          DateFormat('h:mm a').format(intakes.last.timestamp.toDate());
       return {'total': total, 'lastTime': lastTime};
     },
     loading: () => {'total': 0.0, 'lastTime': 'Loading...'},

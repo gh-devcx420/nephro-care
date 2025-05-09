@@ -22,6 +22,7 @@ class NCTextfield extends StatefulWidget {
     this.onTap,
     this.keyboardType,
     this.onSuffixIconTap,
+    this.maxLength,
   });
 
   final TextEditingController textFieldController;
@@ -31,6 +32,7 @@ class NCTextfield extends StatefulWidget {
   final Widget inactiveFieldIcon;
   final TextCapitalization textCapitalization;
   final TextInputType? keyboardType;
+  final int? maxLength;
   final Function(String)? onChanged;
   final Color? enabledBorderColor;
   final Color? focusedBorderColor;
@@ -53,7 +55,6 @@ class _NCTextfieldState extends State<NCTextfield> {
   @override
   void initState() {
     super.initState();
-    // CHANGE 1: Use provided focusNode if available, otherwise create a new one
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(() {});
     widget.textFieldController.addListener(_onTextChanged);
@@ -68,7 +69,6 @@ class _NCTextfieldState extends State<NCTextfield> {
   @override
   void dispose() {
     widget.textFieldController.removeListener(_onTextChanged);
-    // CHANGE 2: Only dispose _focusNode if it was created internally
     if (widget.focusNode == null) {
       _focusNode.dispose();
     }
@@ -99,8 +99,10 @@ class _NCTextfieldState extends State<NCTextfield> {
         ),
         cursorColor: widget.cursorColor ?? themeContext.colorScheme.primary,
         focusNode: _focusNode,
+        maxLength: widget.maxLength ?? TextField.noMaxLength,
         decoration: InputDecoration(
           hintText: widget.hintText,
+          counterText: '',
           hintStyle: themeContext.textTheme.titleMedium!.copyWith(
             color: widget.hintTextColor ?? themeContext.colorScheme.primary,
           ),

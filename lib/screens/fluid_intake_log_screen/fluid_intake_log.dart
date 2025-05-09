@@ -8,6 +8,7 @@ import 'package:nephro_care/providers/firebase_provider.dart';
 import 'package:nephro_care/themes/color_schemes.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/utils/utils.dart';
+import 'package:nephro_care/widgets/nc_alert_dialogue.dart';
 import 'package:nephro_care/widgets/nc_textfield.dart';
 
 const waterBackgroundShade = ComponentColors.waterBackgroundColor;
@@ -26,34 +27,43 @@ class DialogResult {
   });
 }
 
-class AddFluidIntakeDialog extends StatefulWidget {
-  const AddFluidIntakeDialog({super.key});
+class ShowFluidInputOptions extends StatefulWidget {
+  final FluidIntake? intake;
+
+  const ShowFluidInputOptions({super.key, this.intake});
 
   @override
-  State<AddFluidIntakeDialog> createState() => _AddFluidIntakeDialogState();
+  State<ShowFluidInputOptions> createState() => _ShowFluidInputOptionsState();
 }
 
-class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
+class _ShowFluidInputOptionsState extends State<ShowFluidInputOptions> {
   late final TextEditingController fluidNameController;
   late final TextEditingController quantityController;
   late final TextEditingController timeController;
   late final FocusNode fluidNameFocusNode;
   late final FocusNode quantityFocusNode;
-  TimeOfDay? selectedTime = TimeOfDay.now();
+  TimeOfDay? selectedTime;
+  bool isLoading = false; // Added: Track loading state
 
   @override
   void initState() {
     super.initState();
-    fluidNameController = TextEditingController(text: 'Water');
-    quantityController = TextEditingController();
+    fluidNameController =
+        TextEditingController(text: widget.intake?.fluidName ?? 'Water');
+    quantityController = TextEditingController(
+        text: widget.intake != null ? widget.intake!.quantity.toString() : '');
+    final initialTime = widget.intake != null
+        ? TimeOfDay.fromDateTime(widget.intake!.timestamp.toDate())
+        : TimeOfDay.now();
     timeController = TextEditingController(
-      text: Utils.formatTime(
-        DateTime.now(),
-      ),
+      text: Utils.formatTime(DateTime.now().copyWith(
+        hour: initialTime.hour,
+        minute: initialTime.minute,
+      )),
     );
     fluidNameFocusNode = FocusNode();
     quantityFocusNode = FocusNode();
-    selectedTime = TimeOfDay.now();
+    selectedTime = initialTime;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(quantityFocusNode);
     });
@@ -69,6 +79,7 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
     super.dispose();
   }
 
+  /// Function to show a reusable Time Picker.
   Future<void> _showTimePicker() async {
     final errorColor = Theme.of(context).colorScheme.error;
     final navigator = Navigator.of(context);
@@ -115,62 +126,60 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
     }
   }
 
+  /// Helper function to handle validation errors
+  void _handleValidationError(String message, Color errorColor) {
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: errorColor,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  /// Function to add or update fluid intake in Firestore
   Future<void> _addIntake(WidgetRef ref) async {
     final errorColor = Theme.of(context).colorScheme.error;
-    final navigator = Navigator.of(context);
+
+    // Step 1: Validate inputs
+    final fluidName = fluidNameController.text.trim();
+    if (fluidName.isEmpty) {
+      Navigator.of(context).pop();
+      _handleValidationError('Please enter a valid fluid name', errorColor);
+      return;
+    }
+
     double? quantity;
     try {
       quantity = double.parse(quantityController.text);
     } catch (e) {
-      FocusScope.of(context).unfocus();
-      navigator.pop(
-        DialogResult(
-          isSuccess: false,
-          message: 'Please enter a valid quantity',
-          backgroundColor: errorColor,
-        ),
-      );
+      Navigator.of(context).pop();
+      _handleValidationError('Please enter a valid quantity', errorColor);
       return;
     }
 
     if (quantity > 1000) {
-      FocusScope.of(context).unfocus();
-      navigator.pop(
-        DialogResult(
-          isSuccess: false,
-          message: 'Quantity cannot exceed 1000ml',
-          backgroundColor: errorColor,
-        ),
-      );
+      Navigator.of(context).pop();
+      _handleValidationError('Quantity cannot exceed 1000ml', errorColor);
       return;
     }
 
     if (selectedTime == null) {
-      FocusScope.of(context).unfocus();
-      navigator.pop(
-        DialogResult(
-          isSuccess: false,
-          message: 'Please select a time',
-          backgroundColor: errorColor,
-        ),
-      );
+      Navigator.of(context).pop();
+      _handleValidationError('Please select a time', errorColor);
       return;
     }
 
     final user = ref.read(authProvider);
     if (user == null) {
-      FocusScope.of(context).unfocus();
-      navigator.pop(
-        DialogResult(
-          isSuccess: false,
-          message: 'Please sign in to add entries',
-          backgroundColor: errorColor,
-        ),
-      );
+      Navigator.of(context).pop();
+      _handleValidationError('Please sign in to add entries', errorColor);
       return;
     }
     final userId = user.uid;
 
+    // Step 2: Construct FluidIntake
     final today = DateTime.now();
     final dateTime = DateTime(
       today.year,
@@ -179,38 +188,37 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
       selectedTime!.hour,
       selectedTime!.minute,
     );
-
     final intake = FluidIntake(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      fluidName: fluidNameController.text,
+      id: widget.intake?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      fluidName: fluidName,
       quantity: quantity,
       timestamp: Timestamp.fromDate(dateTime),
     );
 
-    FocusScope.of(context).unfocus();
-
+    // Step 3: Save to Firestore with loading state
+    setState(() => isLoading = true);
     try {
-      navigator.pop(
-        DialogResult(
-          isSuccess: true,
-          message: 'Entry added successfully',
-          backgroundColor: Colors.green,
-        ),
-      );
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
           .collection('fluid_intake')
           .doc(intake.id)
           .set(intake.toJson());
-    } catch (e) {
-      navigator.pop(
+      // Step 4: Pop dialog with success result after save
+      if (!mounted) return;
+      Navigator.of(context).pop(
         DialogResult(
-          isSuccess: false,
-          message: 'Failed to save entry: $e',
-          backgroundColor: errorColor,
+          isSuccess: true,
+          message: widget.intake != null
+              ? 'Entry updated successfully'
+              : 'Entry added successfully',
+          backgroundColor: Colors.green,
         ),
       );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => isLoading = false);
+      _handleValidationError('Failed to save entry: $e', errorColor);
     }
   }
 
@@ -236,7 +244,9 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
                         vertical: 8,
                       ),
                       child: Text(
-                        'Enter Fluid Intake Details:',
+                        widget.intake != null
+                            ? 'Edit Fluid Intake'
+                            : 'Enter Fluid Intake Details:',
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                               color: waterShade2,
                             ),
@@ -246,12 +256,12 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
                 ],
               ),
               vGap8,
-              // Textfield for entering Fluid Name.
               NCTextfield(
                 key: const ValueKey('fluidName_textfield'),
                 hintText: 'Fluid Name',
                 textFieldController: fluidNameController,
                 focusNode: fluidNameFocusNode,
+                maxLength: 18,
                 onSuffixIconTap: () {
                   setState(() {
                     fluidNameController.text = '';
@@ -273,10 +283,9 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
               Row(
                 children: [
                   Expanded(
-                    // Textfield for entering Quantity.
                     child: NCTextfield(
                       key: const ValueKey('quantity_textfield'),
-                      hintText: 'Quantity (Ml)',
+                      hintText: 'Quantity (ml)',
                       textFieldController: quantityController,
                       focusNode: quantityFocusNode,
                       keyboardType: TextInputType.number,
@@ -314,7 +323,6 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
                   ),
                   hGap8,
                   Expanded(
-                    // Textfield for entering Time.
                     child: NCTextfield(
                       key: const ValueKey('timepicker_textfield'),
                       hintText: 'Time',
@@ -341,28 +349,41 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
                       cursorColor: waterShade2,
                       selectionHandleColor: waterShade2,
                     ),
-                  )
+                  ),
                 ],
               ),
               vGap16,
               Consumer(
                 builder: (context, ref, child) {
-                  return ElevatedButton(
-                    onPressed: () {
-                      _addIntake(ref);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: waterShade2,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : () => _addIntake(ref),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: waterShade2,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'Add Intake',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: waterBackgroundShade,
-                          ),
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: waterShade2,
+                              ),
+                            )
+                          : Text(
+                              widget.intake != null ? 'Update' : 'Add Intake',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(
+                                    color: waterBackgroundShade,
+                                  ),
+                            ),
                     ),
                   );
                 },
@@ -384,18 +405,103 @@ class FluidIntakeLog extends ConsumerStatefulWidget {
 }
 
 class FluidIntakeLogState extends ConsumerState<FluidIntakeLog> {
+  DateTime selectedDate = DateTime.now(); // Added: State for date selection
+
+  /// Named callback method for deleteFluidIntake completion.
+  void _onDeleteComplete(bool isSuccess, String message, Color color) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  /// Reusable function to delete a fluid intake entry from Firestore
+  Future<void> deleteFluidIntake({
+    required String userId,
+    required String intakeId,
+    required Function(bool, String, Color) onComplete,
+  }) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('fluid_intake')
+          .doc(intakeId)
+          .delete();
+      onComplete(true, 'Entry deleted successfully', Colors.green);
+    } catch (e) {
+      // Modified: Pass error color via onComplete, removing context dependency
+      onComplete(false, 'Failed to delete entry: $e', Colors.red);
+    }
+  }
+
+  /// Function to show delete confirmation before deleting an entry.
+  Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
+    final result = await showNCAlertDialogue(
+      context: context,
+      titleText: 'Delete Entry',
+      content: const Text(
+          'Are you sure you want to delete this fluid intake entry?'),
+      action1: TextButton(
+        onPressed: () => Navigator.of(context).pop(false),
+        child: const Text('Cancel'),
+      ),
+      action2: ElevatedButton(
+        onPressed: () => Navigator.of(context).pop(true),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+        child: Text(
+          'Delete',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+          ),
+        ),
+      ),
+    );
+    return result ?? false;
+  }
+
+  /// Function to show a bottom modal sheet to add fluid intake.
   void _showAddFluidIntakeDialog(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await showModalBottomSheet<DialogResult>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: waterBackgroundShade,
+      builder: (modalContext) => const ShowFluidInputOptions(),
+    );
+    if (!mounted) return;
+    if (result != null) {
+      messenger.clearSnackBars();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(result.message),
+          backgroundColor: result.backgroundColor,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  /// Added: Placeholder for editing fluid intake
+  void _showEditFluidIntakeDialog(
+      BuildContext context, FluidIntake intake) async {
+    // Future: Check if intake.timestamp is between today 12 AM and tomorrow 12 AM
     final messenger = ScaffoldMessenger.of(context);
 
     final result = await showModalBottomSheet<DialogResult>(
       context: context,
       isScrollControlled: true,
       backgroundColor: waterBackgroundShade,
-      builder: (modalContext) => const AddFluidIntakeDialog(),
+      builder: (modalContext) => ShowFluidInputOptions(intake: intake),
     );
-
     if (!mounted) return;
-
     if (result != null) {
       messenger.clearSnackBars();
       messenger.showSnackBar(
@@ -416,13 +522,8 @@ class FluidIntakeLogState extends ConsumerState<FluidIntakeLog> {
         leading: InkWell(
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: const Icon(
-            Icons.arrow_back,
-            color: waterShade2,
-          ),
+          onTap: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back, color: waterShade2),
         ),
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -435,13 +536,17 @@ class FluidIntakeLogState extends ConsumerState<FluidIntakeLog> {
         backgroundColor: waterBackgroundShade,
         surfaceTintColor: Colors.transparent,
         actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.calendar_today,
+              color: waterShade2,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: IconButton(
-              onPressed: () {
-                _showAddFluidIntakeDialog(context);
-              },
-              color: waterShade2,
+              onPressed: () => _showAddFluidIntakeDialog(context),
               icon: const Icon(
                 Icons.add,
                 color: waterShade2,
@@ -456,6 +561,7 @@ class FluidIntakeLogState extends ConsumerState<FluidIntakeLog> {
         top: false,
         child: Consumer(
           builder: (context, ref, child) {
+            // Modified: Pass selectedDate to provider (requires provider update)
             final fluidIntakeAsync = ref.watch(fluidIntakeListProvider);
             return fluidIntakeAsync.when(
               data: (intakes) {
@@ -470,7 +576,7 @@ class FluidIntakeLogState extends ConsumerState<FluidIntakeLog> {
                         child: Row(
                           children: [
                             Text(
-                              "Today's Fluid Intake",
+                              "Fluid Intake for today :",
                               style:
                                   themeContext.textTheme.titleLarge!.copyWith(
                                 color: waterShade2,
@@ -507,9 +613,12 @@ class FluidIntakeLogState extends ConsumerState<FluidIntakeLog> {
                         child: intakes.isEmpty
                             ? Center(
                                 child: Text(
-                                  'No entries for today',
+                                  'No entries for today \n Add a fluid intake to track now',
                                   style: themeContext.textTheme.titleMedium!
-                                      .copyWith(color: waterShade2),
+                                      .copyWith(
+                                    color: waterShade2,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
                               )
                             : ListView.builder(
@@ -523,36 +632,129 @@ class FluidIntakeLogState extends ConsumerState<FluidIntakeLog> {
                                 itemCount: intakes.length,
                                 itemBuilder: (context, index) {
                                   final intake = intakes[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: ListTile(
-                                      leading: const Icon(
-                                        Icons.water_drop,
-                                        color: waterBackgroundShade,
+                                  return Dismissible(
+                                    key: Key(intake.id),
+                                    direction: DismissDirection.endToStart,
+                                    confirmDismiss: (direction) async {
+                                      return await _showDeleteConfirmationDialog(
+                                          context);
+                                    },
+                                    onDismissed: (direction) {
+                                      final user = ref.read(authProvider);
+                                      if (user == null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: const Text(
+                                              'Please sign in to delete entries',
+                                            ),
+                                            backgroundColor:
+                                                themeContext.colorScheme.error,
+                                            duration:
+                                                const Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      deleteFluidIntake(
+                                        userId: user.uid,
+                                        intakeId: intake.id,
+                                        onComplete: _onDeleteComplete,
+                                      );
+                                    },
+                                    background: Container(
+                                      margin: const EdgeInsets.only(
+                                        left: 4,
+                                        bottom: 8,
                                       ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        vertical: 6,
-                                        horizontal: 12,
+                                      decoration: BoxDecoration(
+                                        color: themeContext.colorScheme.error,
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      tileColor: waterShade2,
-                                      title: Text(
-                                        'Drank ${intake.fluidName} : ${intake.quantity.toInt()} ml',
-                                        style: themeContext
-                                            .textTheme.titleMedium!
-                                            .copyWith(
-                                          color: waterBackgroundShade,
-                                          fontWeight: FontWeight.w600,
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.only(right: 20),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          hGap16,
+                                          Text(
+                                            'Delete this Entry',
+                                            style: themeContext
+                                                .textTheme.titleMedium!
+                                                .copyWith(
+                                              color: waterBackgroundShade,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          const Icon(
+                                            Icons.delete,
+                                            color: Colors.white,
+                                          ),
+                                          hGap8,
+                                        ],
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: waterShade2,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                         ),
-                                      ),
-                                      trailing: Text(
-                                        Utils.formatTime(
-                                            intake.timestamp.toDate()),
-                                        style: themeContext
-                                            .textTheme.bodyMedium!
-                                            .copyWith(
-                                          color: waterBackgroundShade,
-                                          fontWeight: FontWeight.w600,
+                                        child: ListTile(
+                                          leading: const Icon(
+                                            Icons.water_drop,
+                                            color: waterBackgroundShade,
+                                          ),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            vertical: 6,
+                                            horizontal: 12,
+                                          ),
+                                          title: Text(
+                                            'Drank: ${intake.fluidName}',
+                                            style: themeContext
+                                                .textTheme.titleMedium!
+                                                .copyWith(
+                                              color: waterBackgroundShade,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            '${intake.quantity.toInt()} ml',
+                                            style: themeContext
+                                                .textTheme.titleMedium!
+                                                .copyWith(
+                                              color: waterBackgroundShade,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              // Added: Placeholder edit button
+                                              const IconButton(
+                                                icon: Icon(
+                                                  Icons.edit,
+                                                  color: waterBackgroundShade,
+                                                ),
+                                                onPressed:
+                                                    null, // Future: Enable for editing
+                                              ),
+                                              Text(
+                                                Utils.formatTime(
+                                                    intake.timestamp.toDate()),
+                                                style: themeContext
+                                                    .textTheme.bodyMedium!
+                                                    .copyWith(
+                                                  color: waterBackgroundShade,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),

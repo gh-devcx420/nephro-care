@@ -36,8 +36,10 @@ class OverviewCard extends ConsumerWidget {
               ),
               const Spacer(),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(8),
@@ -103,7 +105,7 @@ class OverviewCard extends ConsumerWidget {
               ),
               hGap10,
               OverviewChip(
-                chipLabel: 'Weight',
+                chipLabel: 'Weight Tracker',
                 chipIcon: Icons.monitor_weight,
                 chipText: '66.50 Kg',
                 chipTimestamp: '6:50 pm',
