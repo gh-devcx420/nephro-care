@@ -37,8 +37,9 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
   late final TextEditingController fluidNameController;
   late final TextEditingController quantityController;
   late final TextEditingController timeController;
+  late final FocusNode fluidNameFocusNode;
   late final FocusNode quantityFocusNode;
-  TimeOfDay selectedTime = TimeOfDay.now();
+  TimeOfDay? selectedTime = TimeOfDay.now();
 
   @override
   void initState() {
@@ -50,7 +51,9 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
         DateTime.now(),
       ),
     );
+    fluidNameFocusNode = FocusNode();
     quantityFocusNode = FocusNode();
+    selectedTime = TimeOfDay.now();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(quantityFocusNode);
     });
@@ -61,8 +64,154 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
     fluidNameController.dispose();
     quantityController.dispose();
     timeController.dispose();
+    fluidNameFocusNode.dispose();
     quantityFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _showTimePicker() async {
+    final errorColor = Theme.of(context).colorScheme.error;
+    final navigator = Navigator.of(context);
+    FocusScope.of(context).requestFocus(FocusNode());
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: selectedTime ?? TimeOfDay.now(),
+    );
+    if (pickedTime != null) {
+      final currentDateTime = DateTime.now();
+      final pickedDateTime = DateTime(
+        currentDateTime.year,
+        currentDateTime.month,
+        currentDateTime.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+      final nowDateTime = DateTime(
+        currentDateTime.year,
+        currentDateTime.month,
+        currentDateTime.day,
+        currentDateTime.hour,
+        currentDateTime.minute,
+      );
+      if (pickedDateTime.isAfter(nowDateTime)) {
+        navigator.pop(
+          DialogResult(
+            isSuccess: false,
+            message: 'Cannot select a future time',
+            backgroundColor: errorColor,
+          ),
+        );
+        return;
+      }
+      setState(() {
+        selectedTime = pickedTime;
+        timeController.text = pickedTime.format(context);
+      });
+    } else {
+      setState(() {
+        selectedTime = null;
+        timeController.text = '';
+      });
+    }
+  }
+
+  Future<void> _addIntake(WidgetRef ref) async {
+    final errorColor = Theme.of(context).colorScheme.error;
+    final navigator = Navigator.of(context);
+    double? quantity;
+    try {
+      quantity = double.parse(quantityController.text);
+    } catch (e) {
+      FocusScope.of(context).unfocus();
+      navigator.pop(
+        DialogResult(
+          isSuccess: false,
+          message: 'Please enter a valid quantity',
+          backgroundColor: errorColor,
+        ),
+      );
+      return;
+    }
+
+    if (quantity > 1000) {
+      FocusScope.of(context).unfocus();
+      navigator.pop(
+        DialogResult(
+          isSuccess: false,
+          message: 'Quantity cannot exceed 1000ml',
+          backgroundColor: errorColor,
+        ),
+      );
+      return;
+    }
+
+    if (selectedTime == null) {
+      FocusScope.of(context).unfocus();
+      navigator.pop(
+        DialogResult(
+          isSuccess: false,
+          message: 'Please select a time',
+          backgroundColor: errorColor,
+        ),
+      );
+      return;
+    }
+
+    final user = ref.read(authProvider);
+    if (user == null) {
+      FocusScope.of(context).unfocus();
+      navigator.pop(
+        DialogResult(
+          isSuccess: false,
+          message: 'Please sign in to add entries',
+          backgroundColor: errorColor,
+        ),
+      );
+      return;
+    }
+    final userId = user.uid;
+
+    final today = DateTime.now();
+    final dateTime = DateTime(
+      today.year,
+      today.month,
+      today.day,
+      selectedTime!.hour,
+      selectedTime!.minute,
+    );
+
+    final intake = FluidIntake(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      fluidName: fluidNameController.text,
+      quantity: quantity,
+      timestamp: Timestamp.fromDate(dateTime),
+    );
+
+    FocusScope.of(context).unfocus();
+
+    try {
+      navigator.pop(
+        DialogResult(
+          isSuccess: true,
+          message: 'Entry added successfully',
+          backgroundColor: Colors.green,
+        ),
+      );
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('fluid_intake')
+          .doc(intake.id)
+          .set(intake.toJson());
+    } catch (e) {
+      navigator.pop(
+        DialogResult(
+          isSuccess: false,
+          message: 'Failed to save entry: $e',
+          backgroundColor: errorColor,
+        ),
+      );
+    }
   }
 
   @override
@@ -83,7 +232,9 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 8),
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
                       child: Text(
                         'Enter Fluid Intake Details:',
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -100,9 +251,11 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
                 key: const ValueKey('fluidName_textfield'),
                 hintText: 'Fluid Name',
                 textFieldController: fluidNameController,
+                focusNode: fluidNameFocusNode,
                 onSuffixIconTap: () {
                   setState(() {
                     fluidNameController.text = '';
+                    FocusScope.of(context).requestFocus(fluidNameFocusNode);
                   });
                 },
                 activeFieldIcon: const Icon(Icons.local_drink),
@@ -169,52 +322,13 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
                       activeFieldIcon: const Icon(Icons.timer_rounded),
                       inactiveFieldIcon: const Icon(Icons.timer_outlined),
                       textCapitalization: TextCapitalization.none,
-                      onTap: () async {
-                        final errorColor = Theme.of(context).colorScheme.error;
-                        final navigator = Navigator.of(context);
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        final now = TimeOfDay.now();
-                        final pickedTime = await showTimePicker(
-                          context: context,
-                          initialTime: selectedTime,
-                        );
-                        if (pickedTime != null) {
-                          final currentDateTime = DateTime.now();
-                          final pickedDateTime = DateTime(
-                            currentDateTime.year,
-                            currentDateTime.month,
-                            currentDateTime.day,
-                            pickedTime.hour,
-                            pickedTime.minute,
-                          );
-                          final nowDateTime = DateTime(
-                            currentDateTime.year,
-                            currentDateTime.month,
-                            currentDateTime.day,
-                            now.hour,
-                            now.minute,
-                          );
-                          if (pickedDateTime.isAfter(nowDateTime)) {
-                            navigator.pop(
-                              DialogResult(
-                                isSuccess: false,
-                                message: 'Cannot select a future time',
-                                backgroundColor: errorColor,
-                              ),
-                            );
-                            return;
-                          }
-                          setState(() {
-                            selectedTime = pickedTime;
-                            timeController.text = pickedTime.format(context);
-                          });
-                        }
-                      },
+                      onTap: _showTimePicker,
                       onSuffixIconTap: () {
                         setState(() {
                           selectedTime = TimeOfDay.now();
                           timeController.text = '';
                         });
+                        _showTimePicker();
                       },
                       enabledBorderColor: waterShade2,
                       focusedBorderColor: waterShade2,
@@ -234,91 +348,8 @@ class _AddFluidIntakeDialogState extends State<AddFluidIntakeDialog> {
               Consumer(
                 builder: (context, ref, child) {
                   return ElevatedButton(
-                    onPressed: () async {
-                      final errorColor = Theme.of(context).colorScheme.error;
-                      final navigator = Navigator.of(context);
-                      double? quantity;
-                      try {
-                        quantity = double.parse(quantityController.text);
-                      } catch (e) {
-                        FocusScope.of(context).unfocus();
-                        navigator.pop(
-                          DialogResult(
-                            isSuccess: false,
-                            message: 'Please enter a valid quantity',
-                            backgroundColor: errorColor,
-                          ),
-                        );
-                        return;
-                      }
-
-                      if (quantity > 1000) {
-                        FocusScope.of(context).unfocus();
-                        navigator.pop(
-                          DialogResult(
-                            isSuccess: false,
-                            message: 'Quantity cannot exceed 1000ml',
-                            backgroundColor: errorColor,
-                          ),
-                        );
-                        return;
-                      }
-
-                      final user = ref.read(authProvider);
-                      if (user == null) {
-                        FocusScope.of(context).unfocus();
-                        navigator.pop(
-                          DialogResult(
-                            isSuccess: false,
-                            message: 'Please sign in to add entries',
-                            backgroundColor: errorColor,
-                          ),
-                        );
-                        return;
-                      }
-                      final userId = user.uid;
-
-                      final today = DateTime.now();
-                      final dateTime = DateTime(
-                        today.year,
-                        today.month,
-                        today.day,
-                        selectedTime.hour,
-                        selectedTime.minute,
-                      );
-
-                      final intake = FluidIntake(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
-                        fluidName: fluidNameController.text,
-                        quantity: quantity,
-                        timestamp: Timestamp.fromDate(dateTime),
-                      );
-
-                      FocusScope.of(context).unfocus();
-
-                      try {
-                        navigator.pop(
-                          DialogResult(
-                            isSuccess: true,
-                            message: 'Entry added successfully',
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(userId)
-                            .collection('fluid_intake')
-                            .doc(intake.id)
-                            .set(intake.toJson());
-                      } catch (e) {
-                        navigator.pop(
-                          DialogResult(
-                            isSuccess: false,
-                            message: 'Failed to save entry: $e',
-                            backgroundColor: errorColor,
-                          ),
-                        );
-                      }
+                    onPressed: () {
+                      _addIntake(ref);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: waterShade2,

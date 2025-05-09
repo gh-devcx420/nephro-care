@@ -139,7 +139,6 @@ class OverviewCard extends ConsumerWidget {
               ],
             ),
           ),
-          vGap30,
         ],
       ),
     );
