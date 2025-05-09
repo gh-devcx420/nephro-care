@@ -273,18 +273,18 @@ abstract class AppTheme {
       ),
       headlineMedium: GoogleFonts.josefinSans(
         fontSize: 28,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
         color: fontColor,
       ),
       headlineSmall: GoogleFonts.josefinSans(
         fontSize: 24,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
         color: fontColor,
       ),
 
       //Title styles
       titleLarge: GoogleFonts.josefinSans(
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),

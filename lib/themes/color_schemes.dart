@@ -80,27 +80,24 @@ abstract class AppColorScheme {
   );
 }
 
-abstract class ChipColors {
+abstract class ComponentColors {
   // Water Theme
-  static const Color waterBackgroundColor = Color(0xFFD4E6FC); // light blue
-  static const Color waterIconColor = Color(0xFF2CC3F5); // bright blue
-  static const Color waterBorderColor = Color(0xFFB3DFFC); // soft blue border
+  static const Color waterBackgroundColor = Color(0xFFDFEDFD);
+  static const Color waterColorShade1 = Color(0xFF0BA5D9);
+  static const Color waterColorShade2 = Color(0xFF438BBE);
 
   // Urine Theme
-  static const Color urineBackgroundColor = Color(0xFFFFF6D5); // light yellow
-  static const Color urineIconColor = Color(0xFFFFC107); // amber/yellow icon
-  static const Color urineBorderColor = Color(0xFFFFE082); // soft amber border
+  static const Color urineBackgroundColor = Color(0xFFFFF8DE);
+  static const Color urineColorShade1 = Color(0xFFCE7F07);
+  static const Color urineColorShade2 = Color(0xFFBD9D3F);
 
   // Blood Theme
-  static const Color bloodBackgroundColor =
-      Color(0xFFFDE0E0); // light red/pink background
-  static const Color bloodIconColor = Color(0xFFD32F2F); // deep red icon
-  static const Color bloodBorderColor =
-      Color(0xFFF8BBD0); // soft pinkish-red border
+  static const Color bloodBackgroundColor = Color(0xFFFDE5E5);
+  static const Color bloodColorShade1 = Color(0xFFD50C0C);
+  static const Color bloodColorShade2 = Color(0xFFC73838);
 
-  // Weight Theme (fresh green tones)
-  static const Color weightBackgroundColor =
-      Color(0xFFE6F4EA); // very light green
-  static const Color weightIconColor = Color(0xFF43A047); // medium green
-  static const Color weightBorderColor = Color(0xFFA5D6A7);
+  // Weight Theme
+  static const Color weightBackgroundColor = Color(0xFFE3F8EA);
+  static const Color weightColorShade1 = Color(0xFF209F24);
+  static const Color weightColorShade2 = Color(0xFF36863C);
 }

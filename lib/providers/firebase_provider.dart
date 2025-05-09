@@ -22,7 +22,7 @@ final fluidIntakeListProvider = StreamProvider<List<FluidIntake>>((ref) {
       .where('timestamp',
           isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
       .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
-      .orderBy('timestamp', descending: true)
+      .orderBy('timestamp', descending: false)
       .snapshots()
       .map((snapshot) => snapshot.docs
           .map((doc) => FluidIntake.fromJson(doc.data()))

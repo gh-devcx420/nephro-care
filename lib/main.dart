@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/providers/themes_provider.dart';
-import 'package:nephro_care/screens/fluid_intake_screen/fluid_intake_log.dart';
+import 'package:nephro_care/screens/fluid_intake_log_screen/fluid_intake_log.dart';
 import 'package:nephro_care/screens/home_screen/home_screen.dart';
 import 'package:nephro_care/screens/login_screen/login_screen.dart';
 import 'package:nephro_care/themes/theme_config.dart';

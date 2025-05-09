@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/constants.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
+import 'package:nephro_care/screens/home_screen/notes.dart';
 import 'package:nephro_care/screens/home_screen/overview_card.dart';
 import 'package:nephro_care/screens/settings_screen/settings_screen.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
@@ -40,8 +41,8 @@ class HomeScreen extends ConsumerWidget {
           ),
           IconButton(
             onPressed: () async {
-              await ref.read(authProvider.notifier).signOut();
               Navigator.pushReplacementNamed(context, '/home');
+              await ref.read(authProvider.notifier).signOut();
             },
             icon: Icon(
               Icons.logout,
@@ -59,10 +60,10 @@ class HomeScreen extends ConsumerWidget {
           children: [
             Row(
               children: [
-                hGap8,
+                hGap16,
                 Text(
                   'Welcome, $userName',
-                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                 ),
@@ -70,6 +71,8 @@ class HomeScreen extends ConsumerWidget {
             ),
             vGap10,
             const OverviewCard(),
+            vGap10,
+            const NotesCard(),
           ],
         ),
       ),

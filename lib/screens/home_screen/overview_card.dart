@@ -14,7 +14,6 @@ class OverviewCard extends ConsumerWidget {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
-    // Get the fluid intake summary from the provider
     final summary = ref.watch(fluidIntakeSummaryProvider);
 
     return Container(
@@ -30,78 +29,93 @@ class OverviewCard extends ConsumerWidget {
         children: [
           Row(
             children: [
+              hGap4,
               Text(
                 'Today\'s Overview',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const Spacer(),
-              Text(
-                'Sunday',
-                style: Theme.of(context).textTheme.titleMedium,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Sunday',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: Colors.white),
+                ),
               ),
+              hGap4,
             ],
           ),
           vGap16,
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               OverviewChip(
                 chipLabel: 'Fluid Intake',
+                requireLitreConversion: true,
                 chipIcon: Icons.water_drop_rounded,
                 chipText: '${summary['total']} ml',
                 chipTimestamp: '${summary['lastTime']}',
-                chipBackgroundColor: ChipColors.waterBackgroundColor,
-                chipBorderColor: ChipColors.waterBorderColor,
-                chipIconColor: ChipColors.waterIconColor,
-                chipTextColor: ChipColors.waterIconColor,
+                chipBackgroundColor: ComponentColors.waterBackgroundColor,
+                chipBorderColor: ComponentColors.waterColorShade2,
+                chipIconColor: ComponentColors.waterColorShade1,
+                chipTextColor: ComponentColors.waterColorShade1,
                 onChipTap: () {
                   Navigator.pushNamed(context, '/fluid_log');
                 },
               ),
-              hGap16,
+              hGap10,
               OverviewChip(
                 chipLabel: 'Urine Output',
+                requireLitreConversion: true,
                 chipIcon: Icons.water_drop_rounded,
                 chipText: '150 ml',
                 chipTimestamp: '6:50 pm',
-                chipBackgroundColor: ChipColors.urineBackgroundColor,
-                chipBorderColor: ChipColors.urineBorderColor,
-                chipIconColor: ChipColors.urineIconColor,
-                chipTextColor: ChipColors.urineIconColor,
+                chipBackgroundColor: ComponentColors.urineBackgroundColor,
+                chipBorderColor: ComponentColors.urineColorShade2,
+                chipIconColor: ComponentColors.urineColorShade1,
+                chipTextColor: ComponentColors.urineColorShade1,
                 onChipTap: () {},
               ),
             ],
           ),
-          vGap16,
+          vGap10,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               OverviewChip(
-                chipLabel: 'BP',
+                chipLabel: 'BP Monitor',
                 chipIcon: Icons.monitor_heart,
                 chipText: '140 / 90',
                 chipTimestamp: '6:50 pm',
-                chipBackgroundColor: ChipColors.bloodBackgroundColor,
-                chipBorderColor: ChipColors.bloodBorderColor,
-                chipIconColor: ChipColors.bloodIconColor,
-                chipTextColor: ChipColors.bloodIconColor,
+                chipBackgroundColor: ComponentColors.bloodBackgroundColor,
+                chipBorderColor: ComponentColors.bloodColorShade2,
+                chipIconColor: ComponentColors.bloodColorShade1,
+                chipTextColor: ComponentColors.bloodColorShade1,
                 onChipTap: () {},
               ),
-              hGap16,
+              hGap10,
               OverviewChip(
                 chipLabel: 'Weight',
                 chipIcon: Icons.monitor_weight,
                 chipText: '66.50 Kg',
                 chipTimestamp: '6:50 pm',
-                chipBackgroundColor: ChipColors.weightBackgroundColor,
-                chipBorderColor: ChipColors.weightBorderColor,
-                chipIconColor: ChipColors.weightIconColor,
-                chipTextColor: ChipColors.weightIconColor,
+                chipBackgroundColor: ComponentColors.weightBackgroundColor,
+                chipBorderColor: ComponentColors.weightColorShade2,
+                chipIconColor: ComponentColors.weightColorShade1,
+                chipTextColor: ComponentColors.weightColorShade1,
                 onChipTap: () {},
               ),
             ],
           ),
-          vGap16,
+          vGap10,
           Container(
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
             decoration: BoxDecoration(
@@ -126,14 +140,6 @@ class OverviewCard extends ConsumerWidget {
             ),
           ),
           vGap30,
-          Row(
-            children: [
-              Text(
-                'Notes :',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ],
-          ),
         ],
       ),
     );
