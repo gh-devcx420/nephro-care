@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
@@ -21,6 +22,19 @@ class Utils {
     }
   }
 
+  static String formatWeekday(DateTime date) {
+    const days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+    return days[date.weekday - 1];
+  }
+
   /// Utility Function to format Time.
   static String formatTime(DateTime? pickedTime) {
     final formatter = DateFormat('hh:mm a');
@@ -31,8 +45,21 @@ class Utils {
     }
   }
 
+  // Show a Snackbar with consistent styling.
+  static void showSnackBar(
+      BuildContext context, String message, Color backgroundColor) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: backgroundColor,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+  }
+
   /// Utility Function to convert a millilitre value to litres.
-  // CHANGE 1: Updated to handle both String and double inputs
   static String convertToLitres(dynamic input) {
     double? mlValue;
     if (input is String) {
@@ -53,7 +80,6 @@ class Utils {
   }
 
   /// Utility Function to format a fluid amount based on its value.
-  // CHANGE 2: Updated to handle both String and double inputs using convertToLitres
   static String formatFluidAmount(dynamic input) {
     double? mlValue;
     if (input is String) {

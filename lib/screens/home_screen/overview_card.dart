@@ -11,111 +11,146 @@ class OverviewCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
     final summary = ref.watch(fluidIntakeSummaryProvider);
 
     return Container(
       width: width * 0.95,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 16,
+      ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surfaceBright,
         borderRadius: BorderRadius.circular(kBorderRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              hGap4,
-              Text(
-                'Today\'s Overview',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                hGap4,
+                Text(
+                  'Your Summary',
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(8),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.90),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      // TODO: Implement alert dialogue with today's date and fluid cycle time
+                    },
+                    child: Text(
+                      summary.when(
+                        data: (data) => data['day'] as String,
+                        loading: () => 'Loading...',
+                        error: (e, _) => 'Today',
+                      ),
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: Theme.of(context).colorScheme.surfaceBright,
+                          ),
+                    ),
+                  ),
                 ),
-                child: Text(
-                  'Sunday',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium!
-                      .copyWith(color: Colors.white),
-                ),
-              ),
-              hGap4,
-            ],
-          ),
-          vGap16,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              OverviewChip(
-                chipLabel: 'Fluid Intake',
-                requireLitreConversion: true,
-                chipIcon: Icons.water_drop_rounded,
-                chipText: '${summary['total']} ml',
-                chipTimestamp: '${summary['lastTime']}',
-                chipBackgroundColor: ComponentColors.waterBackgroundColor,
-                chipBorderColor: ComponentColors.waterColorShade2,
-                chipIconColor: ComponentColors.waterColorShade1,
-                chipTextColor: ComponentColors.waterColorShade1,
-                onChipTap: () {
-                  Navigator.pushNamed(context, '/fluid_log');
-                },
-              ),
-              hGap10,
-              OverviewChip(
-                chipLabel: 'Urine Output',
-                requireLitreConversion: true,
-                chipIcon: Icons.water_drop_rounded,
-                chipText: '150 ml',
-                chipTimestamp: '6:50 pm',
-                chipBackgroundColor: ComponentColors.urineBackgroundColor,
-                chipBorderColor: ComponentColors.urineColorShade2,
-                chipIconColor: ComponentColors.urineColorShade1,
-                chipTextColor: ComponentColors.urineColorShade1,
-                onChipTap: () {},
-              ),
-            ],
+                hGap4,
+              ],
+            ),
           ),
           vGap10,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              OverviewChip(
-                chipLabel: 'BP Monitor',
-                chipIcon: Icons.monitor_heart,
-                chipText: '140 / 90',
-                chipTimestamp: '6:50 pm',
-                chipBackgroundColor: ComponentColors.bloodBackgroundColor,
-                chipBorderColor: ComponentColors.bloodColorShade2,
-                chipIconColor: ComponentColors.bloodColorShade1,
-                chipTextColor: ComponentColors.bloodColorShade1,
-                onChipTap: () {},
+          vGap2,
+          summary.when(
+            data: (intake) => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                OverviewChip(
+                  chipLabel: 'Fluid Intake',
+                  requireLitreConversion: true,
+                  chipIcon: Icons.water_drop_rounded,
+                  chipText: '${intake['total']} ml',
+                  chipTimestamp: intake['lastTime'] as String,
+                  chipBackgroundColor: ComponentColors.waterBackgroundColor,
+                  chipBorderColor: ComponentColors.waterColorShade2,
+                  chipIconColor: ComponentColors.waterColorShade1,
+                  chipTextColor: ComponentColors.waterColorShade1,
+                  onChipTap: () {
+                    Navigator.pushNamed(context, '/fluid_log');
+                  },
+                ),
+                hGap10,
+                OverviewChip(
+                  chipLabel: 'Urine Output',
+                  requireLitreConversion: true,
+                  chipIcon: Icons.water_drop_rounded,
+                  chipText: '150 ml',
+                  // TODO: Replace with dynamic data
+                  chipTimestamp: '6:50 pm',
+                  // TODO: Replace with dynamic data
+                  chipBackgroundColor: ComponentColors.urineBackgroundColor,
+                  chipBorderColor: ComponentColors.urineColorShade2,
+                  chipIconColor: ComponentColors.urineColorShade1,
+                  chipTextColor: ComponentColors.urineColorShade1,
+                  onChipTap: () {},
+                ),
+              ],
+            ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
               ),
-              hGap10,
-              OverviewChip(
-                chipLabel: 'Weight Tracker',
-                chipIcon: Icons.monitor_weight,
-                chipText: '66.50 Kg',
-                chipTimestamp: '6:50 pm',
-                chipBackgroundColor: ComponentColors.weightBackgroundColor,
-                chipBorderColor: ComponentColors.weightColorShade2,
-                chipIconColor: ComponentColors.weightColorShade1,
-                chipTextColor: ComponentColors.weightColorShade1,
-                onChipTap: () {},
-              ),
-            ],
+            ),
+            error: (e, _) => Center(
+              child: Text('Error: $e'),
+            ),
+          ),
+          vGap10,
+          summary.when(
+            data: (data) => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                OverviewChip(
+                  chipLabel: 'BP Monitor',
+                  chipIcon: Icons.monitor_heart,
+                  chipText: '140 / 90',
+                  // TODO: Replace with dynamic data
+                  chipTimestamp: '6:50 pm',
+                  // TODO: Replace with dynamic data
+                  chipBackgroundColor: ComponentColors.bloodBackgroundColor,
+                  chipBorderColor: ComponentColors.bloodColorShade2,
+                  chipIconColor: ComponentColors.bloodColorShade1,
+                  chipTextColor: ComponentColors.bloodColorShade1,
+                  onChipTap: () {},
+                ),
+                hGap10,
+                OverviewChip(
+                  chipLabel: 'Weight Tracker',
+                  chipIcon: Icons.monitor_weight,
+                  chipText: '66.50 Kg',
+                  // TODO: Replace with dynamic data
+                  chipTimestamp: '6:50 pm',
+                  // TODO: Replace with dynamic data
+                  chipBackgroundColor: ComponentColors.weightBackgroundColor,
+                  chipBorderColor: ComponentColors.weightColorShade2,
+                  chipIconColor: ComponentColors.weightColorShade1,
+                  chipTextColor: ComponentColors.weightColorShade1,
+                  onChipTap: () {},
+                ),
+              ],
+            ),
+            loading: () => const SizedBox.shrink(),
+            error: (e, _) => const SizedBox.shrink(),
           ),
           vGap10,
           Container(
@@ -133,6 +168,7 @@ class OverviewCard extends ConsumerWidget {
                 hGap8,
                 Text(
                   'Medications last taken on : 9:10 am.',
+                  // TODO: Replace with dynamic data
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         color: Colors.pink,
                         fontSize: 20,

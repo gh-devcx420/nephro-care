@@ -98,12 +98,17 @@ abstract class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
         ),
+        titleTextStyle: GoogleFonts.josefinSans(
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.primary,
+        ),
+        visualDensity: VisualDensity.standard,
         subtitleTextStyle: GoogleFonts.josefinSans(
           fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: colorScheme.onPrimary,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.primary,
         ),
-        dense: true,
       ),
       dialogTheme: DialogTheme(
         titleTextStyle: GoogleFonts.josefinSans(
@@ -120,10 +125,14 @@ abstract class AppTheme {
       snackBarTheme: SnackBarThemeData(
         contentTextStyle: GoogleFonts.josefinSans(
           fontSize: 18,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: colorScheme.onPrimary,
         ),
         backgroundColor: colorScheme.primary,
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        circularTrackColor: colorScheme.primary,
+        color: colorScheme.primary,
       ),
       textTheme: textTheme(
         colorScheme.primary,

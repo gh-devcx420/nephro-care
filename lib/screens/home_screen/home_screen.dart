@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/constants.dart';
-import 'package:nephro_care/providers/auth_provider.dart';
-import 'package:nephro_care/screens/home_screen/notes.dart';
+import 'package:nephro_care/screens/home_screen/notes_section.dart';
 import 'package:nephro_care/screens/home_screen/overview_card.dart';
 import 'package:nephro_care/screens/settings_screen/settings_screen.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
@@ -12,8 +11,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider);
-    final userName = user?.displayName ?? 'User';
+    //final user = ref.watch(authProvider);
+    //final userName = user?.displayName ?? 'User';
 
     return Scaffold(
       appBar: AppBar(
@@ -42,37 +41,14 @@ class HomeScreen extends ConsumerWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          IconButton(
-            onPressed: () async {
-              Navigator.pushReplacementNamed(context, '/home');
-              await ref.read(authProvider.notifier).signOut();
-            },
-            icon: Icon(
-              Icons.logout,
-              size: 30,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
         ],
       ),
       drawer: const Drawer(),
       body: const Padding(
         padding: EdgeInsets.all(kScaffoldBodyPadding),
         child: Column(
-          mainAxisSize: MainAxisSize.max,
+          //mainAxisSize: MainAxisSize.max,
           children: [
-            // Row(
-            //   children: [
-            //     hGap16,
-            //     Text(
-            //       'Welcome, $userName',
-            //       style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-            //             color: Theme.of(context).colorScheme.primary,
-            //           ),
-            //     ),
-            //   ],
-            // ),
-            // vGap10,
             OverviewCard(),
             vGap10,
             NotesCard(),

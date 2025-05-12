@@ -3,14 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:nephro_care/models/fluid_intake_model.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
+import 'package:nephro_care/utils/utils.dart';
 
 final fluidIntakeListProvider = StreamProvider<List<FluidIntake>>((ref) {
-  final user = ref.watch(authProvider);
-  if (user == null) {
-    return Stream.value([]);
-  }
+  // Assume user is authenticated
+  final userId = ref.watch(authProvider)!.uid;
 
-  final userId = user.uid;
   final today = DateTime.now();
   final startOfDay = DateTime(today.year, today.month, today.day);
   final endOfDay = startOfDay.add(const Duration(days: 1));
@@ -29,23 +27,52 @@ final fluidIntakeListProvider = StreamProvider<List<FluidIntake>>((ref) {
           .toList());
 });
 
-final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
-  final fluidIntakeAsync = ref.watch(fluidIntakeListProvider);
+final fluidIntakeSummaryProvider = StreamProvider<Map<String, dynamic>>((ref) {
+  final userId = ref.watch(authProvider)!.uid;
 
-  return fluidIntakeAsync.when(
-    data: (intakes) {
-      if (intakes.isEmpty) {
-        return {'total': 0.0, 'lastTime': 'N/A'};
+  // Define date range: 12:00 AM today to 12:00 AM tomorrow
+  final now = DateTime.now();
+  final startOfDay = DateTime(now.year, now.month, now.day);
+  final endOfDay = startOfDay.add(const Duration(days: 1));
+
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('fluid_intake')
+      .where('timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+      .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
+      .orderBy(
+        'timestamp',
+        descending: false,
+      )
+      .snapshots()
+      .map((snapshot) {
+    double total = 0;
+    String lastTime = 'Time : N/A';
+
+    for (var doc in snapshot.docs) {
+      final summary = doc.data();
+      total += (summary['quantity'] as num?)?.toDouble() ?? 0;
+      if (summary['timestamp'] != null) {
+        lastTime = DateFormat('h:mm a').format(
+          (summary['timestamp'] as Timestamp).toDate(),
+        );
       }
-      final total = intakes.fold<double>(
-        0.0,
-        (totalSoFar, intake) => totalSoFar + intake.quantity,
-      );
-      final lastTime =
-          DateFormat('h:mm a').format(intakes.last.timestamp.toDate());
-      return {'total': total, 'lastTime': lastTime};
-    },
-    loading: () => {'total': 0.0, 'lastTime': 'Loading...'},
-    error: (error, stack) => {'total': 0.0, 'lastTime': 'Error'},
-  );
+    }
+    return {
+      'day': Utils.formatWeekday(now),
+      'date': DateFormat('MMMM d, yyyy').format(now),
+      'total': total,
+      'lastTime': lastTime,
+    };
+  }).handleError((error, stackTrace) {
+    final now = DateTime.now();
+    return {
+      'day': Utils.formatWeekday(now),
+      'date': DateFormat('MMMM d, yyyy').format(now),
+      'total': 0.0,
+      'lastTime': 'Time : N/A',
+    };
+  });
 });

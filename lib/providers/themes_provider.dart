@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/themes/theme_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError(
+      'sharedPreferencesProvider must be overridden in ProviderScope');
+});
+
 class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
   final SharedPreferences prefs;
 
@@ -59,11 +64,5 @@ final colorSchemesProvider = Provider<Map<ThemeMode, ColorScheme>>(
       ThemeMode.light: theme.colorScheme.light,
       ThemeMode.dark: theme.colorScheme.dark
     };
-  },
-);
-
-final sharedPreferencesProvider = Provider<SharedPreferences>(
-  (ref) {
-    throw UnimplementedError();
   },
 );

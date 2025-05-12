@@ -72,7 +72,6 @@ class OverviewChip extends StatelessWidget {
                     ),
                     hGap2,
                     Text(
-                      // CHANGE 1: Use formatFluidAmount for conditional formatting
                       requireLitreConversion ?? false
                           ? Utils.formatFluidAmount(chipText)
                           : chipText,

@@ -100,4 +100,8 @@ abstract class ComponentColors {
   static const Color weightBackgroundColor = Color(0xFFE3F8EA);
   static const Color weightColorShade1 = Color(0xFF209F24);
   static const Color weightColorShade2 = Color(0xFF36863C);
+
+  // Other Component Colors
+  static const Color greenSuccess = Colors.green;
+  static const Color orangeAlert = Colors.orange;
 }
