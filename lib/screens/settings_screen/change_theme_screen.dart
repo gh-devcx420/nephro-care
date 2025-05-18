@@ -28,8 +28,8 @@ class ThemeSettingsScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      themeItem.value.colorScheme.dark.secondaryContainer,
                       themeItem.value.colorScheme.light.primary,
+                      themeItem.value.colorScheme.dark.primary,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -37,19 +37,24 @@ class ThemeSettingsScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
-                  title: Text(
-                    themeItem.value.identifier,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: themeItem
-                              .value.colorScheme.light.secondaryContainer,
-                          fontWeight: FontWeight.w600,
-                        ),
+                  title: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                    ),
+                    child: Text(
+                      themeItem.value.identifier,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: themeItem
+                                .value.colorScheme.light.secondaryContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
                   ),
                   trailing: Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Iconify(
                       themeItem.value.themeIcon,
-                      color: themeItem.value.colorScheme.light.onPrimary,
+                      color: themeItem.value.colorScheme.light.primary,
                     ),
                   ),
                   shape: RoundedRectangleBorder(

@@ -73,7 +73,7 @@ class OverviewChip extends StatelessWidget {
                     hGap2,
                     Text(
                       requireLitreConversion ?? false
-                          ? Utils.formatFluidAmount(chipText)
+                          ? Utils.formatFluidValue(chipText)
                           : chipText,
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             color: chipTextColor ?? Colors.grey.shade200,
@@ -83,7 +83,7 @@ class OverviewChip extends StatelessWidget {
                     ),
                     hGap2,
                     Text(
-                      chipTimestamp,
+                      'Time: $chipTimestamp',
                       style: Theme.of(context).textTheme.titleSmall!.copyWith(
                             color: chipTextColor ?? Colors.grey.shade200,
                             fontWeight: FontWeight.w800,

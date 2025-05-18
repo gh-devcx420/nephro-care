@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconify_flutter/icons/ic.dart';
+import 'package:iconify_flutter/icons/whh.dart';
 import 'package:nephro_care/constants.dart';
 import 'package:nephro_care/models/theme_model.dart';
 import 'package:nephro_care/themes/color_schemes.dart';
@@ -11,7 +11,7 @@ Map<ThemeName, AppThemeItem> appThemes = {
   ThemeName.eightball: AppThemeItem(
     identifier: 'Eight Ball',
     colorScheme: AppColorScheme.eightball,
-    themeIcon: Ic.twotone_forest,
+    themeIcon: Whh.eightball,
   ),
 };
 
@@ -98,12 +98,13 @@ abstract class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
         ),
+        iconColor: colorScheme.primary,
         titleTextStyle: GoogleFonts.josefinSans(
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: colorScheme.primary,
         ),
-        visualDensity: VisualDensity.standard,
+        visualDensity: VisualDensity.comfortable,
         subtitleTextStyle: GoogleFonts.josefinSans(
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -132,7 +133,7 @@ abstract class AppTheme {
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         circularTrackColor: colorScheme.primary,
-        color: colorScheme.primary,
+        color: colorScheme.primaryContainer,
       ),
       textTheme: textTheme(
         colorScheme.primary,

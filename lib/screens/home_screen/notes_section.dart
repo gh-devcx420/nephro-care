@@ -25,7 +25,7 @@ class NotesCard extends StatelessWidget {
             children: [
               hGap4,
               Text(
-                'Notes :',
+                'Notes',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ],

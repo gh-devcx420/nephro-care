@@ -11,9 +11,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final user = ref.watch(authProvider);
-    //final userName = user?.displayName ?? 'User';
-
     return Scaffold(
       appBar: AppBar(
         leading: Builder(
@@ -41,13 +38,13 @@ class HomeScreen extends ConsumerWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
+          hGap8,
         ],
       ),
       drawer: const Drawer(),
       body: const Padding(
         padding: EdgeInsets.all(kScaffoldBodyPadding),
         child: Column(
-          //mainAxisSize: MainAxisSize.max,
           children: [
             OverviewCard(),
             vGap10,

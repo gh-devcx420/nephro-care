@@ -82,12 +82,12 @@ abstract class AppColorScheme {
 
 abstract class ComponentColors {
   // Water Theme
-  static const Color waterBackgroundColor = Color(0xFFDFEDFD);
+  static const Color waterBackgroundShade = Color(0xFFDFEDFD);
   static const Color waterColorShade1 = Color(0xFF0BA5D9);
   static const Color waterColorShade2 = Color(0xFF438BBE);
 
   // Urine Theme
-  static const Color urineBackgroundColor = Color(0xFFFFF8DE);
+  static const Color urineBackgroundShade = Color(0xFFFDF8E4);
   static const Color urineColorShade1 = Color(0xFFCE7F07);
   static const Color urineColorShade2 = Color(0xFFBD9D3F);
 

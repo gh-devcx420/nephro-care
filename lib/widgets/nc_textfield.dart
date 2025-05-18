@@ -23,6 +23,8 @@ class NCTextfield extends StatefulWidget {
     this.keyboardType,
     this.onSuffixIconTap,
     this.maxLength,
+    this.readOnly = false,
+    this.semanticsLabel, // Add semanticsLabel for accessibility
   });
 
   final TextEditingController textFieldController;
@@ -44,6 +46,8 @@ class NCTextfield extends StatefulWidget {
   final Color? selectionHandleColor;
   final VoidCallback? onTap;
   final VoidCallback? onSuffixIconTap;
+  final bool readOnly;
+  final String? semanticsLabel; // New property for Semantics
 
   @override
   State<NCTextfield> createState() => _NCTextfieldState();
@@ -87,63 +91,67 @@ class _NCTextfieldState extends State<NCTextfield> {
               widget.selectionHandleColor ?? themeContext.colorScheme.primary,
         ),
       ),
-      child: TextField(
-        onTap: widget.onTap,
-        onTapOutside: (event) {
-          FocusScope.of(context).unfocus();
-        },
-        controller: widget.textFieldController,
-        keyboardType: widget.keyboardType ?? TextInputType.text,
-        style: themeContext.textTheme.titleMedium!.copyWith(
-          color: widget.textColor ?? themeContext.colorScheme.primary,
-        ),
-        cursorColor: widget.cursorColor ?? themeContext.colorScheme.primary,
-        focusNode: _focusNode,
-        maxLength: widget.maxLength ?? TextField.noMaxLength,
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          counterText: '',
-          hintStyle: themeContext.textTheme.titleMedium!.copyWith(
-            color: widget.hintTextColor ?? themeContext.colorScheme.primary,
+      child: Semantics(
+        label: widget.semanticsLabel,
+        child: TextField(
+          onTap: widget.onTap,
+          onTapOutside: (event) {
+            FocusScope.of(context).unfocus();
+          },
+          controller: widget.textFieldController,
+          keyboardType: widget.keyboardType ?? TextInputType.text,
+          style: themeContext.textTheme.titleMedium!.copyWith(
+            color: widget.textColor ?? themeContext.colorScheme.primary,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(kBorderRadius),
-            borderSide: BorderSide(
-              color:
-                  widget.enabledBorderColor ?? themeContext.colorScheme.primary,
-              width: kBorderThickness,
+          cursorColor: widget.cursorColor ?? themeContext.colorScheme.primary,
+          focusNode: _focusNode,
+          maxLength: widget.maxLength ?? TextField.noMaxLength,
+          readOnly: widget.readOnly,
+          decoration: InputDecoration(
+            hintText: widget.hintText,
+            counterText: '',
+            hintStyle: themeContext.textTheme.titleMedium!.copyWith(
+              color: widget.hintTextColor ?? themeContext.colorScheme.primary,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderSide: BorderSide(
+                color: widget.enabledBorderColor ??
+                    themeContext.colorScheme.primary,
+                width: kBorderThickness,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderSide: BorderSide(
+                color: widget.focusedBorderColor ??
+                    themeContext.colorScheme.primary,
+                width: kBorderThickness,
+              ),
+            ),
+            prefixIconColor:
+                widget.prefixIconColor ?? themeContext.colorScheme.primary,
+            suffixIcon: widget.textFieldController.text.isNotEmpty
+                ? InkWell(
+                    onTap: widget.onSuffixIconTap,
+                    child: Icon(
+                      Icons.replay_sharp,
+                      color: widget.prefixIconColor ??
+                          themeContext.colorScheme.primary,
+                    ),
+                  )
+                : null,
+            filled: true,
+            fillColor: widget.fillColor ?? themeContext.colorScheme.surfaceDim,
+            prefixIcon:
+                isActive ? widget.activeFieldIcon : widget.inactiveFieldIcon,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(kBorderRadius),
-            borderSide: BorderSide(
-              color:
-                  widget.focusedBorderColor ?? themeContext.colorScheme.primary,
-              width: kBorderThickness,
-            ),
-          ),
-          prefixIconColor:
-              widget.prefixIconColor ?? themeContext.colorScheme.primary,
-          suffixIcon: widget.textFieldController.text.isNotEmpty
-              ? InkWell(
-                  onTap: widget.onSuffixIconTap,
-                  child: Icon(
-                    Icons.replay_sharp,
-                    color: widget.prefixIconColor ??
-                        themeContext.colorScheme.primary,
-                  ),
-                )
-              : null,
-          filled: true,
-          fillColor: widget.fillColor ?? themeContext.colorScheme.surfaceDim,
-          prefixIcon:
-              isActive ? widget.activeFieldIcon : widget.inactiveFieldIcon,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+          textCapitalization: widget.textCapitalization,
+          onChanged: widget.onChanged,
         ),
-        textCapitalization: widget.textCapitalization,
-        onChanged: widget.onChanged,
       ),
     );
   }

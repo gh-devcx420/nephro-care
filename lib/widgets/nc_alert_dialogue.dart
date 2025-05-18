@@ -21,7 +21,8 @@ Future<dynamic> showNCAlertDialogue({
         title: Text(titleText),
         titlePadding: const EdgeInsets.fromLTRB(24, 24, 16, 8),
         content: content,
-        contentPadding: const EdgeInsets.fromLTRB(24, 8, 16, 8),
+        contentTextStyle: Theme.of(context).textTheme.bodyMedium,
+        contentPadding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
         actions: [action1, action2],
         actionsPadding: const EdgeInsets.fromLTRB(24, 8, 16, 16),
       );

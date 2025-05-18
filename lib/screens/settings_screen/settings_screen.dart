@@ -4,6 +4,7 @@ import 'package:nephro_care/constants.dart';
 import 'package:nephro_care/main.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/screens/settings_screen/change_theme_screen.dart';
+import 'package:nephro_care/screens/settings_screen/entries_settings_screen.dart';
 import 'package:nephro_care/themes/theme_config.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/widgets/nc_alert_dialogue.dart';
@@ -15,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
     final authAsync = ref.read(authProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -24,7 +26,6 @@ class SettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(kScaffoldBodyPadding),
         child: ListView(
           children: [
-            // Change Theme settings tile.
             InkWell(
               onTap: () {
                 Navigator.push(
@@ -35,9 +36,8 @@ class SettingsScreen extends ConsumerWidget {
                 );
               },
               child: ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.color_lens_rounded,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
                 title: const Text(
                   'Change Theme',
@@ -50,18 +50,45 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+
             vGap8,
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EntriesSettingsScreen(),
+                  ),
+                );
+              },
+              child: const ListTile(
+                leading: Icon(
+                  Icons.edit_document,
+                ),
+                title: Text(
+                  'Entries Settings',
+                ),
+                subtitle: Text(
+                  'Allow editing or deleting past entries',
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                ),
+              ),
+            ),
+            vGap8,
+            // Logout user settings tile.
             InkWell(
               onTap: () async {
                 final navigator = Navigator.of(context);
                 showNCAlertDialogue(
                   context: context,
-                  titleText: 'Logout user',
+                  titleText: 'Logout User',
                   content: const Text(
                     'Are you sure you want to logout?',
                   ),
                   action1: TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
+                    onPressed: () => navigator.pop(false),
                     child: const Text(
                       'Cancel',
                     ),
@@ -70,7 +97,7 @@ class SettingsScreen extends ConsumerWidget {
                     onPressed: () async {
                       await authAsync.signOut();
                       if (context.mounted) {
-                        Navigator.of(context).pop(true);
+                        navigator.pop(true);
                         navigator.pushAndRemoveUntil(
                           MaterialPageRoute(
                             builder: (context) => const AuthWrapper(),
@@ -92,9 +119,8 @@ class SettingsScreen extends ConsumerWidget {
                 );
               },
               child: ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.logout,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
                 title: const Text(
                   'Logout',
