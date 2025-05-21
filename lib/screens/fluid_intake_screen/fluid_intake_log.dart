@@ -168,8 +168,13 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
 
   Future<bool> _showFluidIntakeInformationDialogue() async {
     final fluidInputSummary = ref.watch(fluidIntakeSummaryProvider);
+
     return fluidInputSummary.when(
-      data: (summary) async {
+      data: (fluidSummary) async {
+        final lastDrinkTime = fluidSummary['lastTime'] ?? 'N/A';
+        final totalDrinksToday = fluidSummary['totalDrinksToday'] ?? '0';
+        final totalFluidQuantityToday = fluidSummary['total'] ?? 0;
+
         final result = await showNCAlertDialogue(
           context: context,
           titleText: 'Fluid Intake Details',
@@ -178,21 +183,21 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               vGap8,
-              Text(
-                  '• Number of drinks today: ${summary['totalDrinksToday'] ?? 0}'),
-              ...(summary['typeTotals'] as Map<String, dynamic>? ?? {})
+              Text('• Number of drinks today: $totalDrinksToday'),
+              ...(fluidSummary['typeTotals'] as Map<String, dynamic>? ?? {})
                   .entries
                   .map(
                     (entry) => Padding(
                       padding: const EdgeInsets.only(top: 12),
-                      child: Text('• ${entry.key}: ${entry.value.toInt()} ml'),
+                      child: Text(
+                          '• ${entry.key}: ${Utils.formatFluidValue(entry.value)}'),
                     ),
                   ),
               vGap16,
               Text(
-                  '• Total fluid intake: ${(summary['total'] as num?)?.toInt() ?? 0} ml'),
+                  '• Total fluid intake: ${Utils.formatFluidValue(totalFluidQuantityToday)}'),
               vGap16,
-              Text('• Last Drink at: ${summary['lastTime'] ?? 'N/A'}'),
+              Text('• Last Drink at: $lastDrinkTime'),
             ],
           ),
           action1: const SizedBox(),
@@ -280,7 +285,8 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
     final fluidLimit = ref.watch(fluidLimitProvider);
     final allowDeleteAll = ref.watch(allowDeleteAllProvider);
     final isToday = Utils.isSameDay(selectedDate, DateTime.now());
-    final isFluidLogEmpty = fluidIntakeAsync.asData?.value.isEmpty;
+    final isFluidLogEmpty = fluidIntakeAsync.asData?.value.isEmpty == false;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -418,9 +424,9 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
                 ),
               ];
 
-              if (allowDeleteAll && isFluidLogEmpty == true) {
+              if (allowDeleteAll && isFluidLogEmpty) {
                 items.insert(
-                  0,
+                  1,
                   PopupMenuItem<String>(
                     value: 'delete_all',
                     padding: EdgeInsets.zero,

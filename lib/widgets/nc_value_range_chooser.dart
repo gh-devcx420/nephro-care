@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
+import 'package:nephro_care/utils/utils.dart';
 
 class ValueRangeChooser extends ConsumerWidget {
   const ValueRangeChooser({
@@ -50,7 +51,7 @@ class ValueRangeChooser extends ConsumerWidget {
           ),
           hGap8,
           Text(
-            '$value ml',
+            Utils.formatFluidValue(value),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: color ?? Theme.of(context).colorScheme.primary,

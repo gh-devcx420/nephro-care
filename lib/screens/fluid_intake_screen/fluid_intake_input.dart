@@ -96,6 +96,7 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
     );
 
     if (pickedDateTime.isAfter(now)) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Cannot select a future time',
@@ -118,6 +119,7 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
     final user = ref.read(authProvider);
 
     if (fluidName.isEmpty) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Please enter a valid fluid name',
@@ -128,6 +130,7 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
 
     final quantity = double.tryParse(quantityController.text);
     if (quantity == null) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Please enter a valid quantity.',
@@ -137,6 +140,7 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
     }
 
     if (quantity > 1000) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Quantity cannot exceed 1000ml.',
@@ -146,6 +150,7 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
     }
 
     if (selectedTime == null) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Please select a time.',

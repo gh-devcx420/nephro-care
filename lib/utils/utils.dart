@@ -64,6 +64,8 @@ class Utils {
       mlValue = double.tryParse(numericText);
     } else if (input is double) {
       mlValue = input;
+    } else if (input is int) {
+      mlValue = input.toDouble();
     }
     if (mlValue == null) {
       return input is String ? input : 'Invalid Input';
@@ -77,6 +79,7 @@ class Utils {
   }
 
   // Utility Function to format a fluid amount based on its value.
+  // (Supports: int, double & String values as dynamic inputs )
   static String formatFluidValue(dynamic input) {
     double? mlValue;
     if (input is String) {
@@ -84,6 +87,8 @@ class Utils {
       mlValue = double.tryParse(numericText);
     } else if (input is double) {
       mlValue = input;
+    } else if (input is int) {
+      mlValue = input.toDouble();
     }
     if (mlValue == null) {
       return input is String ? input : 'Invalid Input';

@@ -170,58 +170,72 @@ class UrineOutputLogScreenState extends ConsumerState<UrineOutputLogScreen> {
   }
 
   Future<bool> _showUrineOutputInformationDialogue() async {
-    final fluidInputSummary = ref.watch(fluidIntakeSummaryProvider);
     final urineOutputSummary = ref.watch(urineOutputSummaryProvider);
-    double? outputPercent;
-    if (fluidInputSummary.asData?.value['total'] != null &&
-        urineOutputSummary.asData?.value['total'] != null &&
-        fluidInputSummary.asData!.value['total'] != 0) {
-      outputPercent = (urineOutputSummary.asData!.value['total'] /
-              fluidInputSummary.asData!.value['total']) *
-          100;
-    } else {
-      outputPercent = null;
-    }
-    final lastUrineTime = urineOutputSummary.asData?.value['lastTime'] ?? 'N/A';
-    final totalUrineTimes =
-        urineOutputSummary.asData?.value['totalUrineToday']?.toString() ?? '0';
+    final fluidInputSummary = ref.watch(fluidIntakeSummaryProvider);
 
-    final result = await showNCAlertDialogue(
-      context: context,
-      titleText: 'Urine Output Details',
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          vGap8,
-          Text('• Number of times urinated today: $totalUrineTimes'),
-          vGap16,
-          Text(
-            outputPercent != null
-                ? '• Urine output ratio: ${outputPercent.toInt()}% of fluid intake'
-                : '• No data available for output ratio',
+    return urineOutputSummary.when(
+      data: (urineSummary) async {
+        final lastUrineTime = urineSummary['lastTime'];
+        final totalUrineTimes = urineSummary['totalUrineToday'];
+        double? outputPercent;
+        if (fluidInputSummary.asData?.value['total'] != null &&
+            urineSummary['total'] != null &&
+            fluidInputSummary.asData!.value['total'] != 0) {
+          outputPercent = (urineSummary['total'] /
+                  fluidInputSummary.asData!.value['total']) *
+              100;
+        }
+
+        final result = await showNCAlertDialogue(
+          context: context,
+          titleText: 'Urine Output Details',
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              vGap8,
+              Text('• Number of times urinated today: $totalUrineTimes'),
+              vGap16,
+              Text(
+                outputPercent != null
+                    ? '• Urine output ratio: ${outputPercent.toInt()}%'
+                    : '• No data available for output ratio',
+              ),
+              vGap16,
+              Text('• Last urinated at: $lastUrineTime'),
+            ],
           ),
-          vGap16,
-          Text(
-            '• Last urinated at: $lastUrineTime',
+          action1: const SizedBox(),
+          action2: ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _colors['shade2']!,
+            ),
+            child: Text(
+              'Ok',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.surfaceBright,
+              ),
+            ),
           ),
-        ],
-      ),
-      action1: const SizedBox(),
-      action2: ElevatedButton(
-        onPressed: () => Navigator.of(context).pop(true),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _colors['shade2']!,
-        ),
-        child: Text(
-          'Ok',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.surfaceBright,
-          ),
-        ),
-      ),
+        );
+        return result ?? false;
+      },
+      loading: () {
+        _showSnackBar(
+          'Loading urine output summary...',
+          _colors['shade2']!,
+        );
+        return false;
+      },
+      error: (e, _) {
+        _showSnackBar(
+          'Failed to load summary: $e',
+          Theme.of(context).colorScheme.error,
+        );
+        return false;
+      },
     );
-    return result ?? false;
   }
 
   Widget _buildHeader(
@@ -271,7 +285,7 @@ class UrineOutputLogScreenState extends ConsumerState<UrineOutputLogScreen> {
     final selectedDate = ref.watch(selectedDateProvider);
     final allowDeleteAll = ref.watch(allowDeleteAllProvider);
     final isToday = Utils.isSameDay(selectedDate, DateTime.now());
-    final isUrineLogEmpty = urineOutputAsync.asData?.value.isEmpty;
+    final isUrineLogEmpty = urineOutputAsync.asData?.value.isEmpty == false;
 
     return Scaffold(
       appBar: AppBar(
@@ -361,7 +375,7 @@ class UrineOutputLogScreenState extends ConsumerState<UrineOutputLogScreen> {
                 ),
               ];
 
-              if (allowDeleteAll && isUrineLogEmpty == false) {
+              if (allowDeleteAll && isUrineLogEmpty) {
                 items.insert(
                   0,
                   PopupMenuItem<String>(

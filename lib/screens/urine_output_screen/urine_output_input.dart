@@ -32,40 +32,6 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
     'background': ComponentColors.urineBackgroundShade,
   };
 
-  @override
-  void initState() {
-    super.initState();
-    quantityController = TextEditingController(
-      text: widget.output?.quantity.toInt().toString() ?? '',
-    );
-    final initialTime = widget.output != null
-        ? TimeOfDay.fromDateTime(widget.output!.timestamp.toDate())
-        : TimeOfDay.now();
-    timeController = TextEditingController(
-      text: Utils.formatTime(
-        DateTime.now().copyWith(
-          hour: initialTime.hour,
-          minute: initialTime.minute,
-        ),
-      ),
-    );
-    quantityFocusNode = FocusNode();
-    timeFocusNode = FocusNode();
-    selectedTime = initialTime;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(quantityFocusNode);
-    });
-  }
-
-  @override
-  void dispose() {
-    quantityController.dispose();
-    timeController.dispose();
-    quantityFocusNode.dispose();
-    timeFocusNode.dispose();
-    super.dispose();
-  }
-
   Future<void> _showTimePicker() async {
     final pickedTime = await showTimePicker(
       context: context,
@@ -92,6 +58,7 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
     );
 
     if (pickedDateTime.isAfter(now)) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Cannot select a future time',
@@ -113,6 +80,7 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
     final user = ref.read(authProvider);
     final quantity = double.tryParse(quantityController.text);
     if (quantity == null) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Please enter a valid quantity',
@@ -122,6 +90,7 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
     }
 
     if (quantity > 1500) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Quantity cannot exceed 1500ml.',
@@ -131,6 +100,7 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
     }
 
     if (selectedTime == null) {
+      Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
         'Please select a time.',
@@ -171,13 +141,50 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
       );
     } catch (e) {
       if (!mounted) return;
+
       setState(() => isLoading = false);
-      Utils.showSnackBar(
-        context,
-        'Failed to save entry: $e',
-        errorColor,
+      Navigator.of(context).pop(
+        DialogResult(
+          isSuccess: false,
+          message: 'Failed to save entry: $e',
+          backgroundColor: errorColor,
+        ),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    quantityController = TextEditingController(
+      text: widget.output?.quantity.toInt().toString() ?? '',
+    );
+    final initialTime = widget.output != null
+        ? TimeOfDay.fromDateTime(widget.output!.timestamp.toDate())
+        : TimeOfDay.now();
+    timeController = TextEditingController(
+      text: Utils.formatTime(
+        DateTime.now().copyWith(
+          hour: initialTime.hour,
+          minute: initialTime.minute,
+        ),
+      ),
+    );
+    quantityFocusNode = FocusNode();
+    timeFocusNode = FocusNode();
+    selectedTime = initialTime;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(quantityFocusNode);
+    });
+  }
+
+  @override
+  void dispose() {
+    quantityController.dispose();
+    timeController.dispose();
+    quantityFocusNode.dispose();
+    timeFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -196,7 +203,7 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
                 child: SizedBox(
                   width: 60,
                   child: Divider(
-                    thickness: 4,
+                    thickness: 3,
                     color: _urineColors['shade2']!,
                   ),
                 ),
@@ -312,7 +319,9 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _urineColors['shade1']!,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
                       child: isLoading
                           ? SizedBox(
@@ -337,7 +346,7 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
                   );
                 },
               ),
-              const SizedBox(height: 16),
+              vGap16,
             ],
           ),
         ),
