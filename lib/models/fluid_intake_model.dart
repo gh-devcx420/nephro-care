@@ -6,12 +6,14 @@ class FluidIntake {
   final String fluidName;
   final double quantity;
   final Timestamp timestamp;
+  final bool toBeSynced; // New field to track offline entries
 
   FluidIntake({
     required this.id,
     required this.fluidName,
     required this.quantity,
     required this.timestamp,
+    this.toBeSynced = false, // Default to false
   });
 
   // Converts a FluidIntake entry into a format Firestore can store.
@@ -20,6 +22,7 @@ class FluidIntake {
         'fluidName': fluidName,
         'quantity': quantity,
         'timestamp': timestamp,
+        'toBeSynced': toBeSynced, // Include in JSON
       };
 
   // Creates a FluidIntake entry from Firestore data.
@@ -28,5 +31,6 @@ class FluidIntake {
         fluidName: json['fluidName'],
         quantity: (json['quantity'] as num).toDouble(),
         timestamp: json['timestamp'],
+        toBeSynced: json['toBeSynced'] ?? false, // Handle missing field
       );
 }

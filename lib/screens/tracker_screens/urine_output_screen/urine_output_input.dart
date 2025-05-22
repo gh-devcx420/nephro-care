@@ -1,74 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/models/fluid_intake_model.dart';
-import 'package:nephro_care/models/other_generic_models.dart';
+import 'package:nephro_care/models/other_models.dart';
+import 'package:nephro_care/models/urine_output_model.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/themes/color_schemes.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/utils/utils.dart';
 import 'package:nephro_care/widgets/nc_textfield.dart';
 
-class FluidIntakeInput extends StatefulWidget {
-  final FluidIntake? intake;
+import '../../../widgets/nc_divider.dart';
 
-  const FluidIntakeInput({super.key, this.intake});
+class UrineOutputInput extends StatefulWidget {
+  final UrineOutput? output;
+
+  const UrineOutputInput({super.key, this.output});
 
   @override
-  State<FluidIntakeInput> createState() => _FluidIntakeInputState();
+  State<UrineOutputInput> createState() => _UrineOutputInputState();
 }
 
-class _FluidIntakeInputState extends State<FluidIntakeInput> {
-  late final TextEditingController fluidNameController;
+class _UrineOutputInputState extends State<UrineOutputInput> {
   late final TextEditingController quantityController;
   late final TextEditingController timeController;
-  late final FocusNode fluidNameFocusNode;
   late final FocusNode quantityFocusNode;
   late final FocusNode timeFocusNode;
   TimeOfDay? selectedTime;
   bool isLoading = false;
-
-  final _fluidColors = {
-    'shade1': ComponentColors.waterColorShade1,
-    'shade2': ComponentColors.waterColorShade2,
-    'background': ComponentColors.waterBackgroundShade,
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    fluidNameController =
-        TextEditingController(text: widget.intake?.fluidName ?? 'Water');
-    quantityController = TextEditingController(
-        text: widget.intake?.quantity.toInt().toString() ?? '');
-    final initialTime = widget.intake != null
-        ? TimeOfDay.fromDateTime(widget.intake!.timestamp.toDate())
-        : TimeOfDay.now();
-    timeController = TextEditingController(
-      text: Utils.formatTime(DateTime.now().copyWith(
-        hour: initialTime.hour,
-        minute: initialTime.minute,
-      )),
-    );
-    fluidNameFocusNode = FocusNode();
-    quantityFocusNode = FocusNode();
-    timeFocusNode = FocusNode();
-    selectedTime = initialTime;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(quantityFocusNode);
-    });
-  }
-
-  @override
-  void dispose() {
-    fluidNameController.dispose();
-    quantityController.dispose();
-    timeController.dispose();
-    fluidNameFocusNode.dispose();
-    quantityFocusNode.dispose();
-    timeFocusNode.dispose();
-    super.dispose();
-  }
 
   Future<void> _showTimePicker() async {
     final pickedTime = await showTimePicker(
@@ -113,37 +71,25 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
     FocusScope.of(context).unfocus();
   }
 
-  Future<void> _addIntake(WidgetRef ref) async {
+  Future<void> _addOutput(WidgetRef ref) async {
     final errorColor = Theme.of(context).colorScheme.error;
-    final fluidName = fluidNameController.text.trim();
     final user = ref.read(authProvider);
-
-    if (fluidName.isEmpty) {
-      Navigator.of(context).pop();
-      Utils.showSnackBar(
-        context,
-        'Please enter a valid fluid name',
-        errorColor,
-      );
-      return;
-    }
-
     final quantity = double.tryParse(quantityController.text);
     if (quantity == null) {
       Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
-        'Please enter a valid quantity.',
+        'Please enter a valid quantity',
         errorColor,
       );
       return;
     }
 
-    if (quantity > 1000) {
+    if (quantity > 1500) {
       Navigator.of(context).pop();
       Utils.showSnackBar(
         context,
-        'Quantity cannot exceed 1000ml.',
+        'Quantity cannot exceed 1500ml.',
         errorColor,
       );
       return;
@@ -158,14 +104,13 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
       );
       return;
     }
-
     final dateTime = DateTime.now().copyWith(
       hour: selectedTime!.hour,
       minute: selectedTime!.minute,
     );
-    final intake = FluidIntake(
-      id: widget.intake?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      fluidName: fluidName,
+    final output = UrineOutput(
+      id: widget.output?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      outputName: 'Urine',
       quantity: quantity,
       timestamp: Timestamp.fromDate(dateTime),
     );
@@ -175,30 +120,67 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
-          .collection('fluid_intake')
-          .doc(intake.id)
-          .set(intake.toJson());
+          .collection('urine_output')
+          .doc(output.id)
+          .set(output.toJson());
 
       if (!mounted) return;
 
       Navigator.of(context).pop(
         DialogResult(
           isSuccess: true,
-          message: widget.intake != null
+          message: widget.output != null
               ? 'Entry updated successfully'
               : 'Entry added successfully',
-          backgroundColor: _fluidColors['shade2']!,
+          backgroundColor: ComponentColors.urineColorShade2,
         ),
       );
     } catch (e) {
       if (!mounted) return;
+
       setState(() => isLoading = false);
-      Utils.showSnackBar(
-        context,
-        'Failed to save entry: $e',
-        errorColor,
+      Navigator.of(context).pop(
+        DialogResult(
+          isSuccess: false,
+          message: 'Failed to save entry: $e',
+          backgroundColor: errorColor,
+        ),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    quantityController = TextEditingController(
+      text: widget.output?.quantity.toInt().toString() ?? '',
+    );
+    final initialTime = widget.output != null
+        ? TimeOfDay.fromDateTime(widget.output!.timestamp.toDate())
+        : TimeOfDay.now();
+    timeController = TextEditingController(
+      text: Utils.formatTime(
+        DateTime.now().copyWith(
+          hour: initialTime.hour,
+          minute: initialTime.minute,
+        ),
+      ),
+    );
+    quantityFocusNode = FocusNode();
+    timeFocusNode = FocusNode();
+    selectedTime = initialTime;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(quantityFocusNode);
+    });
+  }
+
+  @override
+  void dispose() {
+    quantityController.dispose();
+    timeController.dispose();
+    quantityFocusNode.dispose();
+    timeFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -213,16 +195,14 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Center(
-                child: SizedBox(
-                  width: 60,
-                  child: Divider(
-                    thickness: 4,
-                    color: _fluidColors['shade2'],
-                  ),
+              const Center(
+                child: NCDivider(
+                  thickness: 4,
+                  color: ComponentColors.urineColorShade2,
+                  widthFactor: 0.2,
                 ),
               ),
-              vGap8,
+              vGap10,
               Row(
                 children: [
                   hGap4,
@@ -233,44 +213,18 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
                         vertical: 8,
                       ),
                       child: Text(
-                        widget.intake != null
-                            ? 'Edit Fluid Intake'
-                            : 'Enter Fluid Intake Details:',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(color: _fluidColors['shade2']!),
+                        widget.output != null
+                            ? 'Edit Urine Output'
+                            : 'Enter Urine Output Details:',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              color: ComponentColors.urineColorShade2,
+                            ),
                       ),
                     ),
                   ),
                 ],
               ),
               vGap8,
-              NCTextfield(
-                key: const ValueKey('fluidName_textfield'),
-                hintText: 'Fluid Name',
-                textFieldController: fluidNameController,
-                focusNode: fluidNameFocusNode,
-                maxLength: 18,
-                onSuffixIconTap: () {
-                  setState(() {
-                    fluidNameController.clear();
-                    fluidNameFocusNode.requestFocus();
-                  });
-                },
-                activeFieldIcon: const Icon(Icons.local_drink),
-                inactiveFieldIcon: const Icon(Icons.local_drink_outlined),
-                enabledBorderColor: _fluidColors['shade2']!,
-                focusedBorderColor: _fluidColors['shade2']!,
-                prefixIconColor: _fluidColors['shade2']!,
-                fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-                textColor: _fluidColors['shade2']!,
-                hintTextColor: Theme.of(context).colorScheme.secondaryContainer,
-                cursorColor: _fluidColors['shade2']!,
-                selectionHandleColor: _fluidColors['shade2']!,
-                semanticsLabel: 'Fluid name input',
-              ),
-              vGap16,
               Row(
                 children: [
                   Expanded(
@@ -291,22 +245,21 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
                           quantityController.selection =
                               TextSelection.fromPosition(
                             TextPosition(
-                              offset: quantityController.text.length,
-                            ),
+                                offset: quantityController.text.length),
                           );
                         }
                       },
                       onSuffixIconTap: () => quantityController.clear(),
-                      enabledBorderColor: _fluidColors['shade2']!,
-                      focusedBorderColor: _fluidColors['shade2']!,
-                      prefixIconColor: _fluidColors['shade2']!,
-                      textColor: _fluidColors['shade2']!,
+                      enabledBorderColor: ComponentColors.urineColorShade2,
+                      focusedBorderColor: ComponentColors.urineColorShade2,
+                      prefixIconColor: ComponentColors.urineColorShade2,
+                      textColor: ComponentColors.urineColorShade2,
                       fillColor:
                           Theme.of(context).colorScheme.surfaceContainerLowest,
                       hintTextColor:
                           Theme.of(context).colorScheme.secondaryContainer,
-                      cursorColor: _fluidColors['shade2']!,
-                      selectionHandleColor: _fluidColors['shade2']!,
+                      cursorColor: ComponentColors.urineColorShade2,
+                      selectionHandleColor: ComponentColors.urineColorShade2,
                       semanticsLabel: 'Quantity input in milliliters',
                     ),
                   ),
@@ -334,17 +287,17 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
                         FocusScope.of(context).unfocus();
                         _showTimePicker();
                       },
-                      enabledBorderColor: _fluidColors['shade2']!,
-                      focusedBorderColor: _fluidColors['shade2']!,
-                      prefixIconColor: _fluidColors['shade2']!,
-                      textColor: _fluidColors['shade2']!,
+                      enabledBorderColor: ComponentColors.urineColorShade2,
+                      focusedBorderColor: ComponentColors.urineColorShade2,
+                      prefixIconColor: ComponentColors.urineColorShade2,
+                      textColor: ComponentColors.urineColorShade2,
                       fillColor:
                           Theme.of(context).colorScheme.surfaceContainerLowest,
                       hintTextColor:
                           Theme.of(context).colorScheme.secondaryContainer,
-                      cursorColor: _fluidColors['shade2']!,
-                      selectionHandleColor: _fluidColors['shade2']!,
-                      semanticsLabel: 'Time picker for fluid intake',
+                      cursorColor: ComponentColors.urineColorShade2,
+                      selectionHandleColor: ComponentColors.urineColorShade2,
+                      semanticsLabel: 'Time picker for urine output',
                     ),
                   ),
                 ],
@@ -355,9 +308,9 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: isLoading ? null : () => _addIntake(ref),
+                      onPressed: isLoading ? null : () => _addOutput(ref),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _fluidColors['shade1']!,
+                        backgroundColor: ComponentColors.urineColorShade1,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
@@ -370,24 +323,24 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
                               child: CircularProgressIndicator(
                                 strokeWidth: 3,
                                 backgroundColor:
-                                    ComponentColors.waterBackgroundShade,
-                                color: ComponentColors.waterColorShade2,
+                                    ComponentColors.urineBackgroundShade,
+                                color: ComponentColors.urineColorShade2,
                               ),
                             )
                           : Text(
-                              widget.intake != null ? 'Update' : 'Add Intake',
+                              widget.output != null ? 'Update' : 'Add Output',
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium!
                                   .copyWith(
-                                    color: _fluidColors['background']!,
+                                    color: ComponentColors.urineBackgroundShade,
                                   ),
                             ),
                     ),
                   );
                 },
               ),
-              const SizedBox(height: 16),
+              vGap16,
             ],
           ),
         ),

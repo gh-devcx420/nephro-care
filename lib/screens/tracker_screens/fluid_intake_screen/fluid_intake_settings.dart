@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/constants.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/themes/color_schemes.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/widgets/nc_value_range_chooser.dart';
 
-class FluidIntakeSettings extends StatelessWidget {
+class FluidIntakeSettings extends ConsumerWidget {
   const FluidIntakeSettings({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final fluidLimit = ref.watch(fluidLimitProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,8 +53,6 @@ class FluidIntakeSettings extends StatelessWidget {
                 Icons.water,
                 color: ComponentColors.waterColorShade2,
               ),
-              //dense: false,
-              //isThreeLine: true,
               title: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
@@ -62,28 +62,25 @@ class FluidIntakeSettings extends StatelessWidget {
               titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: ComponentColors.waterColorShade2,
                   ),
-              // subtitle: const Text('Your daily fluid limit'),
-              // subtitleTextStyle:
-              //     Theme.of(context).textTheme.titleMedium?.copyWith(
-              //           color: ComponentColors.waterColorShade2,
-              //         ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 8),
               trailing: ValueRangeChooser(
-                provider: fluidLimitProvider,
+                value: fluidLimit,
+                onValueChanged: (newValue) {
+                  ref.read(fluidLimitProvider.notifier).setFluidLimit(newValue);
+                },
                 step: 50,
                 minValue: 50,
                 color: ComponentColors.waterColorShade2,
               ),
             ),
             vGap8,
+            // Rest of the widget tree remains unchanged
             ListTile(
               tileColor: Colors.transparent,
               leading: const Icon(
                 Icons.straighten_rounded,
                 color: ComponentColors.waterColorShade2,
               ),
-              //dense: false,
-              //isThreeLine: true,
               title: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
@@ -93,11 +90,6 @@ class FluidIntakeSettings extends StatelessWidget {
               titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: ComponentColors.waterColorShade2,
                   ),
-              // subtitle: const Text('Your daily fluid limit'),
-              // subtitleTextStyle:
-              //     Theme.of(context).textTheme.titleMedium?.copyWith(
-              //           color: ComponentColors.waterColorShade2,
-              //         ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 8),
               trailing: Container(
                 decoration: BoxDecoration(
@@ -116,11 +108,6 @@ class FluidIntakeSettings extends StatelessWidget {
                 ),
               ),
             ),
-
-            // NCDivider(
-            //   color: ComponentColors.waterColorShade2,
-            //   widthFactor: 0.9,
-            // ),
           ],
         ),
       ),

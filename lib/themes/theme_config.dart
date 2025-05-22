@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:iconify_flutter/icons/whh.dart';
 import 'package:nephro_care/constants.dart';
 import 'package:nephro_care/models/theme_model.dart';
@@ -22,7 +21,8 @@ abstract class AppTheme {
       useMaterial3: true,
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surfaceContainerLow,
-        titleTextStyle: GoogleFonts.josefinSans(
+        titleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           color: colorScheme.primary,
           fontSize: 24,
           fontWeight: FontWeight.w600,
@@ -99,32 +99,37 @@ abstract class AppTheme {
           borderRadius: BorderRadius.circular(kBorderRadius),
         ),
         iconColor: colorScheme.primary,
-        titleTextStyle: GoogleFonts.josefinSans(
+        titleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 22,
           fontWeight: FontWeight.w600,
           color: colorScheme.primary,
         ),
         visualDensity: VisualDensity.comfortable,
-        subtitleTextStyle: GoogleFonts.josefinSans(
+        subtitleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: colorScheme.primary,
         ),
       ),
       dialogTheme: DialogTheme(
-        titleTextStyle: GoogleFonts.josefinSans(
+        titleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: colorScheme.primary,
         ),
-        contentTextStyle: GoogleFonts.josefinSans(
+        contentTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: colorScheme.primary,
         ),
       ),
       snackBarTheme: SnackBarThemeData(
-        contentTextStyle: GoogleFonts.josefinSans(
+        contentTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: colorScheme.onPrimary,
@@ -147,7 +152,8 @@ abstract class AppTheme {
       colorScheme: colorScheme,
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.primary,
-        titleTextStyle: GoogleFonts.josefinSans(
+        titleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           color: colorScheme.onPrimary,
           fontSize: 24,
           fontWeight: FontWeight.w600,
@@ -223,7 +229,8 @@ abstract class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
         ),
-        subtitleTextStyle: GoogleFonts.josefinSans(
+        subtitleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: colorScheme.onPrimary,
@@ -231,19 +238,22 @@ abstract class AppTheme {
         dense: true,
       ),
       dialogTheme: DialogTheme(
-        titleTextStyle: GoogleFonts.josefinSans(
+        titleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: colorScheme.onPrimary,
         ),
-        contentTextStyle: GoogleFonts.josefinSans(
+        contentTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: colorScheme.onPrimary,
         ),
       ),
       snackBarTheme: SnackBarThemeData(
-        contentTextStyle: GoogleFonts.josefinSans(
+        contentTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
           fontSize: 18,
           fontWeight: FontWeight.w500,
           color: colorScheme.onPrimary,
@@ -258,86 +268,97 @@ abstract class AppTheme {
 
   static textTheme(Color fontColor) {
     return TextTheme(
-      //Display styles
-      displayLarge: GoogleFonts.josefinSans(
+      // Display styles
+      displayLarge: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 57,
         fontWeight: FontWeight.w400,
         color: fontColor,
       ),
-      displayMedium: GoogleFonts.josefinSans(
+      displayMedium: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 45,
         fontWeight: FontWeight.w400,
         color: fontColor,
       ),
-      displaySmall: GoogleFonts.josefinSans(
+      displaySmall: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 36,
         fontWeight: FontWeight.w400,
         color: fontColor,
       ),
-
-      //Headline styles
-      headlineLarge: GoogleFonts.josefinSans(
+      // Headline styles
+      headlineLarge: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 32,
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),
-      headlineMedium: GoogleFonts.josefinSans(
+      headlineMedium: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 28,
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),
-      headlineSmall: GoogleFonts.josefinSans(
+      headlineSmall: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),
-
-      //Title styles
-      titleLarge: GoogleFonts.josefinSans(
+      // Title styles
+      titleLarge: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),
-      titleMedium: GoogleFonts.josefinSans(
+      titleMedium: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 18,
         fontWeight: FontWeight.w500,
         color: fontColor,
       ),
-      titleSmall: GoogleFonts.josefinSans(
+      titleSmall: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: fontColor,
       ),
-
-      //Body text styles
-      bodyLarge: GoogleFonts.josefinSans(
+      // Body text styles
+      bodyLarge: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 18,
         fontWeight: FontWeight.w400,
         color: fontColor,
       ),
-      bodyMedium: GoogleFonts.josefinSans(
+      bodyMedium: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: fontColor,
       ),
-      bodySmall: GoogleFonts.josefinSans(
+      bodySmall: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: fontColor,
       ),
-
-      //Label styles
-      labelLarge: GoogleFonts.josefinSans(
+      // Label styles
+      labelLarge: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: fontColor,
       ),
-      labelMedium: GoogleFonts.josefinSans(
+      labelMedium: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: fontColor,
       ),
-      labelSmall: GoogleFonts.josefinSans(
+      labelSmall: TextStyle(
+        fontFamily: 'JosefinSans',
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: fontColor,

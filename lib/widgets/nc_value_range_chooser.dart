@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/utils/utils.dart';
 
-class ValueRangeChooser extends ConsumerWidget {
+class ValueRangeChooser extends StatelessWidget {
   const ValueRangeChooser({
     super.key,
-    required this.provider,
+    required this.value,
+    required this.onValueChanged,
     this.step = 50,
     this.minValue = 50,
     this.color,
   });
 
-  final StateProvider<int> provider;
+  final int value;
+  final ValueChanged<int> onValueChanged;
   final int step;
   final int minValue;
   final Color? color;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final value = ref.watch(provider);
-
+  Widget build(BuildContext context) {
     void updateValue(int newValue) {
       if (newValue >= minValue) {
-        ref.read(provider.notifier).state = newValue;
+        onValueChanged(newValue);
       }
     }
 
