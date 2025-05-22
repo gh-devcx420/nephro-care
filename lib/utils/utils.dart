@@ -72,9 +72,9 @@ class Utils {
     }
     final litres = mlValue / 1000;
     if (litres == litres.roundToDouble()) {
-      return '${litres.toInt()} L';
+      return '${litres.toDouble()} Litres';
     } else {
-      return '${litres.toStringAsFixed(2).replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '')} L';
+      return '${litres.toStringAsFixed(2).replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '')} Litres';
     }
   }
 

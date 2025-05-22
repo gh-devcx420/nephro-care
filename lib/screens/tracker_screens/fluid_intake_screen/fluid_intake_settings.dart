@@ -74,40 +74,6 @@ class FluidIntakeSettings extends ConsumerWidget {
               ),
             ),
             vGap8,
-            // Rest of the widget tree remains unchanged
-            ListTile(
-              tileColor: Colors.transparent,
-              leading: const Icon(
-                Icons.straighten_rounded,
-                color: ComponentColors.waterColorShade2,
-              ),
-              title: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  'SI Unit',
-                ),
-              ),
-              titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: ComponentColors.waterColorShade2,
-                  ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-              trailing: Container(
-                decoration: BoxDecoration(
-                  color: ComponentColors.waterColorShade2,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 6,
-                ),
-                child: Text(
-                  'Litres',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: ComponentColors.waterBackgroundShade,
-                      ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
