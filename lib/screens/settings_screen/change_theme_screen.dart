@@ -13,8 +13,17 @@ class ThemeSettingsScreen extends ConsumerWidget {
     final themeHandler = ref.watch(themeProvider.notifier);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Choose Theme'),
+        title: const Text('Change Theme'),
         titleSpacing: 0,
+        leading: IconButton(
+          onPressed: () {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            Navigator.of(context).pop();
+          },
+          color: Theme.of(context).colorScheme.primary,
+          icon: const Icon(Icons.arrow_back),
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(kScaffoldBodyPadding),

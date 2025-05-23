@@ -35,29 +35,30 @@ class OverviewCard extends ConsumerWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.90),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: InkWell(
-                  onTap: () async {
-                    final pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: selectedDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
+              InkWell(
+                onTap: () async {
+                  final pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime.now(),
+                  );
+                  if (pickedDate != null && context.mounted) {
+                    ref.read(selectedDateProvider.notifier).state = DateTime(
+                      pickedDate.year,
+                      pickedDate.month,
+                      pickedDate.day,
                     );
-                    if (pickedDate != null && context.mounted) {
-                      ref.read(selectedDateProvider.notifier).state = DateTime(
-                        pickedDate.year,
-                        pickedDate.month,
-                        pickedDate.day,
-                      );
-                    }
-                  },
+                  }
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.90),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Row(
                     children: [
                       const Icon(Icons.calendar_month_outlined),
@@ -83,8 +84,7 @@ class OverviewCard extends ConsumerWidget {
               hGap4,
             ],
           ),
-          vGap10,
-          vGap2,
+          vGap12,
           summary.when(
             data: (data) {
               final fluidData = data.$1;
@@ -138,11 +138,13 @@ class OverviewCard extends ConsumerWidget {
                   chipIcon: Icons.monitor_heart,
                   chipText: '140 / 90',
                   chipTimestamp: '6:50 pm',
-                  chipBackgroundColor: ComponentColors.bloodBackgroundColor,
+                  chipBackgroundColor: ComponentColors.bloodBackgroundShade,
                   chipBorderColor: ComponentColors.bloodColorShade2,
                   chipIconColor: ComponentColors.bloodColorShade1,
                   chipTextColor: ComponentColors.bloodColorShade1,
-                  onChipTap: () {},
+                  onChipTap: () {
+                    Navigator.pushNamed(context, '/bp_monitor_log');
+                  },
                 ),
                 hGap10,
                 OverviewChip(

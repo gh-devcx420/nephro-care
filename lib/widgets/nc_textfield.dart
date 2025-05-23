@@ -24,7 +24,9 @@ class NCTextfield extends StatefulWidget {
     this.onSuffixIconTap,
     this.maxLength,
     this.readOnly = false,
-    this.semanticsLabel, // Add semanticsLabel for accessibility
+    this.semanticsLabel,
+    this.textInputAction, // NEW: Add textInputAction
+    this.onSubmitted, // NEW: Add onSubmitted
   });
 
   final TextEditingController textFieldController;
@@ -47,7 +49,9 @@ class NCTextfield extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onSuffixIconTap;
   final bool readOnly;
-  final String? semanticsLabel; // New property for Semantics
+  final String? semanticsLabel;
+  final TextInputAction? textInputAction; // NEW
+  final void Function(String)? onSubmitted; // NEW
 
   @override
   State<NCTextfield> createState() => _NCTextfieldState();
@@ -107,6 +111,10 @@ class _NCTextfieldState extends State<NCTextfield> {
           focusNode: _focusNode,
           maxLength: widget.maxLength ?? TextField.noMaxLength,
           readOnly: widget.readOnly,
+          textInputAction: widget.textInputAction,
+          // NEW: Pass textInputAction
+          onSubmitted: widget.onSubmitted,
+          // NEW: Pass onSubmitted
           decoration: InputDecoration(
             hintText: widget.hintText,
             counterText: '',

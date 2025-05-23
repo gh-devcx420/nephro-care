@@ -316,13 +316,13 @@ abstract class AppTheme {
       titleMedium: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 18,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
         color: fontColor,
       ),
       titleSmall: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 14,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
         color: fontColor,
       ),
       // Body text styles

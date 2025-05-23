@@ -81,27 +81,23 @@ abstract class AppColorScheme {
 }
 
 abstract class ComponentColors {
-  // Water Theme
-  static const Color waterBackgroundShade = Color(0xFFDFEDFD);
-  static const Color waterColorShade1 = Color(0xFF0BA5D9);
-  static const Color waterColorShade2 = Color(0xFF438BBE);
+// Water Theme (Blue)
+  static const Color waterBackgroundShade = Color(0xFFE6F0FA);
+  static const Color waterColorShade1 = Color(0xFF0277BD);
+  static const Color waterColorShade2 = Color(0xFF01579B);
 
-  // Urine Theme
-  static const Color urineBackgroundShade = Color(0xFFFDF8E4);
-  static const Color urineColorShade1 = Color(0xFFCE7F07);
-  static const Color urineColorShade2 = Color(0xFFBD9D3F);
+  // Urine Theme (Yellowish)
+  static const Color urineBackgroundShade = Color(0xFFFFF9E6);
+  static const Color urineColorShade1 = Color(0xFFA6742E);
+  static const Color urineColorShade2 = Color(0xFF8D5524);
 
-  // Blood Theme
-  static const Color bloodBackgroundColor = Color(0xFFFDE5E5);
-  static const Color bloodColorShade1 = Color(0xFFD50C0C);
-  static const Color bloodColorShade2 = Color(0xFFC73838);
+  // Blood Theme (Purple)
+  static const Color bloodBackgroundShade = Color(0xFFF3E5F5);
+  static const Color bloodColorShade1 = Color(0xFF8E24AA);
+  static const Color bloodColorShade2 = Color(0xFF6A1B9A);
 
-  // Weight Theme
-  static const Color weightBackgroundColor = Color(0xFFE3F8EA);
-  static const Color weightColorShade1 = Color(0xFF209F24);
-  static const Color weightColorShade2 = Color(0xFF36863C);
-
-  // Other Component Colors
-  static const Color greenSuccess = Colors.green;
-  static const Color orangeAlert = Colors.orange;
+  // Weight Theme (Greenish)
+  static const Color weightBackgroundColor = Color(0xFFE8F5E9);
+  static const Color weightColorShade1 = Color(0xFF2E7D32);
+  static const Color weightColorShade2 = Color(0xFF1B5E20);
 }

@@ -6,6 +6,7 @@ Future<dynamic> showNCAlertDialogue({
   required Widget content,
   required Widget action1,
   required Widget action2,
+  Color? titleColor,
 }) {
   return showDialog(
     context: context,
@@ -19,6 +20,9 @@ Future<dynamic> showNCAlertDialogue({
             ? Theme.of(context).colorScheme.surfaceDim
             : Theme.of(context).colorScheme.surface,
         title: Text(titleText),
+        titleTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
+              color: titleColor ?? Theme.of(context).colorScheme.onSurface,
+            ),
         titlePadding: const EdgeInsets.fromLTRB(24, 24, 16, 8),
         content: content,
         contentTextStyle: Theme.of(context).textTheme.bodyMedium,

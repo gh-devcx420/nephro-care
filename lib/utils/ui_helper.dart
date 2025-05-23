@@ -13,6 +13,9 @@ const SizedBox vGap8 = SizedBox(
 const SizedBox vGap10 = SizedBox(
   height: 10,
 );
+const SizedBox vGap12 = SizedBox(
+  height: 12,
+);
 const SizedBox vGap16 = SizedBox(
   height: 16,
 );
@@ -35,6 +38,9 @@ const SizedBox hGap8 = SizedBox(
 );
 const SizedBox hGap10 = SizedBox(
   width: 10,
+);
+const SizedBox hGap12 = SizedBox(
+  width: 12,
 );
 const SizedBox hGap16 = SizedBox(
   width: 16,

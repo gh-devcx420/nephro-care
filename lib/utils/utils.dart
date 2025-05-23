@@ -103,7 +103,11 @@ class Utils {
   /// *UI UTILITY FUNCTIONS* ///
   // Utility Function to show a Snackbar with consistent styling.
   static void showSnackBar(
-      BuildContext context, String message, Color backgroundColor) {
+    BuildContext context,
+    String message,
+    Color backgroundColor, {
+    int durationSeconds = 3,
+  }) {
     if (context.mounted) {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
@@ -111,7 +115,7 @@ class Utils {
           SnackBar(
             content: Text(message),
             backgroundColor: backgroundColor,
-            duration: const Duration(seconds: 2),
+            duration: Duration(seconds: durationSeconds),
           ),
         );
     }

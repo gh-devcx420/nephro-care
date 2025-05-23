@@ -14,12 +14,14 @@ class NCDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * (widthFactor ?? 0.9),
-      child: Divider(
-        color: color ?? Theme.of(context).colorScheme.primary,
-        endIndent: 0.5,
-        thickness: thickness ?? 1,
+    return Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * (widthFactor ?? 0.9),
+        child: Divider(
+          color: color ?? Theme.of(context).colorScheme.primary,
+          endIndent: 0.5,
+          thickness: thickness ?? 1,
+        ),
       ),
     );
   }

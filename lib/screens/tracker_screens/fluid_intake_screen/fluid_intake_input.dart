@@ -29,42 +29,6 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
   TimeOfDay? selectedTime;
   bool isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    fluidNameController =
-        TextEditingController(text: widget.intake?.fluidName ?? 'Water');
-    quantityController = TextEditingController(
-        text: widget.intake?.quantity.toInt().toString() ?? '');
-    final initialTime = widget.intake != null
-        ? TimeOfDay.fromDateTime(widget.intake!.timestamp.toDate())
-        : TimeOfDay.now();
-    timeController = TextEditingController(
-      text: Utils.formatTime(DateTime.now().copyWith(
-        hour: initialTime.hour,
-        minute: initialTime.minute,
-      )),
-    );
-    fluidNameFocusNode = FocusNode();
-    quantityFocusNode = FocusNode();
-    timeFocusNode = FocusNode();
-    selectedTime = initialTime;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(quantityFocusNode);
-    });
-  }
-
-  @override
-  void dispose() {
-    fluidNameController.dispose();
-    quantityController.dispose();
-    timeController.dispose();
-    fluidNameFocusNode.dispose();
-    quantityFocusNode.dispose();
-    timeFocusNode.dispose();
-    super.dispose();
-  }
-
   Future<void> _showTimePicker() async {
     final pickedTime = await showTimePicker(
       context: context,
@@ -197,6 +161,42 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fluidNameController =
+        TextEditingController(text: widget.intake?.fluidName ?? 'Water');
+    quantityController = TextEditingController(
+        text: widget.intake?.quantity.toInt().toString() ?? '');
+    final initialTime = widget.intake != null
+        ? TimeOfDay.fromDateTime(widget.intake!.timestamp.toDate())
+        : TimeOfDay.now();
+    timeController = TextEditingController(
+      text: Utils.formatTime(DateTime.now().copyWith(
+        hour: initialTime.hour,
+        minute: initialTime.minute,
+      )),
+    );
+    fluidNameFocusNode = FocusNode();
+    quantityFocusNode = FocusNode();
+    timeFocusNode = FocusNode();
+    selectedTime = initialTime;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(quantityFocusNode);
+    });
+  }
+
+  @override
+  void dispose() {
+    fluidNameController.dispose();
+    quantityController.dispose();
+    timeController.dispose();
+    fluidNameFocusNode.dispose();
+    quantityFocusNode.dispose();
+    timeFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
@@ -208,12 +208,10 @@ class _FluidIntakeInputState extends State<FluidIntakeInput> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Center(
-                child: NCDivider(
-                  thickness: 4,
-                  color: ComponentColors.waterColorShade2,
-                  widthFactor: 0.2,
-                ),
+              const NCDivider(
+                thickness: 4,
+                color: ComponentColors.waterColorShade2,
+                widthFactor: 0.2,
               ),
               vGap10,
               Row(

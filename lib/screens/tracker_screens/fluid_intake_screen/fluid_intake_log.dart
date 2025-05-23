@@ -8,7 +8,6 @@ import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/fluid_input_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/screens/tracker_screens/fluid_intake_screen/fluid_intake_input.dart';
-import 'package:nephro_care/screens/tracker_screens/fluid_intake_screen/fluid_intake_settings.dart';
 import 'package:nephro_care/themes/color_schemes.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/utils/utils.dart';
@@ -39,7 +38,7 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
     }
   }
 
-  Future<bool> _showEditConfirmationModalSheet() async {
+  Future<bool> _showEditConfirmationDialogue() async {
     return Utils.showConfirmationDialog(
       context: context,
       title: 'Edit Entry',
@@ -49,7 +48,7 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
     );
   }
 
-  void _showEditFluidIntakeDialog(FluidIntake intake) async {
+  void _showEditFluidIntakeModalSheet(FluidIntake intake) async {
     final selectedDate = ref.read(selectedDateProvider);
     final entryDate = intake.timestamp.toDate();
 
@@ -82,55 +81,6 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
     );
   }
 
-  Future<bool> _showDeleteAllConfirmationDialog() async {
-    return Utils.showConfirmationDialog(
-      context: context,
-      title: 'Delete All Entries',
-      content:
-          'Are you sure you want to delete all fluid intake entries for this date?',
-      confirmText: 'Delete All',
-    );
-  }
-
-  Future<void> _deleteAllFluidIntakes(
-      String userId, DateTime selectedDate, Color errorColor) async {
-    try {
-      final user = ref.read(authProvider);
-      if (user == null) {
-        _showSnackBar(
-          'User not authenticated. Please log in.',
-          errorColor,
-        );
-        return;
-      }
-      final startOfDay =
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
-
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('fluid_intake')
-          .where('timestamp',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-          .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
-          .get();
-
-      final batch = FirebaseFirestore.instance.batch();
-      for (var doc in querySnapshot.docs) {
-        batch.delete(doc.reference);
-      }
-      await batch.commit();
-
-      _showSnackBar(
-        'All fluid intake entries deleted successfully',
-        ComponentColors.waterColorShade2,
-      );
-    } catch (e) {
-      _showSnackBar('Failed to delete entries: $e', errorColor);
-    }
-  }
-
   Future<void> _deleteFluidIntake(
       String userId, String intakeId, Color errorColor) async {
     try {
@@ -160,38 +110,165 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
     }
   }
 
-  Future<bool> _showFluidIntakeInformationDialogue() async {
-    final fluidInputSummary = ref.watch(fluidIntakeSummaryProvider);
+  Future<bool> _showDeleteAllConfirmationDialog() async {
+    return Utils.showConfirmationDialog(
+      context: context,
+      title: 'Delete All Entries',
+      content:
+          'Are you sure you want to delete all fluid intake entries for this date?',
+      confirmText: 'Delete All',
+    );
+  }
 
-    return fluidInputSummary.when(
-      data: (fluidSummary) async {
+  Future<void> _deleteAllFluidIntakes(
+      String userId, List<FluidIntake> fluidIntakes, Color errorColor) async {
+    try {
+      final user = ref.read(authProvider);
+      if (user == null) {
+        _showSnackBar(
+          'User not authenticated. Please log in.',
+          errorColor,
+        );
+        return;
+      }
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (var intake in fluidIntakes) {
+        batch.delete(
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .collection('fluid_intake')
+              .doc(intake.id),
+        );
+      }
+      await batch.commit();
+
+      _showSnackBar(
+        'All fluid intake entries deleted successfully',
+        ComponentColors.waterColorShade2,
+      );
+    } catch (e) {
+      _showSnackBar(
+        'Failed to delete entries: $e',
+        errorColor,
+      );
+    }
+  }
+
+  Future<bool> _showFluidIntakeLogDetailsDialogue() async {
+    final fluidDataAsync = ref.watch(fluidIntakeDataProvider(
+      (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
+    ));
+
+    return fluidDataAsync.when(
+      data: (cache) async {
+        final fluidSummary = ref.read(fluidIntakeSummaryProvider);
+
         final lastDrinkTime = fluidSummary['lastTime'] ?? 'N/A';
-        final totalDrinksToday = fluidSummary['totalDrinksToday'] ?? '0';
+        final totalDrinksToday = fluidSummary['totalDrinksToday'] ?? 0;
         final totalFluidQuantityToday = fluidSummary['total'] ?? 0;
+        final theme = Theme.of(context);
 
         final result = await showNCAlertDialogue(
           context: context,
           titleText: 'Fluid Intake Details',
+          titleColor: ComponentColors.waterColorShade2,
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               vGap8,
-              Text('• Number of drinks today: $totalDrinksToday'),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '• Number of drinks today: ',
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: theme.textTheme.bodyMedium!.color,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '$totalDrinksToday',
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: ComponentColors.waterColorShade2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               ...(fluidSummary['typeTotals'] as Map<String, dynamic>? ?? {})
                   .entries
                   .map(
                     (entry) => Padding(
                       padding: const EdgeInsets.only(top: 12),
-                      child: Text(
-                          '• ${entry.key}: ${Utils.formatFluidValue(entry.value)}'),
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '• ${entry.key}: ',
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                fontWeight: FontWeight.w400,
+                                color: theme.textTheme.bodyMedium!.color,
+                              ),
+                            ),
+                            TextSpan(
+                              text: Utils.formatFluidValue(entry.value),
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: ComponentColors
+                                    .waterColorShade2, // 0xFF0277BD
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
               vGap16,
-              Text(
-                  '• Total fluid intake: ${Utils.formatFluidValue(totalFluidQuantityToday)}'),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '• Total fluid intake: ',
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: theme.textTheme.bodyMedium!.color,
+                      ),
+                    ),
+                    TextSpan(
+                      text: Utils.formatFluidValue(totalFluidQuantityToday),
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: ComponentColors.waterColorShade2, // 0xFF0277BD
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               vGap16,
-              Text('• Last Drink at: $lastDrinkTime'),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '• Last Drink at: ',
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: theme.textTheme.bodyMedium!.color,
+                      ),
+                    ),
+                    TextSpan(
+                      text: lastDrinkTime,
+                      style: theme.textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: ComponentColors.waterColorShade2, // 0xFF0277BD
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           action1: const SizedBox(),
@@ -231,7 +308,9 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final errorColor = theme.colorScheme.error;
-    final fluidIntakeAsync = ref.watch(fluidIntakeListProvider);
+    final fluidDataAsync = ref.watch(fluidIntakeDataProvider(
+      (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
+    ));
     final selectedDate = ref.watch(selectedDateProvider);
     final fluidLimit = ref.watch(fluidLimitProvider);
     final allowDeleteAll = ref.watch(allowDeleteAllProvider);
@@ -323,68 +402,11 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
                   ),
                 ),
               ];
-              if (isToday) {
+              if (allowDeleteAll &&
+                  fluidDataAsync.asData?.value.fluidIntakes.isNotEmpty ==
+                      true) {
                 items.insert(
                   0,
-                  PopupMenuItem<String>(
-                    value: 'fluidSettings',
-                    padding: EdgeInsets.zero,
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pop(context, 'fluidSettings');
-                            },
-                            borderRadius: BorderRadius.circular(8),
-                            splashColor: ComponentColors.waterColorShade2
-                                .withOpacity(0.3),
-                            highlightColor: Colors.transparent,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 6,
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.settings,
-                                    size: 30,
-                                    color: ComponentColors.waterColorShade2,
-                                  ),
-                                  hGap8,
-                                  Text(
-                                    'Fluid Settings',
-                                    style:
-                                        theme.textTheme.titleMedium!.copyWith(
-                                      color: ComponentColors.waterColorShade2,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }
-              if (allowDeleteAll &&
-                  fluidIntakeAsync.asData?.value.isNotEmpty == true) {
-                items.insert(
-                  1,
                   PopupMenuItem<String>(
                     value: 'delete_all',
                     padding: EdgeInsets.zero,
@@ -449,18 +471,14 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
                 if (isConfirmed) {
                   final user = ref.read(authProvider);
                   if (user != null) {
+                    final fluidIntakes =
+                        fluidDataAsync.asData?.value.fluidIntakes ?? [];
                     await _deleteAllFluidIntakes(
-                        user.uid, selectedDate, errorColor);
+                        user.uid, fluidIntakes, errorColor);
                   }
                 }
-              } else if (value == 'fluidSettings') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const FluidIntakeSettings(),
-                  ),
-                );
               } else if (value == 'details') {
-                await _showFluidIntakeInformationDialogue();
+                await _showFluidIntakeLogDetailsDialogue();
               }
             },
           ),
@@ -470,238 +488,250 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
       backgroundColor: ComponentColors.waterBackgroundShade,
       body: SafeArea(
         top: false,
-        child: fluidIntakeAsync.when(
-          data: (intakes) {
-            final totalFluidQuantity = intakes.fold<double>(
-                0, (total, intake) => total + intake.quantity);
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: kScaffoldBodyPadding,
+            right: kScaffoldBodyPadding,
+            bottom: kScaffoldBodyPadding,
+          ),
+          child: fluidDataAsync.when(
+            data: (cache) {
+              final intakes = cache.fluidIntakes;
+              final totalFluidQuantity = intakes.fold<double>(
+                  0, (total, intake) => total + intake.quantity);
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (intakes.isNotEmpty)
-                  Container(
-                    width: double.infinity,
-                    color: ComponentColors.waterBackgroundShade,
-                    padding: const EdgeInsets.fromLTRB(20, 0, 16, 12),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Showing entries for ${isToday ? 'Today' : Utils.formatDateDM(selectedDate)}',
-                          style: theme.textTheme.titleMedium!.copyWith(
-                            color: ComponentColors.waterColorShade2,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: totalFluidQuantity >= fluidLimit
-                                ? theme.colorScheme.error
-                                : ComponentColors.waterColorShade2,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            Utils.formatFluidValue(totalFluidQuantity),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (intakes.isNotEmpty)
+                    Container(
+                      width: double.infinity,
+                      color: ComponentColors.waterBackgroundShade,
+                      padding: const EdgeInsets.fromLTRB(12, 0, 0, 12),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Total fluids taken ${isToday ? 'today :' : 'on ${Utils.formatDateDM(selectedDate)}'}',
                             style: theme.textTheme.titleMedium!.copyWith(
-                              color: ComponentColors.waterBackgroundShade,
+                              color: ComponentColors.waterColorShade2,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                Expanded(
-                  child: intakes.isEmpty
-                      ? Center(
-                          child: Text(
-                            'No entries for ${isToday ? 'today.' : Utils.formatDateDMY(selectedDate)} ${isToday ? '\n Add a fluid intake to track now.' : ''}',
-                            style: theme.textTheme.titleLarge!.copyWith(
-                              color: ComponentColors.waterColorShade2,
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
                             ),
-                            textAlign: TextAlign.center,
+                            decoration: BoxDecoration(
+                              color: totalFluidQuantity >= fluidLimit
+                                  ? theme.colorScheme.error
+                                  : ComponentColors.waterColorShade2,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              Utils.formatFluidValue(totalFluidQuantity),
+                              style: theme.textTheme.titleMedium!.copyWith(
+                                color: ComponentColors.waterBackgroundShade,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
-                        )
-                      : ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.only(
-                            top: 0,
-                            left: kScaffoldBodyPadding,
-                            right: kScaffoldBodyPadding,
-                            bottom: kScaffoldBodyPadding,
-                          ),
-                          itemCount: intakes.length,
-                          itemBuilder: (context, index) {
-                            final intake = intakes[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: ClipRRect(
-                                clipBehavior: Clip.hardEdge,
-                                borderRadius: BorderRadius.circular(12),
-                                child: Container(
-                                  color: ComponentColors.waterColorShade2,
-                                  child: Dismissible(
-                                    key: Key(intake.id),
-                                    direction: isToday
-                                        ? DismissDirection.horizontal
-                                        : DismissDirection.endToStart,
-                                    confirmDismiss: (direction) async {
-                                      if (direction ==
-                                          DismissDirection.endToStart) {
-                                        return _showDeleteConfirmationDialog();
-                                      } else if (direction ==
-                                          DismissDirection.startToEnd) {
-                                        final confirmed =
-                                            await _showEditConfirmationModalSheet();
-                                        if (confirmed) {
-                                          _showEditFluidIntakeDialog(intake);
+                        ],
+                      ),
+                    ),
+                  Expanded(
+                    child: intakes.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No entries for ${isToday ? 'today.' : Utils.formatDateDMY(selectedDate)} ${isToday ? '\n Add a fluid intake to track now.' : ''}',
+                              style: theme.textTheme.titleLarge!.copyWith(
+                                color: ComponentColors.waterColorShade2,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.only(
+                              top: 0,
+                              bottom: kScaffoldBodyPadding,
+                            ),
+                            itemCount: intakes.length,
+                            itemBuilder: (context, index) {
+                              final intake = intakes[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: ClipRRect(
+                                  clipBehavior: Clip.hardEdge,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Container(
+                                    color: ComponentColors.waterColorShade2,
+                                    child: Dismissible(
+                                      key: Key(intake.id),
+                                      direction: isToday
+                                          ? DismissDirection.horizontal
+                                          : DismissDirection.endToStart,
+                                      confirmDismiss: (direction) async {
+                                        if (direction ==
+                                            DismissDirection.endToStart) {
+                                          return _showDeleteConfirmationDialog();
+                                        } else if (direction ==
+                                            DismissDirection.startToEnd) {
+                                          final confirmed =
+                                              await _showEditConfirmationDialogue();
+                                          if (confirmed) {
+                                            _showEditFluidIntakeModalSheet(
+                                                intake);
+                                          }
+                                          return false;
                                         }
                                         return false;
-                                      }
-                                      return false;
-                                    },
-                                    onDismissed: (direction) {
-                                      final user = ref.read(authProvider);
-                                      if (user == null) return;
-                                      if (direction ==
-                                          DismissDirection.endToStart) {
-                                        _deleteFluidIntake(
-                                            user.uid, intake.id, errorColor);
-                                      } else if (direction ==
-                                          DismissDirection.startToEnd) {
-                                        _showEditFluidIntakeDialog(intake);
-                                      }
-                                    },
-                                    background: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
+                                      },
+                                      onDismissed: (direction) {
+                                        final user = ref.read(authProvider);
+                                        if (user == null) return;
+                                        if (direction ==
+                                            DismissDirection.endToStart) {
+                                          _deleteFluidIntake(
+                                              user.uid, intake.id, errorColor);
+                                        } else if (direction ==
+                                            DismissDirection.startToEnd) {
+                                          _showEditFluidIntakeModalSheet(
+                                              intake);
+                                        }
+                                      },
+                                      background: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: ComponentColors
+                                                .waterColorShade1,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          alignment: Alignment.centerLeft,
+                                          padding:
+                                              const EdgeInsets.only(left: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.edit,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceBright,
+                                              ),
+                                              hGap16,
+                                              Text(
+                                                'Edit this Entry',
+                                                style: theme
+                                                    .textTheme.titleMedium!
+                                                    .copyWith(
+                                                  color: ComponentColors
+                                                      .waterBackgroundShade,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      secondaryBackground: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: theme.colorScheme.error,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          alignment: Alignment.centerRight,
+                                          padding:
+                                              const EdgeInsets.only(right: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                'Delete this Entry',
+                                                style: theme
+                                                    .textTheme.titleMedium!
+                                                    .copyWith(
+                                                  color: ComponentColors
+                                                      .waterBackgroundShade,
+                                                ),
+                                              ),
+                                              hGap16,
+                                              Icon(
+                                                Icons.delete,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceBright,
+                                              ),
+                                              hGap8,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color:
-                                              ComponentColors.waterColorShade1,
+                                              ComponentColors.waterColorShade2,
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
-                                        alignment: Alignment.centerLeft,
-                                        padding:
-                                            const EdgeInsets.only(left: 20),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Icon(
-                                              Icons.edit,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceBright,
-                                            ),
-                                            hGap16,
-                                            Text(
-                                              'Edit this Entry',
+                                        child: ListTile(
+                                          leading: const Icon(
+                                            Icons.water_drop,
+                                            color: ComponentColors
+                                                .waterBackgroundShade,
+                                          ),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 12),
+                                          title: Semantics(
+                                            label:
+                                                'Fluid type: ${intake.fluidName}',
+                                            child: Text(
+                                              'Drank: ${intake.fluidName}',
                                               style: theme
                                                   .textTheme.titleMedium!
                                                   .copyWith(
                                                 color: ComponentColors
                                                     .waterBackgroundShade,
+                                                fontWeight: FontWeight.w600,
                                               ),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    secondaryBackground: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: theme.colorScheme.error,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        alignment: Alignment.centerRight,
-                                        padding:
-                                            const EdgeInsets.only(right: 20),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              'Delete this Entry',
+                                          ),
+                                          subtitle: Semantics(
+                                            label:
+                                                'Quantity: ${intake.quantity} milliliters',
+                                            child: Text(
+                                              Utils.formatFluidValue(
+                                                  intake.quantity),
                                               style: theme
                                                   .textTheme.titleMedium!
                                                   .copyWith(
                                                 color: ComponentColors
                                                     .waterBackgroundShade,
+                                                fontWeight: FontWeight.w600,
                                               ),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                            hGap16,
-                                            Icon(
-                                              Icons.delete,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .surfaceBright,
-                                            ),
-                                            hGap8,
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: ComponentColors.waterColorShade2,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: ListTile(
-                                        leading: const Icon(
-                                          Icons.water_drop,
-                                          color: ComponentColors
-                                              .waterBackgroundShade,
-                                        ),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 12),
-                                        title: Semantics(
-                                          label:
-                                              'Fluid type: ${intake.fluidName}',
-                                          child: Text(
-                                            'Drank: ${intake.fluidName}',
-                                            style: theme.textTheme.titleMedium!
-                                                .copyWith(
-                                              color: ComponentColors
-                                                  .waterBackgroundShade,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ),
-                                        subtitle: Semantics(
-                                          label:
-                                              'Quantity: ${intake.quantity} milliliters',
-                                          child: Text(
-                                            Utils.formatFluidValue(
-                                                intake.quantity),
-                                            style: theme.textTheme.titleMedium!
-                                                .copyWith(
-                                              color: ComponentColors
-                                                  .waterBackgroundShade,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        trailing: Semantics(
-                                          label:
-                                              'Time: ${Utils.formatTime(intake.timestamp.toDate())}',
-                                          child: Text(
-                                            Utils.formatTime(
-                                                intake.timestamp.toDate()),
-                                            style: theme.textTheme.bodyMedium!
-                                                .copyWith(
-                                              color: ComponentColors
-                                                  .waterBackgroundShade,
-                                              fontWeight: FontWeight.w600,
+                                          trailing: Semantics(
+                                            label:
+                                                'Time: ${Utils.formatTime(intake.timestamp.toDate())}',
+                                            child: Text(
+                                              Utils.formatTime(
+                                                  intake.timestamp.toDate()),
+                                              style: theme.textTheme.bodyMedium!
+                                                  .copyWith(
+                                                color: ComponentColors
+                                                    .waterBackgroundShade,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -709,22 +739,22 @@ class FluidIntakeLogScreenState extends ConsumerState<FluidIntakeLogScreen> {
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                ),
-              ],
-            );
-          },
-          loading: () => const Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-              color: ComponentColors.waterColorShade2,
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              );
+            },
+            loading: () => const Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: ComponentColors.waterColorShade2,
+              ),
             ),
-          ),
-          error: (error, _) => Center(
-            child: Text('Error: $error'),
+            error: (error, _) => Center(
+              child: Text('Error: $error'),
+            ),
           ),
         ),
       ),

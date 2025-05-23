@@ -9,6 +9,16 @@ final selectedDateProvider = StateProvider<DateTime>((ref) {
 final allowDeleteAllProvider = StateProvider<bool>((ref) {
   return true;
 });
+final allowEditPastEntriesProvider = StateProvider<bool>((ref) {
+  return false;
+});
+final allowDeletePastEntriesProvider = StateProvider<bool>((ref) {
+  return false;
+});
+
+final remindersActiveProvider = StateProvider<bool>((ref) {
+  return true;
+});
 
 class FluidLimitNotifier extends StateNotifier<int> {
   FluidLimitNotifier() : super(750) {
@@ -28,7 +38,6 @@ class FluidLimitNotifier extends StateNotifier<int> {
   }
 }
 
-// New provider
 final fluidLimitProvider =
     StateNotifierProvider<FluidLimitNotifier, int>((ref) {
   return FluidLimitNotifier();

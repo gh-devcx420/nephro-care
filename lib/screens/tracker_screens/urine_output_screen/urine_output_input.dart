@@ -104,10 +104,12 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
       );
       return;
     }
+
     final dateTime = DateTime.now().copyWith(
       hour: selectedTime!.hour,
       minute: selectedTime!.minute,
     );
+
     final output = UrineOutput(
       id: widget.output?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       outputName: 'Urine',
@@ -116,6 +118,7 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
     );
 
     setState(() => isLoading = true);
+
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -137,7 +140,6 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
       );
     } catch (e) {
       if (!mounted) return;
-
       setState(() => isLoading = false);
       Navigator.of(context).pop(
         DialogResult(
@@ -195,12 +197,10 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Center(
-                child: NCDivider(
-                  thickness: 4,
-                  color: ComponentColors.urineColorShade2,
-                  widthFactor: 0.2,
-                ),
+              const NCDivider(
+                thickness: 4,
+                color: ComponentColors.urineColorShade2,
+                widthFactor: 0.2,
               ),
               vGap10,
               Row(
@@ -245,7 +245,8 @@ class _UrineOutputInputState extends State<UrineOutputInput> {
                           quantityController.selection =
                               TextSelection.fromPosition(
                             TextPosition(
-                                offset: quantityController.text.length),
+                              offset: quantityController.text.length,
+                            ),
                           );
                         }
                       },

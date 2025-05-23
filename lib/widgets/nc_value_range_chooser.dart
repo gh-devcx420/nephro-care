@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nephro_care/constants.dart';
 import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/utils/utils.dart';
 
@@ -27,14 +28,10 @@ class ValueRangeChooser extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceBright,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color ?? Theme.of(context).colorScheme.primary,
-          width: 1.5,
-        ),
+        borderRadius: BorderRadius.circular(kBorderRadius),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
