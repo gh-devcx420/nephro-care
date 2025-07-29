@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/constants.dart';
+import 'package:nephro_care/constants/constants.dart';
+import 'package:nephro_care/constants/ui_helper.dart';
 import 'package:nephro_care/main.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/screens/settings_screen/change_theme_screen.dart';
 import 'package:nephro_care/screens/settings_screen/trackers_settings_screen.dart';
 import 'package:nephro_care/themes/theme_config.dart';
-import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/widgets/nc_alert_dialogue.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -58,12 +58,12 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: Text(
                   'Available App Colors: ${appThemes.length}',
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                visualDensity:
+                    const VisualDensity(vertical: -4, horizontal: -2),
               ),
             ),
-            vGap8,
+            vGap4,
             InkWell(
               onTap: () {
                 Navigator.push(
@@ -87,16 +87,16 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: const Text(
                   'Settings for various trackers',
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                visualDensity:
+                    const VisualDensity(vertical: -4, horizontal: -2),
               ),
             ),
-            vGap8,
+            vGap4,
             InkWell(
               onTap: () async {
                 final navigator = Navigator.of(context);
-                showNCAlertDialogue(
+                showNCAlertDialog(
                   context: context,
                   titleText: 'Logout User',
                   content: Text(
@@ -148,9 +148,9 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: Text(
                   user?.displayName ?? 'User',
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                visualDensity:
+                    const VisualDensity(vertical: -4, horizontal: -2),
               ),
             ),
           ],

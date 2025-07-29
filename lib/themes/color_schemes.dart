@@ -80,24 +80,24 @@ abstract class AppColorScheme {
   );
 }
 
-abstract class ComponentColors {
-// Water Theme (Blue)
-  static const Color waterBackgroundShade = Color(0xFFE6F0FA);
-  static const Color waterColorShade1 = Color(0xFF0277BD);
-  static const Color waterColorShade2 = Color(0xFF01579B);
 
-  // Urine Theme (Yellowish)
-  static const Color urineBackgroundShade = Color(0xFFFFF9E6);
-  static const Color urineColorShade1 = Color(0xFFA6742E);
-  static const Color urineColorShade2 = Color(0xFF8D5524);
 
-  // Blood Theme (Purple)
-  static const Color bloodBackgroundShade = Color(0xFFF3E5F5);
-  static const Color bloodColorShade1 = Color(0xFF8E24AA);
-  static const Color bloodColorShade2 = Color(0xFF6A1B9A);
 
-  // Weight Theme (Greenish)
-  static const Color weightBackgroundColor = Color(0xFFE8F5E9);
-  static const Color weightColorShade1 = Color(0xFF2E7D32);
-  static const Color weightColorShade2 = Color(0xFF1B5E20);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

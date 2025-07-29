@@ -20,7 +20,8 @@ class NCDivider extends StatelessWidget {
         child: Divider(
           color: color ?? Theme.of(context).colorScheme.primary,
           endIndent: 0.5,
-          thickness: thickness ?? 1,
+          thickness: thickness ?? 0.5,
+          radius: BorderRadius.circular(thickness ?? 1),
         ),
       ),
     );

@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:nephro_care/models/urine_output_model.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
-import 'package:nephro_care/utils/utils.dart';
+import 'package:nephro_care/utils/date_time_utils.dart';
 
 class UrineOutputCache {
   final List<UrineOutput> urineOutputs;
@@ -123,34 +122,38 @@ final urineOutputSummaryProvider = Provider<Map<String, dynamic>>((ref) {
     data: (cache) {
       final urineOutputs = cache.urineOutputs;
       double total = 0;
-      String lastTime = 'Unknown';
+      DateTime? lastTime;
       int totalUrineToday = urineOutputs.length;
 
       for (var output in urineOutputs) {
         total += output.quantity;
-        lastTime = DateFormat('h:mm a').format(output.timestamp.toDate());
+        lastTime = output.timestamp.toDate();
       }
 
       return {
-        'day': Utils.formatWeekday(selectedDate),
-        'date': Utils.formatDateDM(selectedDate),
+        'day': DateTimeUtils.formatWeekday(selectedDate),
+        'date': DateTimeUtils.formatDateDM(selectedDate),
         'total': total,
         'lastTime': lastTime,
         'totalUrineToday': totalUrineToday,
       };
     },
     loading: () => {
-      'day': Utils.formatWeekday(selectedDate),
-      'date': Utils.formatDateDM(selectedDate),
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
+
       'total': 0,
-      'lastTime': 'Unknown',
+
+      'lastTime': null,
       'totalUrineToday': 0,
     },
     error: (_, __) => {
-      'day': Utils.formatWeekday(selectedDate),
-      'date': Utils.formatDateDM(selectedDate),
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
+
       'total': 0,
-      'lastTime': 'Unknown',
+
+      'lastTime': null,
       'totalUrineToday': 0,
     },
   );

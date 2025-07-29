@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/constants.dart';
+import 'package:nephro_care/constants/constants.dart';
+import 'package:nephro_care/constants/ui_helper.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
-import 'package:nephro_care/utils/ui_helper.dart';
 import 'package:nephro_care/widgets/nc_divider.dart';
 import 'package:nephro_care/widgets/nc_value_range_chooser.dart';
 
@@ -38,8 +38,10 @@ class TrackersSettingsScreen extends ConsumerWidget {
             ListTile(
               leading: const Icon(
                 Icons.edit,
-                size: 28,
+                size: 24,
               ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              visualDensity: const VisualDensity(vertical: -4, horizontal: -2),
               tileColor: Colors.transparent,
               title: const Text('Edit Past Entries'),
               titleTextStyle: Theme.of(context)
@@ -62,11 +64,14 @@ class TrackersSettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            vGap8,
             ListTile(
               leading: const Icon(
                 Icons.delete,
-                size: 28,
+                size: 24,
               ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              visualDensity: const VisualDensity(vertical: -4, horizontal: -2),
               tileColor: Colors.transparent,
               title: const Text('Delete Past Entries'),
               titleTextStyle: Theme.of(context)
@@ -87,11 +92,14 @@ class TrackersSettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            vGap8,
             ListTile(
               leading: const Icon(
                 Icons.delete_forever,
-                size: 28,
+                size: 24,
               ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              visualDensity: const VisualDensity(vertical: -4, horizontal: -2),
               tileColor: Colors.transparent,
               title: const Text('Delete All Option'),
               titleTextStyle: Theme.of(context)
@@ -111,11 +119,14 @@ class TrackersSettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            vGap8,
             ListTile(
               leading: const Icon(
                 Icons.notifications_active,
-                size: 28,
+                size: 24,
               ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              visualDensity: const VisualDensity(vertical: -4, horizontal: -2),
               tileColor: Colors.transparent,
               title: const Text('Reminder Alerts'),
               titleTextStyle: Theme.of(context)
@@ -140,8 +151,11 @@ class TrackersSettingsScreen extends ConsumerWidget {
             ListTile(
                 leading: const Icon(
                   Icons.water_drop,
-                  size: 28,
+                  size: 24,
                 ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                visualDensity:
+                    const VisualDensity(vertical: -4, horizontal: -2),
                 tileColor: Colors.transparent,
                 title: const Text('Fluid Intake Limit'),
                 titleTextStyle: Theme.of(context).textTheme.titleMedium,

@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:nephro_care/models/bp_monitor_model.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
-import 'package:nephro_care/utils/utils.dart';
+import 'package:nephro_care/utils/date_time_utils.dart';
 
 class BPMonitorCache {
   final List<BPMonitor> bpMonitors;
@@ -124,69 +123,71 @@ final bpMonitorSummaryProvider = Provider<Map<String, dynamic>>((ref) {
     data: (cache) {
       final bpMonitors = cache.bpMonitors;
       final selectedDate = ref.watch(selectedDateProvider);
-      int totalMeasurements = bpMonitors.length;
-      String lastTime = 'Unknown';
-      int averageSystolic = 0;
-      int averageDiastolic = 0;
-      int averagePulse = 0;
-      double? averageSpo2;
-
-      if (bpMonitors.isNotEmpty) {
-        int totalSystolic = 0;
-        int totalDiastolic = 0;
-        int totalPulse = 0;
-        double totalSpo2 = 0;
-        int spo2Count = 0;
-
-        for (var bp in bpMonitors) {
-          totalSystolic += bp.systolic;
-          totalDiastolic += bp.diastolic;
-          totalPulse += bp.pulse;
-          if (bp.spo2 != null) {
-            totalSpo2 += bp.spo2!;
-            spo2Count++;
-          }
-          lastTime = DateFormat('h:mm a').format(bp.timestamp.toDate());
-        }
-
-        averageSystolic = (totalSystolic / totalMeasurements).round();
-        averageDiastolic = (totalDiastolic / totalMeasurements).round();
-        averagePulse = (totalPulse / totalMeasurements).round();
-        if (spo2Count > 0) {
-          averageSpo2 = totalSpo2 / spo2Count;
-        }
+      if (bpMonitors.isEmpty) {
+        return {
+          'day': DateTimeUtils.formatWeekday(selectedDate),
+          'date': DateTimeUtils.formatDateDM(selectedDate),
+          'totalMeasurements': 0,
+          'lastTime': null,
+          'averageSystolic': 0,
+          'averageDiastolic': 0,
+          'averagePulse': 0,
+          'averageSpo2': null,
+          'lastSystolic': null,
+          'lastDiastolic': null,
+        };
       }
 
+      final totalMeasurements = bpMonitors.length;
+      final totalSystolic =
+          bpMonitors.fold<int>(0, (total, bp) => total + bp.systolic);
+      final totalDiastolic =
+          bpMonitors.fold<int>(0, (total, bp) => total + bp.diastolic);
+      final totalPulse =
+          bpMonitors.fold<int>(0, (total, bp) => total + bp.pulse);
+      final spo2Data = bpMonitors
+          .where((bp) => bp.spo2 != null)
+          .fold<double>(0, (total, bp) => total + bp.spo2!);
+      final spo2Count = bpMonitors.where((bp) => bp.spo2 != null).length;
+
+      final latest = bpMonitors.last;
+
       return {
-        'day': Utils.formatWeekday(selectedDate),
-        'date': Utils.formatDateDM(selectedDate),
+        'day': DateTimeUtils.formatWeekday(selectedDate),
+        'date': DateTimeUtils.formatDateDM(selectedDate),
         'totalMeasurements': totalMeasurements,
-        'lastTime': lastTime,
-        'averageSystolic': averageSystolic,
-        'averageDiastolic': averageDiastolic,
-        'averagePulse': averagePulse,
-        'averageSpo2': averageSpo2,
+        'lastTime': latest.timestamp.toDate(),
+        'averageSystolic': totalSystolic / totalMeasurements,
+        'averageDiastolic': totalDiastolic / totalMeasurements,
+        'averagePulse': totalPulse / totalMeasurements,
+        'averageSpo2': spo2Count > 0 ? spo2Data / spo2Count : null,
+        'lastSystolic': latest.systolic,
+        'lastDiastolic': latest.diastolic,
       };
     },
     loading: () => {
-      'day': Utils.formatWeekday(ref.watch(selectedDateProvider)),
-      'date': Utils.formatDateDM(ref.watch(selectedDateProvider)),
+      'day': DateTimeUtils.formatWeekday(ref.watch(selectedDateProvider)),
+      'date': DateTimeUtils.formatDateDM(ref.watch(selectedDateProvider)),
       'totalMeasurements': 0,
-      'lastTime': 'Unknown',
+      'lastTime': null,
       'averageSystolic': 0,
       'averageDiastolic': 0,
       'averagePulse': 0,
       'averageSpo2': null,
+      'lastSystolic': null,
+      'lastDiastolic': null,
     },
     error: (_, __) => {
-      'day': Utils.formatWeekday(ref.watch(selectedDateProvider)),
-      'date': Utils.formatDateDM(ref.watch(selectedDateProvider)),
+      'day': DateTimeUtils.formatWeekday(ref.watch(selectedDateProvider)),
+      'date': DateTimeUtils.formatDateDM(ref.watch(selectedDateProvider)),
       'totalMeasurements': 0,
-      'lastTime': 'Unknown',
+      'lastTime': null,
       'averageSystolic': 0,
       'averageDiastolic': 0,
       'averagePulse': 0,
       'averageSpo2': null,
+      'lastSystolic': null,
+      'lastDiastolic': null,
     },
   );
 });

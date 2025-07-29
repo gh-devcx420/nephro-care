@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Future<dynamic> showNCAlertDialogue({
+Future<dynamic> showNCAlertDialog({
   required context,
   required titleText,
   required Widget content,
@@ -20,15 +20,15 @@ Future<dynamic> showNCAlertDialogue({
             ? Theme.of(context).colorScheme.surfaceDim
             : Theme.of(context).colorScheme.surface,
         title: Text(titleText),
-        titleTextStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
-              color: titleColor ?? Theme.of(context).colorScheme.onSurface,
-            ),
-        titlePadding: const EdgeInsets.fromLTRB(24, 24, 16, 8),
+        titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: titleColor ?? Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w800),
+        titlePadding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
         content: content,
         contentTextStyle: Theme.of(context).textTheme.bodyMedium,
-        contentPadding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+        contentPadding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
         actions: [action1, action2],
-        actionsPadding: const EdgeInsets.fromLTRB(24, 8, 16, 16),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 4, 12, 12),
       );
     },
   );

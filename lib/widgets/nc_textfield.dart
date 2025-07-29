@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nephro_care/constants.dart';
+import 'package:nephro_care/constants/constants.dart';
 
 class NCTextfield extends StatefulWidget {
   const NCTextfield({
@@ -25,8 +25,8 @@ class NCTextfield extends StatefulWidget {
     this.maxLength,
     this.readOnly = false,
     this.semanticsLabel,
-    this.textInputAction, // NEW: Add textInputAction
-    this.onSubmitted, // NEW: Add onSubmitted
+    this.textInputAction,
+    this.onSubmitted,
   });
 
   final TextEditingController textFieldController;
@@ -50,8 +50,8 @@ class NCTextfield extends StatefulWidget {
   final VoidCallback? onSuffixIconTap;
   final bool readOnly;
   final String? semanticsLabel;
-  final TextInputAction? textInputAction; // NEW
-  final void Function(String)? onSubmitted; // NEW
+  final TextInputAction? textInputAction;
+  final void Function(String)? onSubmitted;
 
   @override
   State<NCTextfield> createState() => _NCTextfieldState();
@@ -112,9 +112,9 @@ class _NCTextfieldState extends State<NCTextfield> {
           maxLength: widget.maxLength ?? TextField.noMaxLength,
           readOnly: widget.readOnly,
           textInputAction: widget.textInputAction,
-          // NEW: Pass textInputAction
+
           onSubmitted: widget.onSubmitted,
-          // NEW: Pass onSubmitted
+
           decoration: InputDecoration(
             hintText: widget.hintText,
             counterText: '',

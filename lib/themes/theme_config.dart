@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/icons/whh.dart';
-import 'package:nephro_care/constants.dart';
+import 'package:nephro_care/constants/constants.dart';
 import 'package:nephro_care/models/theme_model.dart';
 import 'package:nephro_care/themes/color_schemes.dart';
 
@@ -20,12 +20,14 @@ abstract class AppTheme {
       colorScheme: colorScheme,
       useMaterial3: true,
       appBarTheme: AppBarTheme(
+        toolbarHeight: 48,
+        leadingWidth: 48,
         backgroundColor: colorScheme.surfaceContainerLow,
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           color: colorScheme.primary,
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
         ),
         iconTheme: IconThemeData(
           color: colorScheme.primary,
@@ -75,21 +77,39 @@ abstract class AppTheme {
         fillColor: colorScheme.surfaceDim,
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(kBorderRadius),
+        style: ButtonStyle(
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           ),
-          foregroundColor: colorScheme.primary,
-          backgroundColor: Colors.transparent,
+          backgroundColor: WidgetStateProperty.all(Colors.transparent),
+          foregroundColor: WidgetStateProperty.all(colorScheme.primary),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(kBorderRadius),
+            ),
+          ),
+          minimumSize: WidgetStateProperty.all(
+            const Size(0, 0),
+          ),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(kBorderRadius),
+        style: ButtonStyle(
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           ),
-          foregroundColor: colorScheme.onPrimary,
-          backgroundColor: colorScheme.primary,
+          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
+          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(kBorderRadius),
+            ),
+          ),
+          minimumSize: WidgetStateProperty.all(
+            const Size(0, 0),
+          ),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
       listTileTheme: ListTileThemeData(
@@ -113,7 +133,7 @@ abstract class AppTheme {
           color: colorScheme.primary,
         ),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 24,
@@ -155,8 +175,8 @@ abstract class AppTheme {
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           color: colorScheme.onPrimary,
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
         ),
         iconTheme: IconThemeData(
           color: colorScheme.onPrimary,
@@ -215,12 +235,18 @@ abstract class AppTheme {
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
+        style: ButtonStyle(
+          padding: WidgetStateProperty.all(const EdgeInsets.all(2)),
+
+          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
+          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
+          shape: WidgetStateProperty.all(RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(kBorderRadius),
-          ),
-          foregroundColor: colorScheme.onPrimary,
-          backgroundColor: colorScheme.primary,
+          )),
+          minimumSize: WidgetStateProperty.all(const Size(0, 0)),
+
+          tapTargetSize:
+              MaterialTapTargetSize.shrinkWrap,
         ),
       ),
       listTileTheme: ListTileThemeData(
@@ -237,7 +263,7 @@ abstract class AppTheme {
         ),
         dense: true,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 24,
@@ -268,7 +294,7 @@ abstract class AppTheme {
 
   static textTheme(Color fontColor) {
     return TextTheme(
-      // Display styles
+      //Display styles
       displayLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 57,
@@ -287,7 +313,7 @@ abstract class AppTheme {
         fontWeight: FontWeight.w400,
         color: fontColor,
       ),
-      // Headline styles
+      //Headline styles
       headlineLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 32,
@@ -306,26 +332,26 @@ abstract class AppTheme {
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),
-      // Title styles
+      //Title styles
       titleLarge: TextStyle(
-        fontFamily: 'JosefinSans',
-        fontSize: 22,
-        fontWeight: FontWeight.w600,
-        color: fontColor,
-      ),
-      titleMedium: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 18,
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),
-      titleSmall: TextStyle(
+      titleMedium: TextStyle(
         fontFamily: 'JosefinSans',
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
         color: fontColor,
       ),
-      // Body text styles
+      titleSmall: TextStyle(
+        fontFamily: 'JosefinSans',
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: fontColor,
+      ),
+      //Body styles
       bodyLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 18,

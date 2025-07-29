@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:nephro_care/models/fluid_intake_model.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
-import 'package:nephro_care/utils/utils.dart';
+import 'package:nephro_care/utils/date_time_utils.dart';
 
 class FluidIntakeCache {
   final List<FluidIntake> fluidIntakes;
@@ -123,7 +122,7 @@ final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
     data: (cache) {
       final fluidIntakes = cache.fluidIntakes;
       double total = 0;
-      String lastTime = 'Unknown';
+      DateTime? lastTime;
       int totalDrinksToday = fluidIntakes.length;
       Map<String, double> typeTotals = {};
 
@@ -131,12 +130,12 @@ final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
         total += intake.quantity;
         typeTotals[intake.fluidName] =
             (typeTotals[intake.fluidName] ?? 0) + intake.quantity;
-        lastTime = DateFormat('h:mm a').format(intake.timestamp.toDate());
+        lastTime = intake.timestamp.toDate();
       }
 
       return {
-        'day': Utils.formatWeekday(selectedDate),
-        'date': Utils.formatDateDM(selectedDate),
+        'day': DateTimeUtils.formatWeekday(selectedDate),
+        'date': DateTimeUtils.formatDateDM(selectedDate),
         'total': total,
         'lastTime': lastTime,
         'totalDrinksToday': totalDrinksToday,
@@ -144,18 +143,18 @@ final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
       };
     },
     loading: () => {
-      'day': Utils.formatWeekday(selectedDate),
-      'date': Utils.formatDateDM(selectedDate),
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
       'total': 0,
-      'lastTime': 'Unknown',
+      'lastTime': null,
       'totalDrinksToday': 0,
       'typeTotals': <String, double>{},
     },
     error: (_, __) => {
-      'day': Utils.formatWeekday(selectedDate),
-      'date': Utils.formatDateDM(selectedDate),
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
       'total': 0,
-      'lastTime': 'Unknown',
+      'lastTime': null,
       'totalDrinksToday': 0,
       'typeTotals': <String, double>{},
     },
