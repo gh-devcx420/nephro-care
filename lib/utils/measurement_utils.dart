@@ -63,8 +63,6 @@ class MeasurementUtils {
               .replaceAll(RegExp(r'\.$'), ''),
           unit: 'kg'
         );
-      default:
-        return (number: numValue.toString(), unit: '');
     }
   }
 
@@ -107,8 +105,7 @@ class MeasurementUtils {
   static RichText createRichTextTimestamp({
     required DateTime? timestamp,
     required TextStyle timeStyle,
-    required TextStyle
-        meridiemStyle,
+    required TextStyle meridiemStyle,
     String? prefixText,
     TextStyle? prefixStyle,
     double? timeFontSize,

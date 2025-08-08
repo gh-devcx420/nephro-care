@@ -5,41 +5,43 @@ import 'package:nephro_care/constants/enums.dart';
 import 'package:nephro_care/constants/strings_constants.dart';
 import 'package:nephro_care/constants/ui_helper.dart';
 import 'package:nephro_care/models/tracker_models.dart';
-import 'package:nephro_care/providers/fluid_intake_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
-import 'package:nephro_care/providers/urine_output_provider.dart';
+import 'package:nephro_care/providers/weight_provider.dart';
 import 'package:nephro_care/screens/tracker_screens/generic_log_screen.dart';
-import 'package:nephro_care/screens/tracker_screens/urine_output_screen/urine_output_modal_sheet.dart';
+import 'package:nephro_care/screens/tracker_screens/weight_tracker_screen/weight_tracker_modal_sheet.dart';
 import 'package:nephro_care/utils/date_time_utils.dart';
 import 'package:nephro_care/utils/measurement_utils.dart';
 
-class UrineOutputLogScreen extends ConsumerWidget {
-  const UrineOutputLogScreen({super.key});
+class WeightTrackerLogScreen extends ConsumerWidget {
+  const WeightTrackerLogScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    ({String number, String unit}) totalFormatter(List<UrineOutput> items) {
-      final total = items.fold<double>(0, (sum, item) => sum + item.quantity);
-      final formatted =
-          MeasurementUtils.formatValueForRichText(total, MeasurementType.fluid);
+    ({String number, String unit}) totalFormatter(List<Weight> items) {
+      if (items.isEmpty) return (number: 'N/A', unit: '');
+      final avgWeight =
+          items.fold<double>(0, (sum, item) => sum + item.weight) /
+              items.length;
+      final formatted = MeasurementUtils.formatValueForRichText(
+          avgWeight, MeasurementType.weight);
       return (number: formatted.number, unit: formatted.unit);
     }
 
-    return LogScreen<UrineOutput>(
-      appBarTitle: 'Urine Log',
-      headerTitleString: 'urine output',
+    return LogScreen<Weight>(
+      appBarTitle: 'Weight Log',
+      headerTitleString: 'weight',
       primaryColor: Theme.of(context).colorScheme.primary,
       secondaryColor: Theme.of(context).colorScheme.primaryContainer,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-      listItemIcon: Icons.water_drop,
-      dataProvider: urineOutputDataProvider,
-      summaryProvider: urineOutputSummaryProvider,
-      firestoreCollection: 'urine_output',
-      inputWidgetBuilder: (item) => UrineOutputModalSheet(output: item),
+      listItemIcon: Icons.fitness_center,
+      dataProvider: weightDataProvider,
+      summaryProvider: weightSummaryProvider,
+      firestoreCollection: 'weight',
+      inputWidgetBuilder: (item) => WeightModalSheet(weight: item),
       listItemBuilder: (context, item) => ListTile(
         leading: Icon(
-          Icons.water_drop,
+          Icons.fitness_center,
           size: 20,
           color: Theme.of(context).colorScheme.onPrimary,
         ),
@@ -47,9 +49,9 @@ class UrineOutputLogScreen extends ConsumerWidget {
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
         dense: true,
         title: Semantics(
-          label: 'Output type: ${item.outputName}',
+          label: 'Weight',
           child: Text(
-            'Output: ${item.outputName}',
+            'Weight',
             style: theme.textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: 15,
@@ -59,16 +61,15 @@ class UrineOutputLogScreen extends ConsumerWidget {
           ),
         ),
         subtitle: Semantics(
-          label:
-              'Quantity: ${item.quantity} ${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]}',
+          label: 'Weight: ',
           child: MeasurementUtils.createRichTextValueWithUnit(
             value: MeasurementUtils.formatValueForRichText(
-              item.quantity,
-              MeasurementType.fluid,
+              item.weight,
+              MeasurementType.weight,
             ).number,
             unit: MeasurementUtils.formatValueForRichText(
-              item.quantity,
-              MeasurementType.fluid,
+              item.weight,
+              MeasurementType.weight,
             ).unit,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
@@ -94,25 +95,22 @@ class UrineOutputLogScreen extends ConsumerWidget {
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: kMeridiemIndicatorFontSize,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
             isMeridiemUpperCase: false,
           ),
         ),
       ),
       logDetailsDialogBuilder: (context, summary) {
-        final lastUrineTime = summary['lastTime'];
-        final totalUrineTimes = summary['totalUrineToday'] ?? 0;
-        final fluidSummary = ref.read(fluidIntakeSummaryProvider);
+        final lastWeightTime = summary['lastTime'];
+        final totalMeasurements = summary['totalMeasurements'] ?? 0;
+        final averageWeight = summary['averageWeight'] ?? 0;
         final selectedDate = ref.watch(selectedDateProvider);
         final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
-        double? outputPercent;
-        if (fluidSummary['total'] != 0) {
-          outputPercent = (summary['total'] / fluidSummary['total']) * 100;
-        }
-        return totalUrineTimes == 0
+
+        return totalMeasurements == 0
             ? Text(
-                '${Strings.noEntriesPrefix}${isToday ? 'today.' : DateTimeUtils.formatDateDMY(selectedDate)}',
+                '${Strings.noEntriesPrefix}${isToday ? 'today.' : DateTimeUtils.formatDateDMY(selectedDate)}.',
                 style: Theme.of(context).textTheme.bodySmall,
               )
             : Column(
@@ -121,9 +119,9 @@ class UrineOutputLogScreen extends ConsumerWidget {
                 children: [
                   vGap8,
                   MeasurementUtils.createRichTextValueWithUnit(
-                    prefixText: '• Number of urine outputs: ',
+                    prefixText: '• Number of measurements: ',
                     prefixStyle: theme.textTheme.bodySmall,
-                    value: '$totalUrineTimes',
+                    value: '$totalMeasurements',
                     unit: '',
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kValueFontSize,
@@ -136,15 +134,14 @@ class UrineOutputLogScreen extends ConsumerWidget {
                   ),
                   vGap16,
                   MeasurementUtils.createRichTextValueWithUnit(
-                    prefixText:
-                        outputPercent != null ? '• Urine output ratio: ' : '• ',
+                    prefixText: '• Average weight: ',
                     prefixStyle: theme.textTheme.bodySmall,
-                    value: outputPercent != null
-                        ? '${outputPercent.toInt()}'
-                        : 'No data available for output ratio',
-                    unit: outputPercent != null
-                        ? siUnitEnumMap[SIUnitEnum.percentSIUnit]!
-                        : '',
+                    value: MeasurementUtils.formatValueForRichText(
+                            averageWeight, MeasurementType.weight)
+                        .number,
+                    unit: MeasurementUtils.formatValueForRichText(
+                            averageWeight, MeasurementType.weight)
+                        .unit,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,
@@ -156,9 +153,9 @@ class UrineOutputLogScreen extends ConsumerWidget {
                   ),
                   vGap16,
                   MeasurementUtils.createRichTextTimestamp(
-                    prefixText: '• Last urine output at: ',
+                    prefixText: '• Last measured at: ',
                     prefixStyle: theme.textTheme.bodySmall,
-                    timestamp: lastUrineTime,
+                    timestamp: lastWeightTime,
                     timeStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kTimeFontSize,
                       fontWeight: FontWeight.w800,

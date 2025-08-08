@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nephro_care/constants/enums.dart';
 import 'package:nephro_care/constants/ui_helper.dart';
-import 'package:nephro_care/models/fluid_intake_model.dart';
 import 'package:nephro_care/models/other_models.dart';
+import 'package:nephro_care/models/tracker_models.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/screens/tracker_screens/generic_modal_sheet.dart';
 import 'package:nephro_care/utils/ui_utils.dart';
@@ -73,13 +73,17 @@ class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
           semanticsLabel:
               'Quantity input in ${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]}',
           initialValue: widget.intake?.quantity.toInt().toString() ?? '',
+          suffixText: siUnitEnumMap[SIUnitEnum.fluidsSIUnitML],
           validator: (value) {
             final quantity = double.tryParse(value!);
             if (quantity == null) {
               return 'Please enter a valid quantity';
             }
-            if (quantity > 1000) {
-              return 'Quantity cannot exceed 1000${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]}';
+            if (quantity <= 0) {
+              return 'Quantity cannot be 0 ${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]}.';
+            }
+            if (quantity > 1500) {
+              return 'Quantity cannot exceed 1500 ${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]}.';
             }
             return null;
           },

@@ -217,6 +217,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
       cursorColor: widget.primaryColor,
       selectionHandleColor: widget.primaryColor,
       semanticsLabel: inputFieldConfig.semanticsLabel,
+      suffixText: inputFieldConfig.suffixText,
     );
   }
 
@@ -274,7 +275,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -289,8 +290,8 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 8,
+                        horizontal: 6,
+                        vertical: 4,
                       ),
                       child: Text(
                         widget.initialData != null

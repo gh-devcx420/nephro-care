@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/constants/constants.dart';
 import 'package:nephro_care/constants/ui_helper.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
-import 'package:nephro_care/providers/summary_provider.dart';
 import 'package:nephro_care/screens/home_screen/tools_card.dart';
 import 'package:nephro_care/screens/home_screen/trackers_card.dart';
 import 'package:nephro_care/screens/settings_screen/settings_screen.dart';
+import 'package:nephro_care/utils/date_time_utils.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -14,7 +14,6 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedDate = ref.watch(selectedDateProvider);
-    final summary = ref.watch(summaryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -69,11 +68,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   hGap6,
                   Text(
-                    summary.when(
-                      data: (data) => data.$1['date']?.toString() ?? 'N/A',
-                      loading: () => 'Loading',
-                      error: (e, _) => 'Error',
-                    ),
+                    DateTimeUtils.formatDateDM(selectedDate),
                     style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: Theme.of(context).colorScheme.surfaceBright,
                           fontWeight: FontWeight.w800,

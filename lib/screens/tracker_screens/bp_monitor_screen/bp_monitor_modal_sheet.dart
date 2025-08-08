@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nephro_care/constants/enums.dart';
 import 'package:nephro_care/constants/ui_helper.dart';
-import 'package:nephro_care/models/bp_monitor_model.dart';
 import 'package:nephro_care/models/other_models.dart';
+import 'package:nephro_care/models/tracker_models.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/screens/tracker_screens/generic_modal_sheet.dart';
 

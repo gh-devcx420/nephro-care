@@ -1,10 +1,4 @@
-enum BPMonitorFieldEnum {
-  systolic,
-  diastolic,
-  pulse,
-  spo2,
-  time,
-}
+enum MeasurementType { fluid, bp, pulse, spo2, weight }
 
 enum FluidIntakeFieldEnum {
   fluidName,
@@ -17,15 +11,27 @@ enum UrineOutputFieldEnum {
   time,
 }
 
+enum BPMonitorFieldEnum {
+  systolic,
+  diastolic,
+  pulse,
+  spo2,
+  time,
+}
+
+enum WeightFieldEnum {
+  weight,
+  time,
+}
+
 enum SIUnitEnum {
   bloodPressureSIUnit,
   pulseSIUnit,
   fluidsSIUnitML,
   fluidsSIUnitLitres,
   percentSIUnit,
+  weightSIUnit,
 }
-
-enum MeasurementType { fluid, bp, pulse, spo2, weight }
 
 const Map<BPMonitorFieldEnum, String> bpMonitorEnumMap = {
   BPMonitorFieldEnum.systolic: 'systolic',
@@ -46,10 +52,16 @@ const Map<UrineOutputFieldEnum, String> urineOutputEnumMap = {
   UrineOutputFieldEnum.time: 'time',
 };
 
+const weightEnumMap = {
+  WeightFieldEnum.weight: 'weight',
+  WeightFieldEnum.time: 'time',
+};
+
 const Map<SIUnitEnum, String> siUnitEnumMap = {
-  SIUnitEnum.bloodPressureSIUnit: 'mmHg',
-  SIUnitEnum.pulseSIUnit: 'bpm',
   SIUnitEnum.fluidsSIUnitML: 'ml',
   SIUnitEnum.fluidsSIUnitLitres: 'Litres',
+  SIUnitEnum.bloodPressureSIUnit: 'mmHg',
+  SIUnitEnum.pulseSIUnit: 'bpm',
+  SIUnitEnum.weightSIUnit: 'kg',
   SIUnitEnum.percentSIUnit: '%',
 };

@@ -6,14 +6,13 @@ import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/utils/date_time_utils.dart';
 
-class UrineOutputStateNotifier
-    extends StateNotifier<AsyncValue<Cache<UrineOutput>>> {
+class WeightStateNotifier extends StateNotifier<AsyncValue<Cache<Weight>>> {
   final String userId;
   final DateTime selectedDate;
   final Ref ref;
   static final cacheDuration = Duration(minutes: kCacheDurationInMinutes);
 
-  UrineOutputStateNotifier(this.ref, this.userId, this.selectedDate)
+  WeightStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {
     _fetchData();
   }
@@ -27,33 +26,35 @@ class UrineOutputStateNotifier
       final snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('urine_output')
+          .collection('weight')
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
           .orderBy('timestamp', descending: false)
           .get();
 
-      final urineOutputs =
-          snapshot.docs.map((doc) => UrineOutput.fromJson(doc.data())).toList();
+      final weights =
+          snapshot.docs.map((doc) => Weight.fromJson(doc.data())).toList();
 
-      state = AsyncValue.data(Cache<UrineOutput>(
-        items: urineOutputs,
-        lastFetched: DateTime.now(),
-      ));
+      state = AsyncValue.data(
+        Cache<Weight>(
+          items: weights,
+          lastFetched: DateTime.now(),
+        ),
+      );
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
     }
   }
 
-  Stream<Cache<UrineOutput>> streamData() async* {
-    if (state is AsyncData<Cache<UrineOutput>> &&
+  Stream<Cache<Weight>> streamData() async* {
+    if (state is AsyncData<Cache<Weight>> &&
         DateTime.now()
                 .difference(
-                    (state as AsyncData<Cache<UrineOutput>>).value.lastFetched)
+                    (state as AsyncData<Cache<Weight>>).value.lastFetched)
                 .inMinutes <
             cacheDuration.inMinutes) {
-      yield (state as AsyncData<Cache<UrineOutput>>).value;
+      yield (state as AsyncData<Cache<Weight>>).value;
     } else {
       final startOfDay =
           DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
@@ -62,7 +63,7 @@ class UrineOutputStateNotifier
       final stream = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('urine_output')
+          .collection('weight')
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
@@ -70,11 +71,10 @@ class UrineOutputStateNotifier
           .snapshots();
 
       await for (final snapshot in stream) {
-        final urineOutputs = snapshot.docs
-            .map((doc) => UrineOutput.fromJson(doc.data()))
-            .toList();
-        final cache = Cache<UrineOutput>(
-          items: urineOutputs,
+        final weights =
+            snapshot.docs.map((doc) => Weight.fromJson(doc.data())).toList();
+        final cache = Cache<Weight>(
+          items: weights,
           lastFetched: DateTime.now(),
         );
         state = AsyncValue.data(cache);
@@ -84,17 +84,16 @@ class UrineOutputStateNotifier
   }
 }
 
-final urineOutputDataProvider =
-    StreamProvider.family<Cache<UrineOutput>, (String, DateTime)>(
-        (ref, params) {
+final weightDataProvider =
+    StreamProvider.family<Cache<Weight>, (String, DateTime)>((ref, params) {
   final userId = params.$1;
   final selectedDate = params.$2;
-  final notifier = UrineOutputStateNotifier(ref, userId, selectedDate);
+  final notifier = WeightStateNotifier(ref, userId, selectedDate);
   return notifier.streamData();
 });
 
-final urineOutputListProvider = Provider<List<UrineOutput>>((ref) {
-  final data = ref.watch(urineOutputDataProvider(
+final weightListProvider = Provider<List<Weight>>((ref) {
+  final data = ref.watch(weightDataProvider(
     (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
   ));
   return data.when(
@@ -104,45 +103,51 @@ final urineOutputListProvider = Provider<List<UrineOutput>>((ref) {
   );
 });
 
-final urineOutputSummaryProvider = Provider<Map<String, dynamic>>((ref) {
-  final data = ref.watch(urineOutputDataProvider(
+final weightSummaryProvider = Provider<Map<String, dynamic>>((ref) {
+  final data = ref.watch(weightDataProvider(
     (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
   ));
   final selectedDate = ref.watch(selectedDateProvider);
 
   return data.when(
     data: (cache) {
-      final urineOutputs = cache.items;
-      double total = 0;
-      DateTime? lastTime;
-      int totalUrineToday = urineOutputs.length;
-
-      for (var output in urineOutputs) {
-        total += output.quantity;
-        lastTime = output.timestamp.toDate();
+      final weights = cache.items;
+      if (weights.isEmpty) {
+        return {
+          'day': DateTimeUtils.formatWeekday(selectedDate),
+          'date': DateTimeUtils.formatDateDM(selectedDate),
+          'totalMeasurements': 0,
+          'lastTime': null,
+          'averageWeight': 0,
+        };
       }
+
+      final totalMeasurements = weights.length;
+      final totalWeight =
+          weights.fold<double>(0, (total, w) => total + w.weight);
+      final latest = weights.last;
 
       return {
         'day': DateTimeUtils.formatWeekday(selectedDate),
         'date': DateTimeUtils.formatDateDM(selectedDate),
-        'total': total,
-        'lastTime': lastTime,
-        'totalUrineToday': totalUrineToday,
+        'totalMeasurements': totalMeasurements,
+        'lastTime': latest.timestamp.toDate(),
+        'averageWeight': totalWeight / totalMeasurements,
       };
     },
     loading: () => {
       'day': DateTimeUtils.formatWeekday(selectedDate),
       'date': DateTimeUtils.formatDateDM(selectedDate),
-      'total': 0,
+      'totalMeasurements': 0,
       'lastTime': null,
-      'totalUrineToday': 0,
+      'averageWeight': 0,
     },
     error: (_, __) => {
       'day': DateTimeUtils.formatWeekday(selectedDate),
       'date': DateTimeUtils.formatDateDM(selectedDate),
-      'total': 0,
+      'totalMeasurements': 0,
       'lastTime': null,
-      'totalUrineToday': 0,
+      'averageWeight': 0,
     },
   );
 });

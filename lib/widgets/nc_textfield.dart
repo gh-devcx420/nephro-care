@@ -27,6 +27,7 @@ class NCTextfield extends StatefulWidget {
     this.semanticsLabel,
     this.textInputAction,
     this.onSubmitted,
+    this.suffixText,
   });
 
   final TextEditingController textFieldController;
@@ -44,6 +45,7 @@ class NCTextfield extends StatefulWidget {
   final Color? fillColor;
   final Color? hintTextColor;
   final Color? textColor;
+  final String? suffixText;
   final Color? cursorColor;
   final Color? selectionHandleColor;
   final VoidCallback? onTap;
@@ -112,14 +114,23 @@ class _NCTextfieldState extends State<NCTextfield> {
           maxLength: widget.maxLength ?? TextField.noMaxLength,
           readOnly: widget.readOnly,
           textInputAction: widget.textInputAction,
-
           onSubmitted: widget.onSubmitted,
-
           decoration: InputDecoration(
-            hintText: widget.hintText,
+            counter: null,
             counterText: '',
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 4.0,
+              vertical: 10.0,
+            ),
+            hintText: widget.hintText,
             hintStyle: themeContext.textTheme.titleMedium!.copyWith(
               color: widget.hintTextColor ?? themeContext.colorScheme.primary,
+            ),
+            suffixText: widget.textFieldController.text.isNotEmpty
+                ? widget.suffixText
+                : '',
+            suffixStyle: themeContext.textTheme.titleMedium!.copyWith(
+              color: widget.textColor ?? themeContext.colorScheme.primary,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(kBorderRadius),

@@ -7,25 +7,28 @@ import 'package:nephro_care/models/tracker_models.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/screens/tracker_screens/generic_modal_sheet.dart';
 
-class UrineOutputModalSheet extends StatefulWidget {
-  final UrineOutput? output;
+// WeightModalSheet is a StatefulWidget for entering or editing weight data
+class WeightModalSheet extends StatefulWidget {
+  final Weight? weight;
 
-  const UrineOutputModalSheet({super.key, this.output});
+  const WeightModalSheet({super.key, this.weight});
 
   @override
-  State<UrineOutputModalSheet> createState() => _UrineOutputModalSheetState();
+  State<WeightModalSheet> createState() => _WeightModalSheetState();
 }
 
-class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
+class _WeightModalSheetState extends State<WeightModalSheet>
     with TimePickerMixin {
   @override
   void initState() {
     super.initState();
-    initTimePicker(widget.output?.timestamp.toDate() ?? DateTime.now());
+    // Initialize time picker with existing timestamp or current time
+    initTimePicker(widget.weight?.timestamp.toDate() ?? DateTime.now());
   }
 
   @override
   void dispose() {
+    // Dispose time picker resources
     disposeTimePicker();
     super.dispose();
   }
@@ -33,44 +36,41 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
   @override
   Widget build(BuildContext context) {
     return GenericInputModalSheet(
-      title: 'Enter Urine Output Details:',
-      editTitle: 'Edit Urine Output',
+      title: 'Enter Weight Details:',
+      editTitle: 'Edit Weight',
       primaryColor: Theme.of(context).colorScheme.primary,
       secondaryColor: Theme.of(context).colorScheme.primaryContainer,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-      firestoreCollection: 'urine_output',
+      firestoreCollection: 'weight',
       dividerThickness: 2.0,
       dividerWidthFactor: 0.15,
       inputFields: [
         InputFieldConfig(
-          key: UrineOutputFieldEnum.quantity.name,
-          hintText: 'Quantity (${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]})',
+          key: WeightFieldEnum.weight.name,
+          hintText: 'Weight (${siUnitEnumMap[SIUnitEnum.weightSIUnit]})',
           keyboardType: TextInputType.number,
-          activeIcon: Icons.water_drop,
-          inactiveIcon: Icons.water_drop_outlined,
+          activeIcon: Icons.fitness_center,
+          inactiveIcon: Icons.fitness_center_outlined,
           semanticsLabel:
-              'Quantity input in ${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]}',
-          initialValue: widget.output?.quantity.toInt().toString() ?? '',
+              'Weight input in ${siUnitEnumMap[SIUnitEnum.weightSIUnit]}',
+          initialValue: widget.weight?.weight.toString() ?? '',
           validator: (value) {
-            final quantity = double.tryParse(value!);
-            if (quantity == null) {
-              return 'Please enter a valid quantity';
-            }
-            if (quantity > 1500) {
-              return 'Quantity cannot exceed 1500${siUnitEnumMap[SIUnitEnum.fluidsSIUnitML]}';
+            final weight = double.tryParse(value!);
+            if (weight == null || weight < 20 || weight > 300) {
+              return 'Please enter a valid weight (20–300 ${siUnitEnumMap[SIUnitEnum.weightSIUnit]})';
             }
             return null;
           },
           textInputAction: TextInputAction.next,
         ),
         InputFieldConfig(
-          key: UrineOutputFieldEnum.time.name,
+          key: WeightFieldEnum.time.name,
           hintText: 'Time',
+          controller: timeController,
           keyboardType: TextInputType.none,
           activeIcon: Icons.timer_rounded,
           inactiveIcon: Icons.timer_outlined,
           semanticsLabel: 'Time picker',
-          initialValue: timeController.text,
           readOnly: true,
           onTap: showTimePickerDialog,
           onSuffixIconTap: () {
@@ -84,18 +84,14 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
           textInputAction: TextInputAction.done,
         ),
       ],
-      initialData: widget.output,
+      initialData: widget.weight,
       layoutBuilder: (context, fields, buildSubmitButton) => Column(
         children: [
           Row(
             children: [
-              Expanded(
-                  child: fields[
-                      urineOutputEnumMap[UrineOutputFieldEnum.quantity]]!),
+              Expanded(child: fields[weightEnumMap[WeightFieldEnum.weight]]!),
               hGap8,
-              Expanded(
-                  child:
-                      fields[urineOutputEnumMap[UrineOutputFieldEnum.time]]!),
+              Expanded(child: fields[weightEnumMap[WeightFieldEnum.time]]!),
             ],
           ),
           vGap16,
@@ -105,13 +101,16 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
       onSave: (values, ref) async {
         final errorColor = Theme.of(context).colorScheme.error;
 
+        // Validate time selection
         if (selectedTime == null) {
           return DialogResult(
             isSuccess: false,
             message: 'Please select a time',
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: errorColor,
           );
         }
+
+        // Validate user authentication
         final user = ref.read(authProvider);
         if (user == null) {
           return DialogResult(
@@ -120,30 +119,33 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
             backgroundColor: errorColor,
           );
         }
+
+        // Create timestamp from selected time
         final dateTime = DateTime.now().copyWith(
           hour: selectedTime!.hour,
           minute: selectedTime!.minute,
         );
-        final outputData = UrineOutput(
-          id: widget.output?.id ??
+
+        // Create Weight object
+        final weightData = Weight(
+          id: widget.weight?.id ??
               DateTime.now().millisecondsSinceEpoch.toString(),
-          outputName: 'Urine',
-          quantity: double.parse(
-              values[urineOutputEnumMap[UrineOutputFieldEnum.quantity]]!),
+          weight: double.parse(values[weightEnumMap[WeightFieldEnum.weight]]!),
           timestamp: Timestamp.fromDate(dateTime),
         );
 
         try {
+          // Save data to Firestore
           var resultColor = Theme.of(context).colorScheme.primary;
           await FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
-              .collection('urine_output')
-              .doc(outputData.id)
-              .set(outputData.toJson());
+              .collection('weight')
+              .doc(weightData.id)
+              .set(weightData.toJson());
           return DialogResult(
             isSuccess: true,
-            message: widget.output != null
+            message: widget.weight != null
                 ? 'Entry updated successfully'
                 : 'Entry added successfully',
             backgroundColor: resultColor,

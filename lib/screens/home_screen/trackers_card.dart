@@ -75,7 +75,9 @@ class TrackersMenuCard extends ConsumerWidget {
                   buttonText: 'BP',
                 ),
                 NcTrackerButton(
-                  buttonTap: () {},
+                  buttonTap: () {
+                    Navigator.pushNamed(context, '/weight_tracker_log');
+                  },
                   buttonColor: Theme.of(context).colorScheme.surfaceContainer,
                   icon: Icon(
                     Icons.monitor_weight,

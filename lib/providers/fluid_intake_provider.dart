@@ -1,26 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/models/fluid_intake_model.dart';
+import 'package:nephro_care/constants/constants.dart';
+import 'package:nephro_care/models/tracker_models.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/utils/date_time_utils.dart';
 
-class FluidIntakeCache {
-  final List<FluidIntake> fluidIntakes;
-  final DateTime lastFetched;
-
-  FluidIntakeCache({
-    required this.fluidIntakes,
-    required this.lastFetched,
-  });
-}
-
 class FluidIntakeStateNotifier
-    extends StateNotifier<AsyncValue<FluidIntakeCache>> {
+    extends StateNotifier<AsyncValue<Cache<FluidIntake>>> {
   final String userId;
   final DateTime selectedDate;
   final Ref ref;
-  static const cacheDuration = Duration(minutes: 5);
+  static final cacheDuration = Duration(minutes: kCacheDurationInMinutes);
 
   FluidIntakeStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {
@@ -46,8 +37,8 @@ class FluidIntakeStateNotifier
       final fluidIntakes =
           snapshot.docs.map((doc) => FluidIntake.fromJson(doc.data())).toList();
 
-      state = AsyncValue.data(FluidIntakeCache(
-        fluidIntakes: fluidIntakes,
+      state = AsyncValue.data(Cache<FluidIntake>(
+        items: fluidIntakes,
         lastFetched: DateTime.now(),
       ));
     } catch (e, stackTrace) {
@@ -55,14 +46,14 @@ class FluidIntakeStateNotifier
     }
   }
 
-  Stream<FluidIntakeCache> streamData() async* {
-    if (state is AsyncData<FluidIntakeCache> &&
+  Stream<Cache<FluidIntake>> streamData() async* {
+    if (state is AsyncData<Cache<FluidIntake>> &&
         DateTime.now()
                 .difference(
-                    (state as AsyncData<FluidIntakeCache>).value.lastFetched)
+                    (state as AsyncData<Cache<FluidIntake>>).value.lastFetched)
                 .inMinutes <
             cacheDuration.inMinutes) {
-      yield (state as AsyncData<FluidIntakeCache>).value;
+      yield (state as AsyncData<Cache<FluidIntake>>).value;
     } else {
       final startOfDay =
           DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
@@ -82,8 +73,8 @@ class FluidIntakeStateNotifier
         final fluidIntakes = snapshot.docs
             .map((doc) => FluidIntake.fromJson(doc.data()))
             .toList();
-        final cache = FluidIntakeCache(
-          fluidIntakes: fluidIntakes,
+        final cache = Cache<FluidIntake>(
+          items: fluidIntakes,
           lastFetched: DateTime.now(),
         );
         state = AsyncValue.data(cache);
@@ -94,7 +85,8 @@ class FluidIntakeStateNotifier
 }
 
 final fluidIntakeDataProvider =
-    StreamProvider.family<FluidIntakeCache, (String, DateTime)>((ref, params) {
+    StreamProvider.family<Cache<FluidIntake>, (String, DateTime)>(
+        (ref, params) {
   final userId = params.$1;
   final selectedDate = params.$2;
   final notifier = FluidIntakeStateNotifier(ref, userId, selectedDate);
@@ -106,7 +98,7 @@ final fluidIntakeListProvider = Provider<List<FluidIntake>>((ref) {
     (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
   ));
   return data.when(
-    data: (cache) => cache.fluidIntakes,
+    data: (cache) => cache.items,
     loading: () => [],
     error: (_, __) => [],
   );
@@ -120,7 +112,7 @@ final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
 
   return data.when(
     data: (cache) {
-      final fluidIntakes = cache.fluidIntakes;
+      final fluidIntakes = cache.items;
       double total = 0;
       DateTime? lastTime;
       int totalDrinksToday = fluidIntakes.length;

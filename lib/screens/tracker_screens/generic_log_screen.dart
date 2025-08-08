@@ -5,6 +5,7 @@ import 'package:nephro_care/constants/constants.dart';
 import 'package:nephro_care/constants/strings_constants.dart';
 import 'package:nephro_care/constants/ui_helper.dart';
 import 'package:nephro_care/models/other_models.dart';
+import 'package:nephro_care/models/tracker_models.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/utils/date_time_utils.dart';
@@ -21,14 +22,14 @@ class LogScreen<T> extends ConsumerStatefulWidget {
   final Color secondaryColor;
   final Color backgroundColor;
   final IconData listItemIcon;
-  final StreamProviderFamily<dynamic, (String, DateTime)> dataProvider;
+  final StreamProviderFamily<Cache<T>, (String, DateTime)> dataProvider;
   final Provider<Map<String, dynamic>> summaryProvider;
   final String firestoreCollection;
   final Widget Function(T? item) inputWidgetBuilder;
   final Widget Function(BuildContext context, T item) listItemBuilder;
   final Widget Function(BuildContext context, Map<String, dynamic> summary)
       logDetailsDialogBuilder;
-  final List<T> Function(dynamic cache) itemsExtractor;
+  final List<T> Function(Cache<T>) itemsExtractor;
   final ({String number, String unit}) Function(List<T> items) totalFormatter;
 
   const LogScreen({
@@ -322,7 +323,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 ),
               ];
               if (allowDeleteAll &&
-                  widget.itemsExtractor(dataAsync.asData?.value).isNotEmpty ==
+                  widget.itemsExtractor(dataAsync.asData!.value).isNotEmpty ==
                       true) {
                 items.insert(
                   0,
@@ -387,7 +388,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 final confirmed = await _showDeleteAllConfirmationDialog();
                 if (confirmed) {
                   final user = ref.read(authProvider);
-                  final items = widget.itemsExtractor(dataAsync.asData?.value);
+                  final items = widget.itemsExtractor(dataAsync.asData!.value);
                   if (user != null) {
                     await _deleteAllEntries(user.uid, items, errorColor);
                   }

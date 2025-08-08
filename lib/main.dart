@@ -9,6 +9,7 @@ import 'package:nephro_care/screens/login_screen/login_screen.dart';
 import 'package:nephro_care/screens/tracker_screens/bp_monitor_screen/bp_monitor_log.dart';
 import 'package:nephro_care/screens/tracker_screens/fluid_intake_screen/fluid_intake_log.dart';
 import 'package:nephro_care/screens/tracker_screens/urine_output_screen/urine_output_log.dart';
+import 'package:nephro_care/screens/tracker_screens/weight_tracker_screen/weight_tracker_log.dart';
 import 'package:nephro_care/themes/theme_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -70,6 +71,7 @@ class NephroCare extends ConsumerWidget {
           '/fluid_log': (context) => const FluidIntakeLogScreen(),
           '/urine_log': (context) => const UrineOutputLogScreen(),
           '/bp_monitor_log': (context) => const BPMonitorLogScreen(),
+          '/weight_tracker_log': (context) => const WeightTrackerLogScreen(),
         },
       );
     } catch (e) {

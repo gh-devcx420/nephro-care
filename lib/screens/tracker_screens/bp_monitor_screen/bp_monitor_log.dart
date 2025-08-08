@@ -4,7 +4,7 @@ import 'package:nephro_care/constants/constants.dart';
 import 'package:nephro_care/constants/enums.dart';
 import 'package:nephro_care/constants/strings_constants.dart';
 import 'package:nephro_care/constants/ui_helper.dart';
-import 'package:nephro_care/models/bp_monitor_model.dart';
+import 'package:nephro_care/models/tracker_models.dart';
 import 'package:nephro_care/providers/bp_monitor_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/screens/tracker_screens/bp_monitor_screen/bp_monitor_modal_sheet.dart';
@@ -18,7 +18,6 @@ class BPMonitorLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
     ({String number, String unit}) totalFormatter(List<BPMonitor> items) {
       if (items.isEmpty) return (number: 'N/A', unit: '');
       final avgSystolic =
@@ -252,7 +251,7 @@ class BPMonitorLogScreen extends ConsumerWidget {
                 ],
               );
       },
-      itemsExtractor: (cache) => cache.bpMonitors,
+      itemsExtractor: (cache) => cache.items,
       totalFormatter: totalFormatter,
     );
   }

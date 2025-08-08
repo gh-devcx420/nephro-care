@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
-import 'package:nephro_care/providers/fluid_input_provider.dart';
+import 'package:nephro_care/providers/fluid_intake_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/providers/urine_output_provider.dart';
 

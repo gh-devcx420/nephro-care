@@ -1,25 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/models/bp_monitor_model.dart';
+import 'package:nephro_care/constants/constants.dart';
+import 'package:nephro_care/models/tracker_models.dart';
 import 'package:nephro_care/providers/auth_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/utils/date_time_utils.dart';
 
-class BPMonitorCache {
-  final List<BPMonitor> bpMonitors;
-  final DateTime lastFetched;
-
-  BPMonitorCache({
-    required this.bpMonitors,
-    required this.lastFetched,
-  });
-}
-
-class BPMonitorStateNotifier extends StateNotifier<AsyncValue<BPMonitorCache>> {
+class BPMonitorStateNotifier
+    extends StateNotifier<AsyncValue<Cache<BPMonitor>>> {
   final String userId;
   final DateTime selectedDate;
   final Ref ref;
-  static const cacheDuration = Duration(minutes: 5);
+  static final cacheDuration = Duration(minutes: kCacheDurationInMinutes);
 
   BPMonitorStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {
@@ -48,8 +40,8 @@ class BPMonitorStateNotifier extends StateNotifier<AsyncValue<BPMonitorCache>> {
           snapshot.docs.map((doc) => BPMonitor.fromJson(doc.data())).toList();
 
       state = AsyncValue.data(
-        BPMonitorCache(
-          bpMonitors: bpMonitors,
+        Cache<BPMonitor>(
+          items: bpMonitors,
           lastFetched: DateTime.now(),
         ),
       );
@@ -58,14 +50,14 @@ class BPMonitorStateNotifier extends StateNotifier<AsyncValue<BPMonitorCache>> {
     }
   }
 
-  Stream<BPMonitorCache> streamData() async* {
-    if (state is AsyncData<BPMonitorCache> &&
+  Stream<Cache<BPMonitor>> streamData() async* {
+    if (state is AsyncData<Cache<BPMonitor>> &&
         DateTime.now()
                 .difference(
-                    (state as AsyncData<BPMonitorCache>).value.lastFetched)
+                    (state as AsyncData<Cache<BPMonitor>>).value.lastFetched)
                 .inMinutes <
             cacheDuration.inMinutes) {
-      yield (state as AsyncData<BPMonitorCache>).value;
+      yield (state as AsyncData<Cache<BPMonitor>>).value;
     } else {
       final startOfDay =
           DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
@@ -84,8 +76,8 @@ class BPMonitorStateNotifier extends StateNotifier<AsyncValue<BPMonitorCache>> {
       await for (final snapshot in stream) {
         final bpMonitors =
             snapshot.docs.map((doc) => BPMonitor.fromJson(doc.data())).toList();
-        final cache = BPMonitorCache(
-          bpMonitors: bpMonitors,
+        final cache = Cache<BPMonitor>(
+          items: bpMonitors,
           lastFetched: DateTime.now(),
         );
         state = AsyncValue.data(cache);
@@ -96,7 +88,7 @@ class BPMonitorStateNotifier extends StateNotifier<AsyncValue<BPMonitorCache>> {
 }
 
 final bpMonitorDataProvider =
-    StreamProvider.family<BPMonitorCache, (String, DateTime)>((ref, params) {
+    StreamProvider.family<Cache<BPMonitor>, (String, DateTime)>((ref, params) {
   final userId = params.$1;
   final selectedDate = params.$2;
   final notifier = BPMonitorStateNotifier(ref, userId, selectedDate);
@@ -108,7 +100,7 @@ final bpMonitorListProvider = Provider<List<BPMonitor>>((ref) {
     (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
   ));
   return data.when(
-    data: (cache) => cache.bpMonitors,
+    data: (cache) => cache.items,
     loading: () => [],
     error: (_, __) => [],
   );
@@ -121,7 +113,7 @@ final bpMonitorSummaryProvider = Provider<Map<String, dynamic>>((ref) {
 
   return data.when(
     data: (cache) {
-      final bpMonitors = cache.bpMonitors;
+      final bpMonitors = cache.items;
       final selectedDate = ref.watch(selectedDateProvider);
       if (bpMonitors.isEmpty) {
         return {

@@ -10,3 +10,6 @@ const double kValueFontSize = 14.0;
 const double kSIUnitFontSize = 12.0;
 const double kTimeFontSize = 14.0;
 const double kMeridiemIndicatorFontSize = 12.0;
+
+//Provider constants
+int kCacheDurationInMinutes = 30;

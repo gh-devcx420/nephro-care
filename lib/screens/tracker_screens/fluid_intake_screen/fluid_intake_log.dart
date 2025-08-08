@@ -4,8 +4,8 @@ import 'package:nephro_care/constants/constants.dart';
 import 'package:nephro_care/constants/enums.dart';
 import 'package:nephro_care/constants/strings_constants.dart';
 import 'package:nephro_care/constants/ui_helper.dart';
-import 'package:nephro_care/models/fluid_intake_model.dart';
-import 'package:nephro_care/providers/fluid_input_provider.dart';
+import 'package:nephro_care/models/tracker_models.dart';
+import 'package:nephro_care/providers/fluid_intake_provider.dart';
 import 'package:nephro_care/providers/settings_provider.dart';
 import 'package:nephro_care/screens/tracker_screens/fluid_intake_screen/fluid_intake_modal_sheet.dart';
 import 'package:nephro_care/screens/tracker_screens/generic_log_screen.dart';
@@ -18,7 +18,6 @@ class FluidIntakeLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-
     ({String number, String unit}) totalFormatter(List<FluidIntake> items) {
       final total = items.fold<double>(0, (sum, item) => sum + item.quantity);
       final formatted =
@@ -161,11 +160,29 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
+                  vGap16,
+                  MeasurementUtils.createRichTextValueWithUnit(
+                    prefixText: '• Total fluid intake: ',
+                    prefixStyle: theme.textTheme.bodySmall,
+                    value: MeasurementUtils.formatValueForRichText(
+                            totalFluidQuantityToday, MeasurementType.fluid)
+                        .number,
+                    valueStyle: theme.textTheme.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                    unit: MeasurementUtils.formatValueForRichText(
+                            totalFluidQuantityToday, MeasurementType.fluid)
+                        .unit,
+                    unitStyle: theme.textTheme.bodyMedium!.copyWith(
+                      fontSize: kSIUnitFontSize,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   ...(summary['typeTotals'] as Map<String, dynamic>? ?? {})
                       .entries
                       .map(
                         (entry) => Padding(
-                          padding: const EdgeInsets.only(top: 12),
+                          padding: const EdgeInsets.only(top: 16),
                           child: MeasurementUtils.createRichTextValueWithUnit(
                             prefixText: '• ${entry.key}: ',
                             prefixStyle: theme.textTheme.bodySmall,
@@ -188,24 +205,6 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                         ),
                       ),
                   vGap16,
-                  MeasurementUtils.createRichTextValueWithUnit(
-                    prefixText: '• Total fluid intake: ',
-                    prefixStyle: theme.textTheme.bodySmall,
-                    value: MeasurementUtils.formatValueForRichText(
-                            totalFluidQuantityToday, MeasurementType.fluid)
-                        .number,
-                    valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                    unit: MeasurementUtils.formatValueForRichText(
-                            totalFluidQuantityToday, MeasurementType.fluid)
-                        .unit,
-                    unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  vGap16,
                   MeasurementUtils.createRichTextTimestamp(
                     prefixText: '• Last drink at: ',
                     prefixStyle: theme.textTheme.bodySmall,
@@ -224,7 +223,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                 ],
               );
       },
-      itemsExtractor: (cache) => cache.fluidIntakes,
+      itemsExtractor: (cache) => cache.items,
       totalFormatter: totalFormatter,
     );
   }
