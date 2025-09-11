@@ -8,10 +8,12 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/shared/generic_log_screen.dart';
-import 'package:nephro_care/features/trackers/weight/weight_enums.dart';
+import 'package:nephro_care/features/shared/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
+import 'package:nephro_care/features/trackers/weight/weight_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/weight/weight_model.dart';
 import 'package:nephro_care/features/trackers/weight/weight_provider.dart';
-import 'package:nephro_care/features/trackers/weight/weight_tracker_modal_sheet.dart';
+import 'package:nephro_care/features/trackers/weight/weight_utils.dart';
 
 class WeightTrackerLogScreen extends ConsumerWidget {
   const WeightTrackerLogScreen({super.key});
@@ -19,16 +21,21 @@ class WeightTrackerLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    ({String number, String unit}) totalFormatter(List<WeightModel> items) {
-      if (items.isEmpty) return (number: 'N/A', unit: '');
-      final avgWeight =
-          items.fold<double>(0, (sum, item) => sum + item.weight) /
-              items.length;
-      final formatted = WeightField.weightValue.format(avgWeight);
-      return (
-        number: formatted.numericValue,
-        unit: formatted.unitValue,
-      );
+    Measurement totalFormatter(List<WeightModel> items) {
+      // if (items.isEmpty) return (number: 'N/A', unitString: '');
+      // final avgWeight =
+      //     items.fold<double>(0, (sum, item) => sum + item.weight) /
+      //         items.length;
+      // final formatted = WeightField.weightValue.format(avgWeight);
+      // return (
+      //   number: formatted.numericValue,
+      //   unitString: formatted.unitValue,
+      // );
+
+      if (items.isEmpty) return Measurement.invalid();
+      final averageWeight =
+          items.fold<double>(0, (sum, item) => sum + item.weight);
+      return WeightUtils().format(averageWeight);
     }
 
     return LogScreen<WeightModel>(
@@ -41,7 +48,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
       dataProvider: weightDataProvider,
       summaryProvider: weightSummaryProvider,
       firestoreService: FirestoreService(),
-      firestoreCollection: 'weight',
+      firestoreCollection: WeightConstants.weightFirebaseCollectionName,
       inputModalSheet: (item) => WeightModalSheet(weightInput: item),
       listItemBuilder: (context, item) => ListTile(
         leading: Icon(
@@ -67,8 +74,8 @@ class WeightTrackerLogScreen extends ConsumerWidget {
         subtitle: Semantics(
           label: 'Weight: ',
           child: UIUtils.createRichTextValueWithUnit(
-            value: WeightField.weightValue.format(item.weight).numericValue,
-            unit: WeightField.weightValue.format(item.weight).unitValue,
+            value: WeightUtils().format(item.weight).formattedValue!,
+            unit: WeightUtils().format(item.weight).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: kValueFontSize,
@@ -133,11 +140,8 @@ class WeightTrackerLogScreen extends ConsumerWidget {
                   UIUtils.createRichTextValueWithUnit(
                     prefixText: '• Average weight: ',
                     prefixStyle: theme.textTheme.bodySmall,
-                    value: WeightField.weightValue
-                        .format(averageWeight)
-                        .numericValue,
-                    unit:
-                        WeightField.weightValue.format(averageWeight).unitValue,
+                    value: WeightUtils().format(averageWeight).formattedValue!,
+                    unit: WeightUtils().format(averageWeight).unitString!,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,
@@ -167,7 +171,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
               );
       },
       itemsExtractor: (cache) => cache.items,
-      totalFormatter: totalFormatter,
+      headerValue: totalFormatter,
     );
   }
 }

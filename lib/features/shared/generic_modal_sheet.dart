@@ -174,7 +174,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
             backgroundColor: errorColor,
             durationSeconds: 1,
           );
-          return; // Stop submission
+          return;
         }
       }
       values[inputField.key] = capturedInputValue;

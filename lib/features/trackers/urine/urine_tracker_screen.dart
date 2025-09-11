@@ -8,11 +8,13 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/shared/generic_log_screen.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_tracker_provider.dart';
-import 'package:nephro_care/features/trackers/urine/urine_output_enums.dart';
-import 'package:nephro_care/features/trackers/urine/urine_output_model.dart';
-import 'package:nephro_care/features/trackers/urine/urine_tracker_modal_sheet.dart';
-import 'package:nephro_care/features/trackers/urine/urine_tracker_provider.dart';
+import 'package:nephro_care/features/shared/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
+import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
+import 'package:nephro_care/features/trackers/urine/urine_details_bottom_sheet.dart';
+import 'package:nephro_care/features/trackers/urine/urine_enums.dart';
+import 'package:nephro_care/features/trackers/urine/urine_model.dart';
+import 'package:nephro_care/features/trackers/urine/urine_provider.dart';
 import 'package:nephro_care/features/trackers/urine/urine_utils.dart';
 
 class UrineOutputLogScreen extends ConsumerWidget {
@@ -21,14 +23,12 @@ class UrineOutputLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    ({String number, String unit}) totalFormatter(
-        List<UrineOutputModel> items) {
+    Measurement totalFormatter(List<UrineModel> items) {
       final total = items.fold<double>(0, (sum, item) => sum + item.quantity);
-      final formatted = UrineUnit().format(total);
-      return (number: formatted.numericValue, unit: formatted.unitValue);
+      return UrineUtils().format(total);
     }
 
-    return LogScreen<UrineOutputModel>(
+    return LogScreen<UrineModel>(
       appBarTitle: 'Urine Log',
       headerTitleString: 'urine output',
       primaryColor: Theme.of(context).colorScheme.primary,
@@ -38,7 +38,7 @@ class UrineOutputLogScreen extends ConsumerWidget {
       dataProvider: urineOutputDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: urineOutputSummaryProvider,
-      firestoreCollection: 'urine',
+      firestoreCollection: UrineConstants.urineFirebaseCollectionName,
       inputModalSheet: (item) => UrineOutputModalSheet(output: item),
       listItemBuilder: (context, item) => ListTile(
         leading: Icon(
@@ -62,15 +62,10 @@ class UrineOutputLogScreen extends ConsumerWidget {
           ),
         ),
         subtitle: Semantics(
-          label:
-              'Quantity: ${item.quantity} ${UrineOutputField.urineQuantityML.unit}',
+          label: 'Quantity: ${item.quantity} ${UrineUnits.milliliters.siUnit}',
           child: UIUtils.createRichTextValueWithUnit(
-            value: UrineOutputField.urineQuantityML
-                .format(item.quantity)
-                .numericValue,
-            unit: UrineOutputField.urineQuantityML
-                .format(item.quantity)
-                .unitValue,
+            value: UrineUtils().format(item.quantity).formattedValue!,
+            unit: UrineUtils().format(item.quantity).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: kValueFontSize,
@@ -173,7 +168,7 @@ class UrineOutputLogScreen extends ConsumerWidget {
               );
       },
       itemsExtractor: (cache) => cache.items,
-      totalFormatter: totalFormatter,
+      headerValue: totalFormatter,
     );
   }
 }

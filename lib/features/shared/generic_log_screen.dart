@@ -3,17 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/constants/strings.dart';
+import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/services/firestore_service.dart';
+import 'package:nephro_care/core/themes/color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
+import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_alert_dialogue.dart';
 import 'package:nephro_care/core/widgets/nc_icon_button.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
-import 'package:nephro_care/core/services/firestore_service.dart';
-import 'package:nephro_care/core/themes/color_schemes.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
+import 'package:nephro_care/features/shared/tracker_utils.dart';
 
 class Cache<T> {
   final List<T> items;
@@ -24,7 +25,6 @@ class Cache<T> {
     required this.lastFetched,
   });
 }
-
 
 class LogScreen<T> extends ConsumerStatefulWidget {
   final String appBarTitle;
@@ -44,7 +44,7 @@ class LogScreen<T> extends ConsumerStatefulWidget {
   final Widget Function(BuildContext context, Map<String, dynamic> summary)
       logDetailsDialogBuilder;
   final List<T> Function(Cache<T>) itemsExtractor;
-  final ({String number, String unit}) Function(List<T> items) totalFormatter;
+  final Measurement Function(List<T> items)? headerValue;
 
   const LogScreen({
     super.key,
@@ -64,7 +64,7 @@ class LogScreen<T> extends ConsumerStatefulWidget {
     required this.listItemBuilder,
     required this.logDetailsDialogBuilder,
     required this.itemsExtractor,
-    required this.totalFormatter,
+    this.headerValue,
   });
 
   @override
@@ -395,12 +395,19 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
             onTap: () async {
               HapticFeedback.lightImpact();
               final RenderBox button = context.findRenderObject() as RenderBox;
-              final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+              final RenderBox overlay =
+                  Overlay.of(context).context.findRenderObject() as RenderBox;
               final RelativeRect position = RelativeRect.fromRect(
                 Rect.fromPoints(
-                  button.localToGlobal(Offset(button.size.width, MediaQuery.of(context).padding.top), // This sets the topmost position (below status bar)
+                  button.localToGlobal(
+                      Offset(button.size.width,
+                          MediaQuery.of(context).padding.top),
+                      // This sets the topmost position (below status bar)
                       ancestor: overlay),
-                  button.localToGlobal(button.size.bottomRight(Offset(MediaQuery.of(context).padding.top, 0)), // Adjust bottom-right to align with top
+                  button.localToGlobal(
+                      button.size.bottomRight(Offset(
+                          MediaQuery.of(context).padding.top,
+                          0)), // Adjust bottom-right to align with top
                       ancestor: overlay),
                 ),
                 Offset.zero & overlay.size,
@@ -509,51 +516,70 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                         Text(
                           widget.headerText ??
                               'Total ${widget.headerTitleString?.toLowerCase()} ${isToday ? 'for today :' : 'on ${DateTimeUtils.formatDateDM(selectedDate)}'}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(
-                                //color: widget.primaryColor,
-                                fontWeight: FontWeight.w800,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge!.copyWith(
+                                    //color: widget.primaryColor,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                         ),
                         const Spacer(),
                         widget.headerActionButton != null
                             ? widget.headerActionButton!(logItems)
-                            : Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: widget.primaryColor,
-                                  borderRadius: BorderRadius.circular(32),
-                                ),
-                                child: UIUtils
-                                    .createRichTextValueWithUnit(
-                                  value: widget
-                                      .totalFormatter(logItems)
-                                      .number,
-                                  unit:
-                                      widget.totalFormatter(logItems).unit,
-                                  valueStyle: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(
-                                        color: widget.backgroundColor,
-                                        fontSize: kValueFontSize,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                  unitStyle: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(
-                                        color: widget.backgroundColor,
-                                        fontSize: kSIUnitFontSize,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                ),
-                              ),
+                            : widget.headerValue != null
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: widget.primaryColor,
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                    child: UIUtils.createRichTextValueWithUnit(
+                                      value: widget.headerValue!(logItems)
+                                          .formattedValue!,
+                                      unit: widget
+                                          .headerValue!(logItems).unitString!,
+                                      valueStyle: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .copyWith(
+                                            color: widget.backgroundColor,
+                                            fontSize: kValueFontSize,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                      unitStyle: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .copyWith(
+                                            color: widget.backgroundColor,
+                                            fontSize: kSIUnitFontSize,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                    ),
+                                  )
+                                : Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                    child: Text(
+                                      'No Data',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                            fontSize: kValueFontSize,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                    ),
+                                  ),
                       ],
                     ),
                   ),
@@ -605,8 +631,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                         final confirmed =
                                             await _showEditConfirmationDialog();
                                         if (confirmed) {
-                                          _showEditModalSheet(
-                                              logItem: logItem);
+                                          _showEditModalSheet(logItem: logItem);
                                         }
                                         return false;
                                       }
@@ -658,8 +683,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                                   .textTheme
                                                   .titleMedium!
                                                   .copyWith(
-                                                    color: widget
-                                                        .backgroundColor,
+                                                    color:
+                                                        widget.backgroundColor,
                                                   ),
                                             ),
                                           ],
@@ -689,8 +714,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                                   .textTheme
                                                   .titleMedium!
                                                   .copyWith(
-                                                    color: widget
-                                                        .backgroundColor,
+                                                    color:
+                                                        widget.backgroundColor,
                                                   ),
                                             ),
                                             hGap16,
@@ -708,8 +733,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                     child: Container(
                                       decoration: BoxDecoration(
                                         color: widget.primaryColor,
-                                        borderRadius:
-                                            BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: widget.listItemBuilder(
                                         context,

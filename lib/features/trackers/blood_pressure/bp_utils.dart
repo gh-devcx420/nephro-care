@@ -1,184 +1,189 @@
-// blood_pressure_unit.dart
-
-// Import your enum: import 'package:your_app/features/trackers/blood_pressure/bp_enums.dart';
-
 import 'package:intl/intl.dart';
 import 'package:nephro_care/features/shared/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
 
-/// BloodPressureUnit handles formatting blood pressure measurements
-/// Different from others - needs to know which specific field it's formatting
-class BloodPressureUnit extends MeasurementUnit {
-  final BloodPressureField
-      field; // Which BP field (systolic, diastolic, pulse, spo2)
+class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
+  static final _invalidBPMeasure = Measurement.invalid<BloodPressureField>();
 
-  /// Constructor requires you to specify which field
-  BloodPressureUnit(this.field);
+  bool _isValidSource(Measurement<BloodPressureField> source) {
+    return source.isValid &&
+        source.unit != null &&
+        source.value != null &&
+        source.unit is BloodPressureField &&
+        source.value! >= 0;
+  }
 
-  // ===== IMPLEMENT ABSTRACT PROPERTIES =====
-
-  @override
-  String? get basicSIUnit => field.unit;
-
-  @override
-  NumberFormat? get formatter => field.numberFormat;
-
-  // ===== IMPLEMENT ABSTRACT METHOD =====
+  bool _isValidFieldValue(BloodPressureField field, double value) {
+    return value >= BloodPressureConstants.getMinValue(field) &&
+        value <= BloodPressureConstants.getMaxValue(field);
+  }
 
   @override
-  FormattedMeasurement format(dynamic input) {
-    final double? numericValue = MeasurementUnit.parseValue(input);
+  BloodPressureField get baseUnit => BloodPressureField.systolic;
 
-    if (numericValue == null) {
-      return FormattedMeasurement.invalid;
+  @override
+  NumberFormat get baseUnitFormat => BloodPressureField.systolic.valueFormat;
+
+  @override
+  Measurement<BloodPressureField> format(num value) {
+    throw UnimplementedError(
+      'Use formatField() instead. BP measurements require specifying both value and field type.',
+    );
+  }
+
+  /// Validates if systolic > diastolic
+  bool isValidBPReading({
+    required Measurement<BloodPressureField> systolic,
+    required Measurement<BloodPressureField> diastolic,
+  }) {
+    if (!_isValidSource(systolic) ||
+        !_isValidSource(diastolic) ||
+        systolic.unit != BloodPressureField.systolic ||
+        diastolic.unit != BloodPressureField.diastolic) {
+      return false;
     }
 
-    // Validate the value for this specific field
-    if (!_isValidValueForField(numericValue)) {
-      return FormattedMeasurement(
-        value: 'Invalid',
-        basicSIUnit: basicSIUnit,
+    return systolic.value! > diastolic.value!;
+  }
+
+  /// Formats a measurement for a specific blood pressure field
+  Measurement<BloodPressureField> formatField({
+    required BloodPressureField field,
+    required num value,
+  }) {
+    final processedValue = value.toDouble();
+
+    if (processedValue < 0 || !_isValidFieldValue(field, processedValue)) {
+      return _invalidBPMeasure;
+    }
+
+    final formattedValue = field.valueFormat.format(processedValue);
+
+    return Measurement<BloodPressureField>(
+      value: processedValue,
+      formattedValue: formattedValue,
+      unit: field,
+      unitString: field.siUnit,
+      isValid: true,
+    );
+  }
+
+  /// Formats systolic pressure
+  Measurement<BloodPressureField> formatSystolic(num value) {
+    return formatField(field: BloodPressureField.systolic, value: value);
+  }
+
+  /// Formats diastolic pressure
+  Measurement<BloodPressureField> formatDiastolic(num value) {
+    return formatField(field: BloodPressureField.diastolic, value: value);
+  }
+
+  /// Formats pulse rate
+  Measurement<BloodPressureField> formatPulse(num value) {
+    return formatField(field: BloodPressureField.pulse, value: value);
+  }
+
+  /// Formats SpO2
+  Measurement<BloodPressureField> formatSpO2(num value) {
+    return formatField(field: BloodPressureField.spo2, value: value);
+  }
+
+  Measurement<BloodPressureField> formatBPReading({
+    required Measurement<BloodPressureField> systolic,
+    required Measurement<BloodPressureField> diastolic,
+  }) {
+    if (!isValidBPReading(systolic: systolic, diastolic: diastolic)) {
+      return const Measurement<BloodPressureField>(
+        value: null,
+        formattedValue: null,
+        unit: null,
+        unitString: null,
         isValid: false,
+        displayValue: 'Invalid Reading',
       );
     }
 
-    return createFormattedMeasurement(numericValue, basicSIUnit, formatter);
+    final customDisplayValue =
+        '${systolic.value!.round()}/${diastolic.value!.round()}';
+
+    return Measurement<BloodPressureField>(
+      value: systolic.value,
+      // You could use average or systolic as primary value
+      formattedValue: customDisplayValue,
+      unit: BloodPressureField.systolic,
+      unitString: BloodPressureField.systolic.siUnit,
+      isValid: true,
+      displayValue: customDisplayValue, // Custom display for BP readings
+    );
   }
 
-  // ===== BLOOD PRESSURE-SPECIFIC METHODS =====
+  /// Gets blood pressure category based on systolic and diastolic measurements
+  String getBPCategory({
+    required Measurement<BloodPressureField> systolic,
+    required Measurement<BloodPressureField> diastolic,
+  }) {
+    if (!isValidBPReading(systolic: systolic, diastolic: diastolic)) {
+      return 'Invalid';
+    }
 
-  /// Check if value is reasonable for this field
-  bool _isValidValueForField(double value) {
-    switch (field) {
-      case BloodPressureField.systolic:
-        return value >= 50 && value <= 300; // 50-300 mmHg
+    final sys = systolic.value!;
+    final dia = diastolic.value!;
 
-      case BloodPressureField.diastolic:
-        return value >= 30 && value <= 200; // 30-200 mmHg
-
-      case BloodPressureField.pulse:
-        return value >= 20 && value <= 300; // 20-300 bpm
-
-      case BloodPressureField.spo2:
-        return value >= 70 && value <= 100; // 70-100%
-
-      case BloodPressureField.time:
-        return true; // Time fields don't have numeric validation
+    if (sys >= BloodPressureConstants.crisisSystolicMin ||
+        dia >= BloodPressureConstants.crisisDiastolicMin) {
+      return 'Hypertensive Crisis';
+    } else if (sys >= BloodPressureConstants.stage2SystolicMin ||
+        dia >= BloodPressureConstants.stage2DiastolicMin) {
+      return 'High Blood Pressure : Stage 2';
+    } else if ((sys >= BloodPressureConstants.stage1SystolicMin &&
+            sys <= BloodPressureConstants.stage1SystolicMax) ||
+        (dia >= BloodPressureConstants.stage1DiastolicMin &&
+            dia <= BloodPressureConstants.stage1DiastolicMax)) {
+      return 'High Blood Pressure : Stage 1';
+    } else if (sys >= BloodPressureConstants.elevatedSystolicMin &&
+        sys <= BloodPressureConstants.elevatedSystolicMax &&
+        dia <= BloodPressureConstants.elevatedDiastolicMax) {
+      return 'Elevated';
+    } else {
+      return 'Normal';
     }
   }
 
-  /// Get field-specific display name
-  String get fieldDisplayName => field.displayName;
-
-  /// Format with field-specific validation messages
-  FormattedMeasurement formatWithFeedback(dynamic input) {
-    final double? numericValue = MeasurementUnit.parseValue(input);
-
-    if (numericValue == null) {
-      return const FormattedMeasurement(
-        value: 'Enter a number',
-        basicSIUnit: null,
-        isValid: false,
-      );
+  /// Gets pulse category
+  String getPulseCategory(Measurement<BloodPressureField> pulse) {
+    if (!_isValidSource(pulse) || pulse.unit != BloodPressureField.pulse) {
+      return 'Invalid';
     }
 
-    if (!_isValidValueForField(numericValue)) {
-      final range = _getValidRangeText();
-      return FormattedMeasurement(
-        value: 'Out of range ($range)',
-        basicSIUnit: basicSIUnit,
-        isValid: false,
-      );
-    }
+    final pulseValue = pulse.value!;
 
-    return createFormattedMeasurement(numericValue, basicSIUnit, formatter);
-  }
-
-  /// Get human-readable valid range for this field
-  String _getValidRangeText() {
-    switch (field) {
-      case BloodPressureField.systolic:
-        return '50-300 mmHg';
-      case BloodPressureField.diastolic:
-        return '30-200 mmHg';
-      case BloodPressureField.pulse:
-        return '20-300 bpm';
-      case BloodPressureField.spo2:
-        return '70-100%';
-      case BloodPressureField.time:
-        return 'Any time';
+    if (pulseValue <= BloodPressureConstants.bradycardiaMax) {
+      return 'Bradycardia (Low)';
+    } else if (pulseValue >= BloodPressureConstants.normalPulseMin &&
+        pulseValue <= BloodPressureConstants.normalPulseMax) {
+      return 'Normal';
+    } else {
+      return 'Tachycardia (High)';
     }
   }
 
-  /// Check if the reading suggests hypertension (high blood pressure)
-  bool isHighBloodPressure(double value) {
-    switch (field) {
-      case BloodPressureField.systolic:
-        return value >= 140; // High systolic
-      case BloodPressureField.diastolic:
-        return value >= 90; // High diastolic
-      default:
-        return false; // Only applies to BP values
+  /// Gets SpO2 category
+  String getSpO2Category(Measurement<BloodPressureField> spo2) {
+    if (!_isValidSource(spo2) || spo2.unit != BloodPressureField.spo2) {
+      return 'Invalid';
+    }
+
+    final spo2Value = spo2.value!;
+
+    if (spo2Value >= BloodPressureConstants.normalSpo2Min) {
+      return 'Normal';
+    } else if (spo2Value >= BloodPressureConstants.mildHypoxemiaMin) {
+      return 'Mild Hypoxemia';
+    } else if (spo2Value >= BloodPressureConstants.moderateHypoxemiaMin) {
+      return 'Moderate Hypoxemia';
+    } else {
+      return 'Severe Hypoxemia';
     }
   }
-
-  /// Check if the reading suggests hypotension (low blood pressure)
-  bool isLowBloodPressure(double value) {
-    switch (field) {
-      case BloodPressureField.systolic:
-        return value <= 90; // Low systolic
-      case BloodPressureField.diastolic:
-        return value <= 60; // Low diastolic
-      default:
-        return false;
-    }
-  }
-
-  /// Get health status for the reading
-  String getHealthStatus(double value) {
-    if (!_isValidValueForField(value)) return 'Invalid';
-
-    switch (field) {
-      case BloodPressureField.systolic:
-        if (value <= 90) return 'Low';
-        if (value <= 120) return 'Normal';
-        if (value <= 129) return 'Elevated';
-        if (value <= 139) return 'Stage 1 High';
-        return 'Stage 2 High';
-
-      case BloodPressureField.diastolic:
-        if (value <= 60) return 'Low';
-        if (value <= 80) return 'Normal';
-        if (value <= 89) return 'Stage 1 High';
-        return 'Stage 2 High';
-
-      case BloodPressureField.pulse:
-        if (value < 60) return 'Low';
-        if (value <= 100) return 'Normal';
-        return 'High';
-
-      case BloodPressureField.spo2:
-        if (value >= 95) return 'Normal';
-        if (value >= 90) return 'Low Normal';
-        return 'Low';
-
-      case BloodPressureField.time:
-        return 'N/A';
-    }
-  }
-}
-
-// ===== FACTORY METHODS FOR EASY CREATION =====
-
-class BloodPressureUnits {
-  static BloodPressureUnit systolic() =>
-      BloodPressureUnit(BloodPressureField.systolic);
-
-  static BloodPressureUnit diastolic() =>
-      BloodPressureUnit(BloodPressureField.diastolic);
-
-  static BloodPressureUnit pulse() =>
-      BloodPressureUnit(BloodPressureField.pulse);
-
-  static BloodPressureUnit spo2() => BloodPressureUnit(BloodPressureField.spo2);
 }

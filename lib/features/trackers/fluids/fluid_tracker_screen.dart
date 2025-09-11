@@ -8,11 +8,12 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/shared/generic_log_screen.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_intake_enums.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_intake_model.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_tracker_modal_sheet.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_tracker_provider.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_details_bottom_sheet.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_utils.dart';
+import 'package:nephro_care/features/trackers/fluids/fluids_model.dart';
+import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
 
 class FluidIntakeLogScreen extends ConsumerWidget {
   const FluidIntakeLogScreen({super.key});
@@ -20,46 +21,60 @@ class FluidIntakeLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    ({String number, String unit}) totalFormatter(
-        List<FluidIntakeModel> items) {
-      final total = items.fold<double>(0, (sum, item) => sum + item.quantity);
-      final formatted = FluidUnit().format(total);
-      return (number: formatted.numericValue, unit: formatted.unitValue);
-    }
 
-    return LogScreen<FluidIntakeModel>(
+    return LogScreen<FluidsModel>(
       appBarTitle: 'Fluid Log',
       headerTitleString: 'fluids intake',
-      headerActionButton: (items) => Consumer(
-        builder: (context, ref, child) {
-          final fluidLimit = ref.watch(fluidLimitProvider);
-          final total =
-              items.fold<double>(0, (sum, item) => sum + item.quantity);
+      headerActionButton: (items) {
+        if (items.isEmpty) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
-              color: total > fluidLimit
-                  ? Theme.of(context).colorScheme.error
-                  : Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(32),
             ),
-            child: UIUtils.createRichTextValueWithUnit(
-              value: totalFormatter(items).number,
-              unit: totalFormatter(items).unit,
-              valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+            child: Text(
+              'No Data',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: kValueFontSize,
                     fontWeight: FontWeight.w800,
                   ),
-              unitStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: kSIUnitFontSize,
-                    fontWeight: FontWeight.w800,
-                  ),
             ),
           );
-        },
-      ),
+        }
+        return Consumer(
+          builder: (context, ref, child) {
+            final fluidLimit = ref.watch(fluidLimitProvider);
+            final total =
+                items.fold<double>(0, (sum, item) => sum + item.quantity);
+
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: total > fluidLimit
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(32),
+              ),
+              child: UIUtils.createRichTextValueWithUnit(
+                value: FluidUtils().format(total).formattedValue!,
+                unit: FluidUtils().format(total).unitString!,
+                valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: kValueFontSize,
+                      fontWeight: FontWeight.w800,
+                    ),
+                unitStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: kSIUnitFontSize,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+            );
+          },
+        );
+      },
       primaryColor: Theme.of(context).colorScheme.primary,
       secondaryColor: Theme.of(context).colorScheme.primaryContainer,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
@@ -67,7 +82,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
       dataProvider: fluidIntakeDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: fluidIntakeSummaryProvider,
-      firestoreCollection: 'fluids',
+      firestoreCollection: FluidConstants.fluidFirebaseCollectionName,
       inputModalSheet: (item) => FluidIntakeModalSheet(intake: item),
       listItemBuilder: (context, item) => ListTile(
         leading: Icon(
@@ -91,11 +106,10 @@ class FluidIntakeLogScreen extends ConsumerWidget {
           ),
         ),
         subtitle: Semantics(
-          label:
-              'Quantity: ${item.quantity} ${FluidIntakeField.fluidQuantityMl.unit}',
+          label: 'Quantity: ${item.quantity} ${FluidUnits.milliliters.siUnit}',
           child: UIUtils.createRichTextValueWithUnit(
-            value: FluidUnit().format(item.quantity).numericValue,
-            unit: FluidUnit().format(item.quantity).unitValue,
+            value: FluidUtils().format(item.quantity).formattedValue!,
+            unit: FluidUtils().format(item.quantity).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: kValueFontSize,
@@ -159,11 +173,15 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                   UIUtils.createRichTextValueWithUnit(
                     prefixText: '• Total fluids intake: ',
                     prefixStyle: theme.textTheme.bodySmall,
-                    value: FluidUnit().format(totalFluidQuantityToday).numericValue,
+                    value: FluidUtils()
+                        .format(totalFluidQuantityToday)
+                        .formattedValue!,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
-                    unit: FluidUnit().format(totalFluidQuantityToday).unitValue,
+                    unit: FluidUtils()
+                        .format(totalFluidQuantityToday)
+                        .unitString!,
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kSIUnitFontSize,
                       fontWeight: FontWeight.w800,
@@ -177,12 +195,14 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                           child: UIUtils.createRichTextValueWithUnit(
                             prefixText: '• ${entry.key}: ',
                             prefixStyle: theme.textTheme.bodySmall,
-                            value: FluidUnit().format(entry.value).numericValue,
+                            value: FluidUtils()
+                                .format(entry.value)
+                                .formattedValue!,
                             valueStyle: theme.textTheme.bodyMedium!.copyWith(
                               fontSize: kValueFontSize,
                               fontWeight: FontWeight.w800,
                             ),
-                            unit: FluidUnit().format(entry.value).unitValue,
+                            unit: FluidUtils().format(entry.value).unitString!,
                             unitStyle: theme.textTheme.bodyMedium!.copyWith(
                               fontSize: kSIUnitFontSize,
                               fontWeight: FontWeight.w800,
@@ -201,7 +221,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                     ),
                     meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kMeridiemIndicatorFontSize,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w800,
                     ),
                     isMeridiemUpperCase: false,
                   ),
@@ -210,7 +230,6 @@ class FluidIntakeLogScreen extends ConsumerWidget {
               );
       },
       itemsExtractor: (cache) => cache.items,
-      totalFormatter: totalFormatter,
     );
   }
 }

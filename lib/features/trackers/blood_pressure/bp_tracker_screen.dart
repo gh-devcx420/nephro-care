@@ -8,6 +8,7 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/shared/generic_log_screen.dart';
+import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_monitor_model.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_tracker_modal_sheet.dart';
@@ -20,24 +21,60 @@ class BPTrackerLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    ({String number, String unit}) totalFormatter(List<BPTrackerModel> items) {
-      if (items.isEmpty) return (number: 'N/A', unit: '');
-      final avgSystolic =
-          items.fold<double>(0, (sum, item) => sum + item.systolic) /
-              items.length;
-      final avgDiastolic =
-          items.fold<double>(0, (sum, item) => sum + item.diastolic) /
-              items.length;
-      return (
-        number: '${avgSystolic.toInt()}/${avgDiastolic.toInt()}',
-        unit: BloodPressureField.systolic.unit!
-      );
-    }
 
     return LogScreen<BPTrackerModel>(
       appBarTitle: 'Blood Pressure Log',
       headerText:
           'Average BP for ${DateTimeUtils.isSameDay(ref.watch(selectedDateProvider), DateTime.now()) ? 'today :' : 'on ${DateTimeUtils.formatDateDM(ref.watch(selectedDateProvider))}'}',
+      headerActionButton: (items) {
+        if (items.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: Text(
+              'No Data',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: kValueFontSize,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+          );
+        }
+
+        final avgSystolic =
+            items.fold<double>(0, (sum, item) => sum + item.systolic) /
+                items.length;
+        final avgDiastolic =
+            items.fold<double>(0, (sum, item) => sum + item.diastolic) /
+                items.length;
+        final bpReading = '${avgSystolic.round()}/${avgDiastolic.round()}';
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: UIUtils.createRichTextValueWithUnit(
+            value: bpReading,
+            unit: BloodPressureField.systolic.siUnit,
+            valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: kValueFontSize,
+                  fontWeight: FontWeight.w800,
+                ),
+            unitStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: kSIUnitFontSize,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+        );
+      },
       primaryColor: Theme.of(context).colorScheme.primary,
       secondaryColor: Theme.of(context).colorScheme.primaryContainer,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
@@ -45,7 +82,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
       dataProvider: bpTrackerDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: bpTrackerSummaryProvider,
-      firestoreCollection: 'blood_pressure',
+      firestoreCollection: BloodPressureConstants.bpFirebaseCollectionName,
       inputModalSheet: (item) => BPTrackerModalSheet(bpMeasure: item),
       listItemBuilder: (context, item) => ListTile(
         leading: Icon(
@@ -61,7 +98,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextValueWithUnit(
             prefixText: 'BP: ',
             value: '${item.systolic}/${item.diastolic}',
-            unit: BloodPressureField.systolic.unit!,
+            unit: BloodPressureField.systolic.siUnit,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: kValueFontSize,
@@ -76,7 +113,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
         ),
         subtitle: Semantics(
           label:
-              'Pulse: ${item.pulse} ${BloodPressureField.pulse.unit}, SpO2: ${item.spo2?.toInt() ?? 'N/A'} ${BloodPressureField.spo2.unit}',
+              '${BloodPressureField.pulse.hintText}: ${item.pulse} ${BloodPressureField.pulse.siUnit}, ${BloodPressureField.spo2.hintText}: ${item.spo2?.toInt() ?? 'N/A'} ${BloodPressureField.spo2.siUnit}',
           child: RichText(
             text: TextSpan(
               style: theme.textTheme.titleMedium!.copyWith(
@@ -86,14 +123,14 @@ class BPTrackerLogScreen extends ConsumerWidget {
               ),
               children: [
                 TextSpan(
-                  text: 'Pulse: ${item.pulse}',
+                  text: '${BloodPressureField.pulse.hintText}: ${item.pulse}',
                   style: const TextStyle(
                     fontSize: kValueFontSize,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 TextSpan(
-                  text: ' ${BloodPressureField.pulse.unit}',
+                  text: ' ${BloodPressureField.pulse.siUnit}',
                   style: const TextStyle(
                     fontSize: kSIUnitFontSize,
                     fontWeight: FontWeight.w600,
@@ -108,14 +145,15 @@ class BPTrackerLogScreen extends ConsumerWidget {
                     ),
                   ),
                   TextSpan(
-                    text: 'SpO2: ${item.spo2!.toInt()}',
+                    text:
+                        '${BloodPressureField.spo2.hintText}: ${item.spo2!.toInt()}',
                     style: const TextStyle(
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                   TextSpan(
-                    text: ' ${BloodPressureField.spo2.unit}',
+                    text: ' ${BloodPressureField.spo2.siUnit}',
                     style: const TextStyle(
                       fontSize: kSIUnitFontSize,
                       fontWeight: FontWeight.w600,
@@ -189,7 +227,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
                     prefixStyle: theme.textTheme.bodySmall,
                     value:
                         '${averageSystolic.toInt()}/${averageDiastolic.toInt()}',
-                    unit: BloodPressureField.systolic.unit!,
+                    unit: BloodPressureField.systolic.siUnit,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,
@@ -203,12 +241,12 @@ class BPTrackerLogScreen extends ConsumerWidget {
                   UIUtils.createRichTextValueWithUnit(
                     prefixText: '• Average Pulse: ',
                     prefixStyle: theme.textTheme.bodySmall,
-                    value: BloodPressureField.systolic
-                        .format(averagePulse)
-                        .numericValue,
-                    unit: BloodPressureUnit(averagePulse)
-                        .format(averagePulse)
-                        .unitValue,
+                    value: BloodPressureUtils()
+                        .formatSystolic(averagePulse)
+                        .formattedValue!,
+                    unit: BloodPressureUtils()
+                        .formatSystolic(averagePulse)
+                        .unitString!,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,
@@ -225,7 +263,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
                     value: averageSpo2 == 'N/A' ? 'N/A' : averageSpo2,
                     unit: averageSpo2 == 'N/A'
                         ? ''
-                        : BloodPressureField.spo2.unit!,
+                        : BloodPressureField.spo2.siUnit,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,
@@ -255,7 +293,6 @@ class BPTrackerLogScreen extends ConsumerWidget {
               );
       },
       itemsExtractor: (cache) => cache.items,
-      totalFormatter: totalFormatter,
     );
   }
 }

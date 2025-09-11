@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_intake_enums.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_utils.dart';
 
 class NCValueRange extends StatelessWidget {
   const NCValueRange({
@@ -13,21 +13,19 @@ class NCValueRange extends StatelessWidget {
     this.color,
   });
 
-  final int value;
-  final ValueChanged<int> onValueChanged;
+  final double value;
+  final ValueChanged<double> onValueChanged;
   final int step;
   final int minValue;
   final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    void updateValue(int newValue) {
+    void updateValue(double newValue) {
       if (newValue >= minValue) {
         onValueChanged(newValue);
       }
     }
-
-    final formattedValue = FluidIntakeField.fluidQuantityMl.format(value);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
@@ -49,8 +47,8 @@ class NCValueRange extends StatelessWidget {
           ),
           hGap8,
           UIUtils.createRichTextValueWithUnit(
-            value: formattedValue.numericValue,
-            unit: formattedValue.unitValue,
+            value: FluidUtils().format(value).formattedValue!,
+            unit: FluidUtils().format(value).unitString!,
             valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: color ?? Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,

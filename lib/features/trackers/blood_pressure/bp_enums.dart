@@ -1,19 +1,60 @@
-// bp_enums.dart
-
 import 'package:intl/intl.dart';
-import 'package:nephro_care/features/shared/tracker_utils.dart';
-import 'package:nephro_care/features/trackers/blood_pressure/bp_utils.dart';
 
 enum BloodPressureField {
-  systolic, // Systolic blood pressure
-  diastolic, // Diastolic blood pressure
-  pulse, // Pulse rate
-  spo2, // Oxygen saturation
-  time, // Time of measurement
+  systolic,
+  diastolic,
+  pulse,
+  spo2,
+  time,
 }
 
 extension BloodPressureFieldExtension on BloodPressureField {
-  String? get unit {
+  String get fieldName {
+    switch (this) {
+      case BloodPressureField.systolic:
+        return 'Systolic';
+      case BloodPressureField.diastolic:
+        return 'Diastolic';
+      case BloodPressureField.pulse:
+        return 'Pulse';
+      case BloodPressureField.spo2:
+        return 'Spo2';
+      case BloodPressureField.time:
+        return 'Time';
+    }
+  }
+
+  String get hintText {
+    switch (this) {
+      case BloodPressureField.systolic:
+        return 'Systolic';
+      case BloodPressureField.diastolic:
+        return 'Diastolic';
+      case BloodPressureField.pulse:
+        return 'Pulse';
+      case BloodPressureField.spo2:
+        return 'Spo2';
+      case BloodPressureField.time:
+        return 'Measurement Time';
+    }
+  }
+
+  String get fieldKey {
+    switch (this) {
+      case BloodPressureField.systolic:
+        return 'systolic_key';
+      case BloodPressureField.diastolic:
+        return 'diastolic_key';
+      case BloodPressureField.pulse:
+        return 'pulse_key';
+      case BloodPressureField.spo2:
+        return 'spo2_key';
+      case BloodPressureField.time:
+        return 'time_key';
+    }
+  }
+
+  String get siUnit {
     switch (this) {
       case BloodPressureField.systolic:
         return 'mmHg';
@@ -24,83 +65,22 @@ extension BloodPressureFieldExtension on BloodPressureField {
       case BloodPressureField.spo2:
         return '%';
       case BloodPressureField.time:
-        return null; // Time has no unit
+        return '';
     }
   }
 
-  NumberFormat? get numberFormat {
+  NumberFormat get valueFormat {
     switch (this) {
       case BloodPressureField.systolic:
-        return NumberFormat('#'); // Show as: 120 mmHg
+        return NumberFormat('#');
       case BloodPressureField.diastolic:
-        return NumberFormat('#'); // Show as: 80 mmHg
+        return NumberFormat('#');
       case BloodPressureField.pulse:
-        return NumberFormat('#'); // Show as: 72 bpm
+        return NumberFormat('#');
       case BloodPressureField.spo2:
-        return NumberFormat('#.#'); // Show as: 98.5%
+        return NumberFormat('#');
       case BloodPressureField.time:
-        return null; // Time is not a number field
+        return NumberFormat('#');
     }
-  }
-
-  String get displayName {
-    switch (this) {
-      case BloodPressureField.systolic:
-        return 'Systolic (mmHg)';
-      case BloodPressureField.diastolic:
-        return 'Diastolic (mmHg)';
-      case BloodPressureField.pulse:
-        return 'Pulse (bpm)';
-      case BloodPressureField.spo2:
-        return 'SpO2 (%)';
-      case BloodPressureField.time:
-        return 'Time';
-    }
-  }
-
-  bool get isQuantity {
-    return this == BloodPressureField.systolic ||
-        this == BloodPressureField.diastolic ||
-        this == BloodPressureField.pulse ||
-        this == BloodPressureField.spo2;
-  }
-
-  FormattedMeasurement format(dynamic input) {
-    // Create the appropriate BloodPressureUnit for this field
-    final bloodPressureUnit = BloodPressureUnit(this);
-
-    // Use the BloodPressureUnit to format the input
-    return bloodPressureUnit.format(input);
-  }
-
-  /// Format with validation feedback - useful for user input
-  /// This allows you to call: BloodPressureField.pulse.formatWithFeedback(userInput)
-  FormattedMeasurement formatWithFeedback(dynamic input) {
-    // Create the appropriate BloodPressureUnit for this field
-    final bloodPressureUnit = BloodPressureUnit(this);
-
-    // Use the BloodPressureUnit to format with feedback
-    return bloodPressureUnit.formatWithFeedback(input);
-  }
-
-  /// Get health status for a value
-  /// This allows you to call: BloodPressureField.systolic.getHealthStatus(120)
-  String getHealthStatus(double value) {
-    final bloodPressureUnit = BloodPressureUnit(this);
-    return bloodPressureUnit.getHealthStatus(value);
-  }
-
-  /// Check if value indicates high blood pressure
-  /// This allows you to call: BloodPressureField.systolic.isHighBloodPressure(140)
-  bool isHighBloodPressure(double value) {
-    final bloodPressureUnit = BloodPressureUnit(this);
-    return bloodPressureUnit.isHighBloodPressure(value);
-  }
-
-  /// Check if value indicates low blood pressure
-  /// This allows you to call: BloodPressureField.systolic.isLowBloodPressure(90)
-  bool isLowBloodPressure(double value) {
-    final bloodPressureUnit = BloodPressureUnit(this);
-    return bloodPressureUnit.isLowBloodPressure(value);
   }
 }

@@ -5,6 +5,7 @@ import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_divider.dart';
 import 'package:nephro_care/core/widgets/nc_value_range_chooser.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
+import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
 
 class TrackersSettingsScreen extends ConsumerWidget {
   const TrackersSettingsScreen({super.key});
@@ -162,9 +163,9 @@ class TrackersSettingsScreen extends ConsumerWidget {
                 trailing: NCValueRange(
                   value: fluidLimit,
                   onValueChanged: (newValue) {
-                    ref
-                        .read(fluidLimitProvider.notifier)
-                        .setFluidLimit(newValue);
+                    ref.read(fluidLimitProvider.notifier).setFluidLimit(
+                          newValue.toDouble(),
+                        );
                   },
                   step: 50,
                   minValue: 50,

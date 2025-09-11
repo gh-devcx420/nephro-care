@@ -5,10 +5,11 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/shared/generic_log_screen.dart';
-import 'package:nephro_care/features/trackers/urine/urine_output_model.dart';
+import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
+import 'package:nephro_care/features/trackers/urine/urine_model.dart';
 
 class UrineOutputStateNotifier
-    extends StateNotifier<AsyncValue<Cache<UrineOutputModel>>> {
+    extends StateNotifier<AsyncValue<Cache<UrineModel>>> {
   final String userId;
   final DateTime selectedDate;
   final Ref ref;
@@ -28,18 +29,17 @@ class UrineOutputStateNotifier
       final snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('urine')
+          .collection(UrineConstants.urineFirebaseCollectionName)
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
           .orderBy('timestamp', descending: false)
           .get();
 
-      final urineOutputs = snapshot.docs
-          .map((doc) => UrineOutputModel.fromJson(doc.data()))
-          .toList();
+      final urineOutputs =
+          snapshot.docs.map((doc) => UrineModel.fromJson(doc.data())).toList();
 
-      state = AsyncValue.data(Cache<UrineOutputModel>(
+      state = AsyncValue.data(Cache<UrineModel>(
         items: urineOutputs,
         lastFetched: DateTime.now(),
       ));
@@ -48,15 +48,14 @@ class UrineOutputStateNotifier
     }
   }
 
-  Stream<Cache<UrineOutputModel>> streamData() async* {
-    if (state is AsyncData<Cache<UrineOutputModel>> &&
+  Stream<Cache<UrineModel>> streamData() async* {
+    if (state is AsyncData<Cache<UrineModel>> &&
         DateTime.now()
-                .difference((state as AsyncData<Cache<UrineOutputModel>>)
-                    .value
-                    .lastFetched)
+                .difference(
+                    (state as AsyncData<Cache<UrineModel>>).value.lastFetched)
                 .inMinutes <
             cacheDuration.inMinutes) {
-      yield (state as AsyncData<Cache<UrineOutputModel>>).value;
+      yield (state as AsyncData<Cache<UrineModel>>).value;
     } else {
       final startOfDay =
           DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
@@ -65,7 +64,7 @@ class UrineOutputStateNotifier
       final stream = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('urine')
+          .collection(UrineConstants.urineFirebaseCollectionName)
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
@@ -74,9 +73,9 @@ class UrineOutputStateNotifier
 
       await for (final snapshot in stream) {
         final urineOutputs = snapshot.docs
-            .map((doc) => UrineOutputModel.fromJson(doc.data()))
+            .map((doc) => UrineModel.fromJson(doc.data()))
             .toList();
-        final cache = Cache<UrineOutputModel>(
+        final cache = Cache<UrineModel>(
           items: urineOutputs,
           lastFetched: DateTime.now(),
         );
@@ -88,15 +87,14 @@ class UrineOutputStateNotifier
 }
 
 final urineOutputDataProvider =
-    StreamProvider.family<Cache<UrineOutputModel>, (String, DateTime)>(
-        (ref, params) {
+    StreamProvider.family<Cache<UrineModel>, (String, DateTime)>((ref, params) {
   final userId = params.$1;
   final selectedDate = params.$2;
   final notifier = UrineOutputStateNotifier(ref, userId, selectedDate);
   return notifier.streamData();
 });
 
-final urineOutputListProvider = Provider<List<UrineOutputModel>>((ref) {
+final urineOutputListProvider = Provider<List<UrineModel>>((ref) {
   final data = ref.watch(urineOutputDataProvider(
     (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
   ));

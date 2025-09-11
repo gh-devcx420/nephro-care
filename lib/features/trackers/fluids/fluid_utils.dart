@@ -1,121 +1,123 @@
 import 'package:intl/intl.dart';
 import 'package:nephro_care/features/shared/tracker_utils.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_intake_enums.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
 
-/// FluidUnit handles formatting fluid measurements
-/// Knows about ml and liters, can convert between them
-class FluidUnit extends MeasurementUnit {
-  // ===== IMPLEMENT ABSTRACT PROPERTIES =====
+class FluidUtils implements TrackerUtils<FluidUnits> {
+  static final _invalidFluidMeasure = Measurement.invalid<FluidUnits>();
 
-  @override
-  String? get basicSIUnit => FluidIntakeField.fluidQuantityMl.unit; // "ml"
-
-  @override
-  NumberFormat? get formatter =>
-      FluidIntakeField.fluidQuantityMl.numberFormat; // NumberFormat('#')
-
-  // ===== IMPLEMENT ABSTRACT METHOD =====
+  bool _isValidSource(Measurement<FluidUnits> source) {
+    return source.isValid &&
+        source.unit != null &&
+        source.value != null &&
+        source.unit is FluidUnits &&
+        source.value! >= 0;
+  }
 
   @override
-  FormattedMeasurement format(dynamic input) {
-    // Step 1: Try to convert input to a number
-    final double? numericValue = MeasurementUnit.parseValue(input);
+  FluidUnits get baseUnit => FluidUnits.milliliters;
 
-    // Step 2: Check if conversion failed
-    if (numericValue == null || numericValue < 0) {
-      return FormattedMeasurement.invalid;
+  @override
+  NumberFormat get baseUnitFormat => FluidUnits.milliliters.valueFormat;
+
+  @override
+  Measurement<FluidUnits> format(num value) {
+    final processedValue = value.toDouble();
+
+    if (processedValue < 0) return _invalidFluidMeasure;
+
+    final baseMeasurement = Measurement<FluidUnits>(
+      value: processedValue,
+      formattedValue: baseUnitFormat.format(processedValue),
+      unit: FluidUnits.milliliters,
+      unitString: FluidUnits.milliliters.siUnit,
+      isValid: true,
+    );
+
+    return autoFormat(source: baseMeasurement);
+  }
+
+  /// Converts any measurement to the appropriate unit (auto-scaling)
+  Measurement<FluidUnits> autoFormat(
+      {required Measurement<FluidUnits> source}) {
+    if (!_isValidSource(source)) return _invalidFluidMeasure;
+
+    final sourceValue = source.value!;
+
+    if (sourceValue >= FluidConstants.conversionThreshold) {
+      return formatAsLitres(source);
     }
 
-    // Step 3: Smart formatting - choose best unit
-    return _formatWithSmartUnit(numericValue);
+    final formattedValue =
+        FluidUnits.milliliters.valueFormat.format(sourceValue);
+
+    return Measurement<FluidUnits>(
+      value: sourceValue,
+      formattedValue: formattedValue,
+      unit: FluidUnits.milliliters,
+      unitString: FluidUnits.milliliters.siUnit,
+      isValid: true,
+    );
   }
 
-  // ===== FLUID-SPECIFIC METHODS =====
+  /// Converts any measurement to milliliters
+  Measurement<FluidUnits> formatAsMilliliters(Measurement<FluidUnits> source) {
+    if (!_isValidSource(source)) return _invalidFluidMeasure;
 
-  /// Smart formatting: automatically choose ml or L based on value
-  FormattedMeasurement _formatWithSmartUnit(double mlValue) {
-    // If >= 1000ml, show in liters for readability
-    if (mlValue >= 1000) {
-      return formatAsLiters(mlValue);
+    final sourceValue = source.value!;
+    final sourceUnit = source.unit as FluidUnits;
+
+    double mlValue;
+    if (sourceUnit == FluidUnits.litres) {
+      mlValue = sourceValue * FluidConstants.conversionThreshold;
+    } else {
+      mlValue = sourceValue;
     }
 
-    // Otherwise show in ml
-    return formatAsMilliliters(mlValue);
+    final formattedValue = FluidUnits.milliliters.valueFormat.format(mlValue);
+
+    return Measurement<FluidUnits>(
+      value: mlValue,
+      formattedValue: formattedValue,
+      unit: FluidUnits.milliliters,
+      unitString: FluidUnits.milliliters.siUnit,
+      isValid: true,
+    );
   }
 
-  /// Force format as milliliters: 1500 -> "1500 ml"
-  FormattedMeasurement formatAsMilliliters(double mlValue) {
-    return createFormattedMeasurement(
-        mlValue,
-        FluidIntakeField.fluidQuantityMl.unit, // "ml"
-        FluidIntakeField.fluidQuantityMl.numberFormat // NumberFormat('#')
-        );
+  /// Converts any measurement to liters
+  Measurement<FluidUnits> formatAsLitres(Measurement<FluidUnits> source) {
+    if (!_isValidSource(source)) return _invalidFluidMeasure;
+
+    final sourceValue = source.value!;
+    final sourceUnit = source.unit as FluidUnits;
+
+    if (sourceUnit == FluidUnits.litres) return source;
+
+    final litresValue = sourceValue / FluidConstants.conversionThreshold;
+
+    final formattedValue = FluidUnits.litres.valueFormat.format(litresValue);
+    return Measurement<FluidUnits>(
+      value: litresValue,
+      formattedValue: formattedValue,
+      unit: FluidUnits.litres,
+      unitString: FluidUnits.litres.siUnit,
+      isValid: true,
+    );
   }
 
-  /// Force format as liters: 1500 -> "1.50 L"
-  FormattedMeasurement formatAsLiters(double mlValue) {
-    final liters = convertMlToLiters(mlValue); // 1500 -> 1.5
-
-    return createFormattedMeasurement(
-        liters,
-        FluidIntakeField.fluidQuantityL.unit, // "L"
-        FluidIntakeField.fluidQuantityL.numberFormat // NumberFormat('#.##')
-        );
-  }
-
-  /// Format a value that's already in liters: 1.5 -> "1.50 L"
-  FormattedMeasurement formatLiterValue(double literValue) {
-    return createFormattedMeasurement(
-        literValue,
-        FluidIntakeField.fluidQuantityL.unit, // "L"
-        FluidIntakeField.fluidQuantityL.numberFormat // NumberFormat('#.##')
-        );
-  }
-
-  // ===== CONVERSION HELPERS =====
-
-  /// Convert milliliters to liters: 1500ml -> 1.5L
-  double convertMlToLiters(double ml) => ml / 1000;
-
-  /// Convert liters to milliliters: 1.5L -> 1500ml
-  double convertLitersToMl(double liters) => liters * 1000;
-
-  /// Convert any fluid value between units
-  double convertBetween({
-    required double value,
-    required FluidIntakeField from,
-    required FluidIntakeField to,
+  /// Converts between any two fluid units
+  Measurement<FluidUnits> formatBetween({
+    required Measurement<FluidUnits> source,
+    required FluidUnits target,
   }) {
-    // Skip non-quantity fields
-    if (!from.isQuantity || !to.isQuantity) return value;
-
-    // Same unit - no conversion
-    if (from == to) return value;
-
-    // ml to L
-    if (from == FluidIntakeField.fluidQuantityMl &&
-        to == FluidIntakeField.fluidQuantityL) {
-      return convertMlToLiters(value);
+    if (!_isValidSource(source) || source.unit == target) {
+      return source.unit == target ? source : _invalidFluidMeasure;
     }
 
-    // L to ml
-    if (from == FluidIntakeField.fluidQuantityL &&
-        to == FluidIntakeField.fluidQuantityMl) {
-      return convertLitersToMl(value);
-    }
-
-    return value;
-  }
-
-  /// Format a value in a specific unit
-  FormattedMeasurement formatAs(double value, FluidIntakeField targetUnit) {
-    switch (targetUnit) {
-      case FluidIntakeField.fluidQuantityMl:
-        return formatAsMilliliters(value);
-      case FluidIntakeField.fluidQuantityL:
-        return formatAsLiters(value);
-      default:
-        return FormattedMeasurement.invalid; // Can't format non-quantity fields
-    }
+    return switch (target) {
+      FluidUnits.milliliters => formatAsMilliliters(source),
+      FluidUnits.litres => formatAsLitres(source),
+    };
   }
 }

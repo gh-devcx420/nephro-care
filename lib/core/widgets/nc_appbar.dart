@@ -19,8 +19,8 @@ class NCAppbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final User? user = ref.watch(authProvider);
-    final isLight =
-        MediaQuery.of(context).platformBrightness == Brightness.light;
+    // final isLight =
+    //     MediaQuery.of(context).platformBrightness == Brightness.light;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(

@@ -8,6 +8,7 @@ import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/shared/generic_modal_sheet.dart';
+import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_monitor_model.dart';
 
@@ -33,17 +34,17 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
   @override
   void initState() {
     super.initState();
-    _systolicController = NCTextEditingController(
-        suffix: BloodPressureField.systolic.unit ?? 'mmhg')
-      ..text = widget.bpMeasure?.systolic.toInt().toString() ?? '';
-    _diastolicController = NCTextEditingController(
-        suffix: BloodPressureField.diastolic.unit ?? 'mmhg')
-      ..text = widget.bpMeasure?.diastolic.toInt().toString() ?? '';
+    _systolicController =
+        NCTextEditingController(suffix: BloodPressureField.systolic.siUnit)
+          ..text = widget.bpMeasure?.systolic.toInt().toString() ?? '';
+    _diastolicController =
+        NCTextEditingController(suffix: BloodPressureField.diastolic.siUnit)
+          ..text = widget.bpMeasure?.diastolic.toInt().toString() ?? '';
     _pulseController =
-        NCTextEditingController(suffix: BloodPressureField.pulse.unit ?? 'bpm')
+        NCTextEditingController(suffix: BloodPressureField.pulse.siUnit)
           ..text = widget.bpMeasure?.pulse.toInt().toString() ?? '';
     _spo2Controller =
-        NCTextEditingController(suffix: BloodPressureField.spo2.unit ?? '%')
+        NCTextEditingController(suffix: BloodPressureField.spo2.siUnit)
           ..text = widget.bpMeasure?.spo2?.toInt().toString() ?? '';
     initTimePicker(widget.bpMeasure?.timestamp.toDate() ?? DateTime.now());
   }
@@ -70,90 +71,104 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
       primaryColor: Theme.of(context).colorScheme.primary,
       secondaryColor: Theme.of(context).colorScheme.primaryContainer,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-      initialFocusFieldKey: BloodPressureField.systolic.name,
+      initialFocusFieldKey: BloodPressureField.systolic.fieldKey,
       inputFields: [
         NCTextFieldConfig(
-          key: BloodPressureField.systolic.name,
+          key: BloodPressureField.systolic.fieldKey,
           controller: _systolicController,
-          hintText: 'Systolic (${BloodPressureField.systolic.unit})',
+          hintText:
+              '${BloodPressureField.systolic.hintText} in (${BloodPressureField.systolic.siUnit})',
           keyboardType: TextInputType.number,
           activeIcon: Icons.monitor_heart,
           inactiveIcon: Icons.monitor_heart_outlined,
           semanticsLabel:
-              'Systolic blood pressure input in $BloodPressureField.systolic.unit}',
+              '${BloodPressureField.systolic.hintText} in ${BloodPressureField.systolic.siUnit}',
           validator: (value) {
             final numericSystolic = _systolicController.numericValue;
             final systolic = int.tryParse(numericSystolic);
-            if (systolic == null || systolic < 50 || systolic > 280) {
-              return 'Please enter a valid systolic value (50–280 ${BloodPressureField.systolic.unit})';
+            if (systolic == null ||
+                systolic < BloodPressureConstants.systolicMin ||
+                systolic > BloodPressureConstants.systolicMax) {
+              return 'Please enter a valid systolic value (${BloodPressureConstants.systolicMin}–${BloodPressureConstants.systolicMax} ${BloodPressureField.systolic.siUnit}).';
             }
             return null;
           },
           textInputAction: TextInputAction.next,
-          nextFieldKey: BloodPressureField.diastolic.name,
+          nextFieldKey: BloodPressureField.diastolic.fieldKey,
         ),
         NCTextFieldConfig(
-          key: BloodPressureField.diastolic.name,
+          key: BloodPressureField.diastolic.fieldKey,
           controller: _diastolicController,
-          hintText: 'Diastolic (${BloodPressureField.diastolic.unit})',
+          hintText:
+              '${BloodPressureField.diastolic.hintText} in (${BloodPressureField.diastolic.siUnit})',
           keyboardType: TextInputType.number,
           activeIcon: Icons.monitor_heart,
           inactiveIcon: Icons.monitor_heart_outlined,
           semanticsLabel:
-              'Diastolic blood pressure input in ${BloodPressureField.diastolic.unit}',
+              '${BloodPressureField.diastolic.hintText} in (${BloodPressureField.diastolic.siUnit})',
           validator: (value) {
             final numericDiastolic = _diastolicController.numericValue;
             final diastolic = int.tryParse(numericDiastolic);
-            if (diastolic == null || diastolic < 30 || diastolic > 180) {
-              return 'Please enter a valid diastolic value (30–180 ${BloodPressureField.diastolic.unit})';
+            if (diastolic == null ||
+                diastolic < BloodPressureConstants.diastolicMin ||
+                diastolic > BloodPressureConstants.diastolicMax) {
+              return 'Please enter a valid diastolic value (${BloodPressureConstants.diastolicMin}–${BloodPressureConstants.diastolicMax} ${BloodPressureField.diastolic.siUnit}).';
             }
             return null;
           },
           textInputAction: TextInputAction.next,
-          nextFieldKey: BloodPressureField.pulse.name,
+          nextFieldKey: BloodPressureField.pulse.fieldKey,
         ),
         NCTextFieldConfig(
-          key: BloodPressureField.pulse.name,
+          key: BloodPressureField.pulse.fieldKey,
           controller: _pulseController,
-          hintText: 'Pulse (${BloodPressureField.pulse.unit})',
+          hintText:
+              '${BloodPressureField.pulse.hintText} in (${BloodPressureField.pulse.siUnit})',
           keyboardType: TextInputType.number,
           activeIcon: Icons.favorite,
           inactiveIcon: Icons.favorite_border,
-          semanticsLabel: 'Pulse input in ${BloodPressureField.pulse.unit}',
+          semanticsLabel:
+              '${BloodPressureField.pulse.hintText} in ${BloodPressureField.pulse.siUnit}',
           validator: (value) {
             final numericPulse = _pulseController.numericValue;
             final pulse = int.tryParse(numericPulse);
-            if (pulse == null || pulse < 20 || pulse > 250) {
-              return 'Please enter a valid pulse value (20–250 ${BloodPressureField.pulse.unit})';
+            if (pulse == null ||
+                pulse < BloodPressureConstants.pulseMin ||
+                pulse > BloodPressureConstants.pulseMax) {
+              return 'Please enter a valid pulse value (${BloodPressureConstants.pulseMin}–${BloodPressureConstants.pulseMax} ${BloodPressureField.pulse.siUnit}).';
             }
             return null;
           },
           textInputAction: TextInputAction.next,
-          nextFieldKey: BloodPressureField.spo2.name,
+          nextFieldKey: BloodPressureField.spo2.fieldKey,
         ),
         NCTextFieldConfig(
-          key: BloodPressureField.spo2.name,
+          key: BloodPressureField.spo2.fieldKey,
           controller: _spo2Controller,
-          hintText: 'SpO2 (${BloodPressureField.spo2.unit})',
+          hintText:
+              '${BloodPressureField.spo2.hintText} in (${BloodPressureField.spo2.siUnit})',
           keyboardType: TextInputType.number,
           activeIcon: Icons.air,
           inactiveIcon: Icons.air_outlined,
-          semanticsLabel: 'SpO2 input in ${BloodPressureField.spo2.unit}',
+          semanticsLabel:
+              '${BloodPressureField.spo2.hintText} in (${BloodPressureField.spo2.siUnit})',
           validator: (value) {
             if (value == null || value.isEmpty) {
               return null;
             }
             final numericSpo2 = _spo2Controller.numericValue;
             final spo2 = double.tryParse(numericSpo2);
-            if (spo2 == null || spo2 <= 0 || spo2 > 100) {
-              return 'SpO2 must be between 0 – 100 ${BloodPressureField.spo2.unit}';
+            if (spo2 == null ||
+                spo2 <= BloodPressureConstants.spo2Min ||
+                spo2 > BloodPressureConstants.spo2Max) {
+              return 'SpO2 must be between ${BloodPressureConstants.spo2Min}–${BloodPressureConstants.spo2Max} ${BloodPressureField.spo2.siUnit}';
             }
             return null;
           },
         ),
         NCTextFieldConfig(
-          key: BloodPressureField.time.name,
-          hintText: 'Time',
+          key: BloodPressureField.time.fieldKey,
+          hintText: BloodPressureField.time.hintText,
           controller: timeController,
           keyboardType: TextInputType.none,
           activeIcon: Icons.timer_rounded,
@@ -176,22 +191,22 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
         children: [
           Row(
             children: [
-              Expanded(child: fields[BloodPressureField.systolic.name]!),
+              Expanded(child: fields[BloodPressureField.systolic.fieldKey]!),
               hGap8,
-              Expanded(child: fields[BloodPressureField.diastolic.name]!),
+              Expanded(child: fields[BloodPressureField.diastolic.fieldKey]!),
             ],
           ),
           vGap8,
           Row(
             children: [
-              Expanded(child: fields[BloodPressureField.pulse.name]!),
+              Expanded(child: fields[BloodPressureField.pulse.fieldKey]!),
               hGap8,
-              Expanded(child: fields[BloodPressureField.spo2.name]!),
+              Expanded(child: fields[BloodPressureField.spo2.fieldKey]!),
             ],
           ),
           vGap8,
           Row(children: [
-            Expanded(child: fields[BloodPressureField.time.name]!)
+            Expanded(child: fields[BloodPressureField.time.fieldKey]!)
           ]),
           vGap16,
           buildSubmitButton(context),
@@ -250,7 +265,7 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
 
         return await firestoreService.saveEntry(
           userId: user.uid,
-          collection: 'blood_pressure',
+          collection: BloodPressureConstants.bpFirebaseCollectionName,
           docId: bpData.id,
           data: bpData.toJson(),
           successMessage: widget.bpMeasure != null

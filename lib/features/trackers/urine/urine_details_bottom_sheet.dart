@@ -7,36 +7,35 @@ import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/shared/generic_modal_sheet.dart';
-import 'package:nephro_care/features/trackers/weight/weight_enums.dart';
-import 'package:nephro_care/features/trackers/weight/weight_model.dart';
+import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
+import 'package:nephro_care/features/trackers/urine/urine_enums.dart';
+import 'package:nephro_care/features/trackers/urine/urine_model.dart';
 
-class WeightModalSheet extends StatefulWidget {
-  final WeightModel? weightInput;
+class UrineOutputModalSheet extends StatefulWidget {
+  final UrineModel? output;
 
-  const WeightModalSheet({super.key, this.weightInput});
+  const UrineOutputModalSheet({super.key, this.output});
 
   @override
-  State<WeightModalSheet> createState() => _WeightModalSheetState();
+  State<UrineOutputModalSheet> createState() => _UrineOutputModalSheetState();
 }
 
-class _WeightModalSheetState extends State<WeightModalSheet>
+class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
     with TimePickerMixin {
-  late final NCTextEditingController _weightController;
+  late final NCTextEditingController _urineQuantityController;
 
   @override
   void initState() {
     super.initState();
-    _weightController = NCTextEditingController(
-      suffix: WeightField.weightValue.unit ?? 'kg',
-    )..text = widget.weightInput?.weight.toInt().toString() ?? '';
-    initTimePicker(
-      widget.weightInput?.timestamp.toDate() ?? DateTime.now(),
-    );
+    _urineQuantityController = NCTextEditingController(
+      suffix: UrineUnits.milliliters.siUnit,
+    )..text = widget.output?.quantity.toInt().toString() ?? '';
+    initTimePicker(widget.output?.timestamp.toDate() ?? DateTime.now());
   }
 
   @override
   void dispose() {
-    _weightController.dispose();
+    _urineQuantityController.dispose();
     disposeTimePicker();
     super.dispose();
   }
@@ -44,8 +43,8 @@ class _WeightModalSheetState extends State<WeightModalSheet>
   @override
   Widget build(BuildContext context) {
     return GenericInputModalSheet(
-      title: 'Enter Weight Details:',
-      editTitle: 'Edit Weight',
+      title: 'Enter Urine Output Details:',
+      editTitle: 'Edit Urine Output',
       primaryColor: Theme.of(context).colorScheme.primary,
       secondaryColor: Theme.of(context).colorScheme.primaryContainer,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
@@ -54,32 +53,40 @@ class _WeightModalSheetState extends State<WeightModalSheet>
       dividerWidthFactor: 0.15,
       inputFields: [
         NCTextFieldConfig(
-          key: WeightField.weightValue.name,
-          controller: _weightController,
-          hintText: 'Weight (${WeightField.weightValue.unit})',
+          key: Urine.quantity.fieldKey,
+          controller: _urineQuantityController,
+          hintText:
+              '${Urine.quantity.hintText} in ${UrineUnits.milliliters.siUnit}',
           keyboardType: TextInputType.number,
-          activeIcon: Icons.monitor_weight,
-          inactiveIcon: Icons.monitor_weight_outlined,
-          semanticsLabel: 'Weight input in ${WeightField.weightValue.unit}',
-          initialValue: widget.weightInput?.weight.toString() ?? '',
+          activeIcon: Icons.water_drop,
+          inactiveIcon: Icons.water_drop_outlined,
+          semanticsLabel:
+              '${Urine.quantity.hintText} in ${UrineUnits.milliliters.siUnit}',
+          initialValue: widget.output?.quantity.toInt().toString() ?? '',
           validator: (value) {
-            final numericValue = _weightController.numericValue;
-            final weight = double.tryParse(numericValue);
-            if (weight == null || weight < 10 || weight > 300) {
-              return 'Please enter a valid weight (10–300 ${WeightField.weightValue.unit})';
+            final numericQuantity = _urineQuantityController.numericValue;
+            final quantity = double.tryParse(numericQuantity);
+            if (quantity == null) {
+              return 'Please enter a valid quantity.';
+            }
+            if (quantity <= 0) {
+              return 'Quantity cannot be 0 ${UrineUnits.milliliters.siUnit}.';
+            }
+            if (quantity > 1500) {
+              return 'Quantity won\'t usually exceed ${UrineConstants.urineBladderMaxCapacity} ${UrineUnits.milliliters.siUnit}.';
             }
             return null;
           },
           textInputAction: TextInputAction.next,
         ),
         NCTextFieldConfig(
-          key: WeightField.time.name,
+          key: Urine.time.fieldKey,
           hintText: 'Time',
-          controller: timeController,
           keyboardType: TextInputType.none,
           activeIcon: Icons.timer_rounded,
           inactiveIcon: Icons.timer_outlined,
           semanticsLabel: 'Time picker',
+          initialValue: timeController.text,
           readOnly: true,
           onTap: showTimePickerDialog,
           onSuffixIconTap: () {
@@ -93,14 +100,14 @@ class _WeightModalSheetState extends State<WeightModalSheet>
           textInputAction: TextInputAction.done,
         ),
       ],
-      initialData: widget.weightInput,
+      initialData: widget.output,
       layoutConfig: (context, fields, buildSubmitButton) => Column(
         children: [
           Row(
             children: [
-              Expanded(child: fields[WeightField.weightValue.name]!),
+              Expanded(child: fields[Urine.quantity.fieldKey]!),
               hGap8,
-              Expanded(child: fields[WeightField.time.name]!),
+              Expanded(child: fields[Urine.time.fieldKey]!),
             ],
           ),
           vGap16,
@@ -115,11 +122,12 @@ class _WeightModalSheetState extends State<WeightModalSheet>
           return Result(
             isSuccess: false,
             message: 'Please select a time',
-            backgroundColor: errorColor,
+            backgroundColor: Theme.of(context).colorScheme.error,
           );
         }
 
         final user = ref.read(authProvider);
+
         if (user == null) {
           return Result(
             isSuccess: false,
@@ -127,29 +135,31 @@ class _WeightModalSheetState extends State<WeightModalSheet>
             backgroundColor: errorColor,
           );
         }
-
         final dateTime = DateTime.now().copyWith(
           hour: selectedTime!.hour,
           minute: selectedTime!.minute,
         );
-
-        final weightData = WeightModel(
-          id: widget.weightInput?.id ??
+        final outputData = UrineModel(
+          id: widget.output?.id ??
               DateTime.now().millisecondsSinceEpoch.toString(),
-          weight: double.parse(_weightController.numericValue),
+          outputName: 'Urine',
+          quantity: double.parse(
+            _urineQuantityController.numericValue.isEmpty
+                ? '0'
+                : _urineQuantityController.numericValue,
+          ),
           timestamp: Timestamp.fromDate(dateTime),
         );
-
         return await firestoreService.saveEntry(
           userId: user.uid,
-          collection: 'weight',
-          docId: weightData.id,
-          data: weightData.toJson(),
-          successMessage: widget.weightInput != null
+          collection: UrineConstants.urineFirebaseCollectionName,
+          docId: outputData.id,
+          data: outputData.toJson(),
+          successMessage: widget.output != null
               ? 'Entry updated successfully'
               : 'Entry added successfully',
-          successMessageColor: successColor,
           errorMessagePrefix: 'Failed to save entry: ',
+          successMessageColor: successColor,
           errorMessageColor: errorColor,
         );
       },

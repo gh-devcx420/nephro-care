@@ -12,7 +12,20 @@
           "package_name": "com.nephrocare.nephro_care"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "917778903922-0h1l8ueb6ga3r3h5d9o01ucujg658n8r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nephrocare.nephro_care",
+            "certificate_hash": "fb697b5597a45457bbe073803f5ccd77ad94970c"
+          }
+        },
+        {
+          "client_id": "917778903922-1voojmcdnlu33ljbdd7eu7obbc1lb2rr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBzDYX10_68zVVn5h-pD8frKvin7N1qtJM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "917778903922-1voojmcdnlu33ljbdd7eu7obbc1lb2rr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "917778903922-1g0k2ibdtki5lng1p0amkke2t4clic9e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nephrocare.nephroCare"
+              }
+            }
+          ]
         }
       }
     }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -8,19 +9,22 @@ import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/shared/generic_modal_sheet.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_intake_enums.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_intake_model.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
+import 'package:nephro_care/features/trackers/fluids/fluids_model.dart';
+import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
 
-class FluidIntakeModalSheet extends StatefulWidget {
-  final FluidIntakeModel? intake;
+class FluidIntakeModalSheet extends ConsumerStatefulWidget {
+  final FluidsModel? intake;
 
   const FluidIntakeModalSheet({super.key, this.intake});
 
   @override
-  State<FluidIntakeModalSheet> createState() => _FluidIntakeModalSheetState();
+  ConsumerState<FluidIntakeModalSheet> createState() =>
+      _FluidIntakeModalSheetState();
 }
 
-class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
+class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
     with TimePickerMixin {
   late final NCTextEditingController _fluidQuantityController;
 
@@ -28,7 +32,7 @@ class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
   void initState() {
     super.initState();
     _fluidQuantityController = NCTextEditingController(
-      suffix: FluidIntakeField.fluidQuantityMl.unit ?? 'ml',
+      suffix: FluidUnits.milliliters.siUnit,
     )..text = widget.intake?.quantity.toInt().toString() ?? '';
     initTimePicker(widget.intake?.timestamp.toDate() ?? DateTime.now());
   }
@@ -42,17 +46,19 @@ class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
 
   @override
   Widget build(BuildContext context) {
+    final fluidDailyLimitProvider = ref.watch(fluidLimitProvider);
+
     return GenericInputModalSheet(
       title: 'Enter Fluid Intake Details:',
       editTitle: 'Edit Fluid Intake:',
       initialData: widget.intake,
       firestoreService: FirestoreService(),
-      initialFocusFieldKey: FluidIntakeField.fluidType.name,
+      initialFocusFieldKey: Fluids.name.fieldKey,
       primaryColor: Theme.of(context).colorScheme.primary,
       secondaryColor: Theme.of(context).colorScheme.primaryContainer,
       inputFields: [
         NCTextFieldConfig(
-          key: FluidIntakeField.fluidType.name,
+          key: Fluids.name.fieldKey,
           initialValue: widget.intake?.fluidName ?? 'Water',
           hintText: 'Fluid Name',
           semanticsLabel: 'Fluid name input',
@@ -62,19 +68,20 @@ class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
             if (value == null || value.isEmpty) {
               return 'Please enter a valid fluids name';
             }
-            if (value.length > 18) {
-              return 'Fluid name too long';
+            if (value.length > FluidConstants.fluidNameMaxChars) {
+              return 'Fluid name too long.\nMaximum ${FluidConstants.fluidNameMaxChars} characters allowed.';
             }
             return null;
           },
-          nextFieldKey: FluidIntakeField.fluidQuantityMl.name,
+          nextFieldKey: Fluids.quantity.fieldKey,
         ),
         NCTextFieldConfig(
-          key: FluidIntakeField.fluidQuantityMl.name,
+          key: Fluids.quantity.fieldKey,
           controller: _fluidQuantityController,
-          hintText: 'Quantity (${FluidIntakeField.fluidQuantityMl.unit})',
+          hintText:
+              '${Fluids.quantity.hintText} in ${FluidUnits.milliliters.siUnit}',
           semanticsLabel:
-              'Quantity input in ${FluidIntakeField.fluidQuantityMl.unit}',
+              '${Fluids.quantity.hintText} in ${FluidUnits.milliliters.siUnit}',
           activeIcon: Icons.water_drop,
           inactiveIcon: Icons.water_drop_outlined,
           keyboardType: TextInputType.number,
@@ -85,20 +92,20 @@ class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
             final quantity = double.tryParse(numericValue);
 
             if (quantity == null) {
-              return 'Please enter a valid quantity';
+              return 'Please enter a valid quantity.';
             }
             if (quantity <= 0) {
-              return 'Quantity cannot be 0 ${FluidIntakeField.fluidQuantityMl.unit}.';
+              return 'Quantity cannot be 0 ${FluidUnits.milliliters.siUnit}.';
             }
-            if (quantity > 1500) {
-              return 'Quantity cannot exceed 1500 ${FluidIntakeField.fluidQuantityMl.unit}.';
+            if (quantity > fluidDailyLimitProvider) {
+              return 'Quantity cannot exceed $fluidDailyLimitProvider ${FluidUnits.milliliters.siUnit}.\nAdjust the limit in settings.';
             }
             return null;
           },
-          nextFieldKey: FluidIntakeField.time.name,
+          nextFieldKey: Fluids.time.fieldKey,
         ),
         NCTextFieldConfig(
-          key: FluidIntakeField.time.name,
+          key: Fluids.time.fieldKey,
           hintText: 'Time',
           controller: timeController,
           keyboardType: TextInputType.none,
@@ -121,15 +128,13 @@ class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
       ],
       layoutConfig: (context, fields, buildSubmitButton) => Column(
         children: [
-          Row(children: [
-            Expanded(child: fields[FluidIntakeField.fluidType.name]!)
-          ]),
+          Row(children: [Expanded(child: fields[Fluids.name.fieldKey]!)]),
           vGap8,
           Row(
             children: [
-              Expanded(child: fields[FluidIntakeField.fluidQuantityMl.name]!),
+              Expanded(child: fields[Fluids.quantity.fieldKey]!),
               hGap8,
-              Expanded(child: fields[FluidIntakeField.time.name]!),
+              Expanded(child: fields[Fluids.time.fieldKey]!),
             ],
           ),
           vGap16,
@@ -163,17 +168,17 @@ class _FluidIntakeModalSheetState extends State<FluidIntakeModalSheet>
           minute: selectedTime!.minute,
         );
 
-        final intakeData = FluidIntakeModel(
+        final intakeData = FluidsModel(
           id: widget.intake?.id ??
               DateTime.now().millisecondsSinceEpoch.toString(),
-          fluidName: values[FluidIntakeField.fluidType.name]!,
+          fluidName: values[Fluids.name.fieldKey]!,
           quantity: double.parse(_fluidQuantityController.numericValue),
           timestamp: Timestamp.fromDate(dateTime),
         );
 
         return await firestoreService.saveEntry(
           userId: user.uid,
-          collection: 'fluids',
+          collection: FluidConstants.fluidFirebaseCollectionName,
           docId: intakeData.id,
           data: intakeData.toJson(),
           successMessage: widget.intake != null

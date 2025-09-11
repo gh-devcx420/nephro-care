@@ -5,6 +5,7 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/shared/generic_log_screen.dart';
+import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_monitor_model.dart';
 
 class BPMonitorStateNotifier
@@ -30,7 +31,7 @@ class BPMonitorStateNotifier
       final snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('blood_pressure')
+          .collection(BloodPressureConstants.bpFirebaseCollectionName)
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
@@ -69,7 +70,7 @@ class BPMonitorStateNotifier
       final stream = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('blood_pressure')
+          .collection(BloodPressureConstants.bpFirebaseCollectionName)
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))

@@ -1,121 +1,124 @@
-// urine_unit.dart
-
-// Import your enum: import 'package:your_app/features/trackers/urine/urine_output_enums.dart';
-
 import 'package:intl/intl.dart';
 import 'package:nephro_care/features/shared/tracker_utils.dart';
-import 'package:nephro_care/features/trackers/urine/urine_output_enums.dart';
+import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
+import 'package:nephro_care/features/trackers/urine/urine_enums.dart';
 
-/// UrineUnit handles formatting urine output measurements
-/// Very similar to FluidUnit but uses UrineOutputField enum
-class UrineUnit extends MeasurementUnit {
-  // ===== IMPLEMENT ABSTRACT PROPERTIES =====
+class UrineUtils implements TrackerUtils<UrineUnits> {
+  static final _invalidUrineMeasure = Measurement.invalid<UrineUnits>();
 
-  @override
-  String? get basicSIUnit => UrineOutputField.urineQuantityML.unit; // "ml"
-
-  @override
-  NumberFormat? get formatter =>
-      UrineOutputField.urineQuantityML.numberFormat; // NumberFormat('#')
-
-  // ===== IMPLEMENT ABSTRACT METHOD =====
+  bool _isValidSource(Measurement<UrineUnits> source) {
+    return source.isValid &&
+        source.unit != null &&
+        source.value != null &&
+        source.unit is UrineUnits &&
+        source.value! >= 0;
+  }
 
   @override
-  FormattedMeasurement format(dynamic input) {
-    final double? numericValue = MeasurementUnit.parseValue(input);
+  UrineUnits get baseUnit => UrineUnits.milliliters;
 
-    if (numericValue == null || numericValue < 0) {
-      return FormattedMeasurement.invalid;
+  @override
+  NumberFormat get baseUnitFormat => UrineUnits.milliliters.valueFormat;
+
+  @override
+  Measurement<UrineUnits> format(num value) {
+    final processedValue = value.toDouble();
+
+    if (processedValue < 0) return _invalidUrineMeasure;
+
+    final baseMeasurement = Measurement<UrineUnits>(
+      value: processedValue,
+      formattedValue: baseUnitFormat.format(processedValue),
+      unit: UrineUnits.milliliters,
+      unitString: UrineUnits.milliliters.siUnit,
+      isValid: true,
+    );
+
+    return autoFormat(source: baseMeasurement);
+  }
+
+  /// Converts any measurement to the appropriate unit (auto-scaling)
+  Measurement<UrineUnits> autoFormat(
+      {required Measurement<UrineUnits> source}) {
+    if (!_isValidSource(source)) return _invalidUrineMeasure;
+
+    final sourceValue = source.value!;
+
+    if (sourceValue >= UrineConstants.conversionThreshold) {
+      return formatAsLitres(source);
     }
 
-    return _formatWithSmartUnit(numericValue);
+    final formattedValue =
+        UrineUnits.milliliters.valueFormat.format(sourceValue);
+
+    return Measurement<UrineUnits>(
+      value: sourceValue,
+      formattedValue: formattedValue,
+      unit: UrineUnits.milliliters,
+      unitString: UrineUnits.milliliters.siUnit,
+      isValid: true,
+    );
   }
 
-  // ===== URINE-SPECIFIC METHODS =====
+  /// Converts any measurement to milliliters
+  Measurement<UrineUnits> formatAsMilliliters(Measurement<UrineUnits> source) {
+    if (!_isValidSource(source)) return _invalidUrineMeasure;
 
-  /// Smart formatting: automatically choose ml or L based on value
-  FormattedMeasurement _formatWithSmartUnit(double mlValue) {
-    // If >= 1000ml, show in liters for readability
-    if (mlValue >= 1000) {
-      return formatAsLiters(mlValue);
+    final sourceUnit = source.unit as UrineUnits;
+    final sourceValue = source.value!;
+
+    double mlValue;
+    if (sourceUnit == UrineUnits.litres) {
+      mlValue = sourceValue * UrineConstants.conversionThreshold;
+    } else {
+      mlValue = sourceValue;
     }
 
-    return formatAsMilliliters(mlValue);
+    final formattedValue = UrineUnits.milliliters.valueFormat.format(mlValue);
+
+    return Measurement<UrineUnits>(
+      value: mlValue,
+      formattedValue: formattedValue,
+      unit: UrineUnits.milliliters,
+      unitString: UrineUnits.milliliters.siUnit,
+      isValid: true,
+    );
   }
 
-  /// Force format as milliliters: 350 -> "350 ml"
-  FormattedMeasurement formatAsMilliliters(double mlValue) {
-    return createFormattedMeasurement(
-        mlValue,
-        UrineOutputField.urineQuantityML.unit, // "ml"
-        UrineOutputField.urineQuantityML.numberFormat // NumberFormat('#')
-        );
+  /// Converts any measurement to liters
+  Measurement<UrineUnits> formatAsLitres(Measurement<UrineUnits> source) {
+    if (!_isValidSource(source)) return _invalidUrineMeasure;
+
+    final sourceUnit = source.unit as UrineUnits;
+    final sourceValue = source.value!;
+
+    if (sourceUnit == UrineUnits.litres) return source;
+
+    final litresValue = sourceValue / UrineConstants.conversionThreshold;
+
+    final formattedValue = UrineUnits.litres.valueFormat.format(litresValue);
+
+    return Measurement<UrineUnits>(
+      value: litresValue,
+      formattedValue: formattedValue,
+      unit: UrineUnits.litres,
+      unitString: UrineUnits.litres.siUnit,
+      isValid: true,
+    );
   }
 
-  /// Force format as liters: 1200 -> "1.20 L"
-  FormattedMeasurement formatAsLiters(double mlValue) {
-    final liters = convertMlToLiters(mlValue);
-
-    return createFormattedMeasurement(
-        liters,
-        UrineOutputField.urineQuantityL.unit, // "L"
-        UrineOutputField.urineQuantityL.numberFormat // NumberFormat('#.##')
-        );
-  }
-
-  /// Format a value that's already in liters: 1.2 -> "1.20 L"
-  FormattedMeasurement formatLiterValue(double literValue) {
-    return createFormattedMeasurement(
-        literValue,
-        UrineOutputField.urineQuantityL.unit, // "L"
-        UrineOutputField.urineQuantityL.numberFormat // NumberFormat('#.##')
-        );
-  }
-
-  // ===== CONVERSION HELPERS =====
-
-  /// Convert milliliters to liters: 1200ml -> 1.2L
-  double convertMlToLiters(double ml) => ml / 1000;
-
-  /// Convert liters to milliliters: 1.2L -> 1200ml
-  double convertLitersToMl(double liters) => liters * 1000;
-
-  /// Convert between urine measurement units
-  double convertBetween({
-    required double value,
-    required UrineOutputField from,
-    required UrineOutputField to,
+  /// Converts between any two urine units
+  Measurement<UrineUnits> formatBetween({
+    required Measurement<UrineUnits> source,
+    required UrineUnits target,
   }) {
-    // Skip non-quantity fields
-    if (!from.isQuantity || !to.isQuantity) return value;
-
-    // Same unit - no conversion
-    if (from == to) return value;
-
-    // ml to L
-    if (from == UrineOutputField.urineQuantityML &&
-        to == UrineOutputField.urineQuantityL) {
-      return convertMlToLiters(value);
+    if (!_isValidSource(source) || source.unit == target) {
+      return source.unit == target ? source : _invalidUrineMeasure;
     }
 
-    // L to ml
-    if (from == UrineOutputField.urineQuantityL &&
-        to == UrineOutputField.urineQuantityML) {
-      return convertLitersToMl(value);
-    }
-
-    return value;
-  }
-
-  /// Format a value in a specific unit
-  FormattedMeasurement formatAs(double value, UrineOutputField targetUnit) {
-    switch (targetUnit) {
-      case UrineOutputField.urineQuantityML:
-        return formatAsMilliliters(value);
-      case UrineOutputField.urineQuantityL:
-        return formatAsLiters(value);
-      default:
-        return FormattedMeasurement.invalid; // Can't format non-quantity fields
-    }
+    return switch (target) {
+      UrineUnits.milliliters => formatAsMilliliters(source),
+      UrineUnits.litres => formatAsLitres(source),
+    };
   }
 }

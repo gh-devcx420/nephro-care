@@ -1,14 +1,12 @@
 buildscript {
     repositories {
-        google() // Tells Gradle to look in Google's repository for dependencies
-        mavenCentral() // Another repository for dependencies
+        google()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.4.0'
-        // Android Gradle plugin (already present in Flutter projects)
+        classpath 'com.android.tools.build:gradle:8.13.0'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10'
-        // Kotlin plugin (already present)
-        classpath 'com.google.gms:google-services:4.4.2' // Add this for Firebase
+        classpath 'com.google.gms:google-services:4.4.3'
     }
 }
 

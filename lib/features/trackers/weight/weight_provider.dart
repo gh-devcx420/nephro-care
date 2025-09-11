@@ -5,6 +5,7 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/shared/generic_log_screen.dart';
+import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
 import 'package:nephro_care/features/trackers/weight/weight_model.dart';
 
 class WeightStateNotifier
@@ -28,7 +29,7 @@ class WeightStateNotifier
       final snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('weight')
+          .collection(WeightConstants.weightFirebaseCollectionName)
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
@@ -65,7 +66,7 @@ class WeightStateNotifier
       final stream = FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('weight')
+          .collection(WeightConstants.weightFirebaseCollectionName)
           .where('timestamp',
               isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))

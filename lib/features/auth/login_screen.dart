@@ -95,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isLight = theme.brightness == Brightness.light;
-    const svgDimensions = Size(220, 220);
+    const svgDimensions = Size(300, 300);
 
     // Handle navigation after user state change
     ref.listen<dynamic>(authProvider, (previous, next) {
@@ -122,9 +122,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 80),
+                // const SizedBox(height: 40),
                 // Fixed spacing instead of percentage
                 Container(
                   height: svgDimensions.height,
@@ -151,7 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 160),
                 // Fixed spacing
                 Text(
                   'Welcome to NephroCare',

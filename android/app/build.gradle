@@ -9,7 +9,7 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace = "com.nephrocare.nephro_care"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

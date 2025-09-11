@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_tracker_provider.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_tracker_provider.dart';
-import 'package:nephro_care/features/trackers/urine/urine_tracker_provider.dart';
+import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
+import 'package:nephro_care/features/trackers/urine/urine_provider.dart';
 
 final summaryProvider = Provider<
     AsyncValue<
