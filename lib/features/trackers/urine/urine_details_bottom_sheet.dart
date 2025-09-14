@@ -6,7 +6,7 @@ import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
-import 'package:nephro_care/features/shared/generic_modal_sheet.dart';
+import 'package:nephro_care/features/trackers/generic/generic_modal_sheet.dart';
 import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
 import 'package:nephro_care/features/trackers/urine/urine_enums.dart';
 import 'package:nephro_care/features/trackers/urine/urine_model.dart';

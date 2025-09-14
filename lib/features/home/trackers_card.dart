@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
-import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_tracker_button.dart';
@@ -20,11 +19,6 @@ class TrackersMenuCard extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Iconify(
-                MaterialSymbols.auto_graph_rounded,
-                size: 18,
-              ),
-              hGap4,
               Text(
                 'Trackers',
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(

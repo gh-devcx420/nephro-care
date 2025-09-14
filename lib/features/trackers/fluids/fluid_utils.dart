@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
-import 'package:nephro_care/features/shared/tracker_utils.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
 
 class FluidUtils implements TrackerUtils<FluidUnits> {
   static final _invalidFluidMeasure = Measurement.invalid<FluidUnits>();

@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
-import 'package:nephro_care/features/shared/tracker_utils.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
 
 class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
   static final _invalidBPMeasure = Measurement.invalid<BloodPressureField>();

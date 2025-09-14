@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nephro_care/core/themes/theme_model.dart';
-import 'package:nephro_care/features/shared/tracker_enums.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_enums.dart';
 
 abstract class AppColorScheme {
   static ThemeColorScheme eightball = const ThemeColorScheme(

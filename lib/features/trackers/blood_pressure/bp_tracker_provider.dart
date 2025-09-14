@@ -4,9 +4,9 @@ import 'package:nephro_care/core/constants/provider_constants.dart';
 import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
-import 'package:nephro_care/features/shared/generic_log_screen.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_monitor_model.dart';
+import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 
 class BPMonitorStateNotifier
     extends StateNotifier<AsyncValue<Cache<BPTrackerModel>>> {

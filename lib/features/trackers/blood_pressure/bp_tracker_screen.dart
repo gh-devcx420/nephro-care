@@ -7,13 +7,12 @@ import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
-import 'package:nephro_care/features/shared/generic_log_screen.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_monitor_model.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_tracker_modal_sheet.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_tracker_provider.dart';
-import 'package:nephro_care/features/trackers/blood_pressure/bp_utils.dart';
+import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 
 class BPTrackerLogScreen extends ConsumerWidget {
   const BPTrackerLogScreen({super.key});
@@ -241,12 +240,8 @@ class BPTrackerLogScreen extends ConsumerWidget {
                   UIUtils.createRichTextValueWithUnit(
                     prefixText: '• Average Pulse: ',
                     prefixStyle: theme.textTheme.bodySmall,
-                    value: BloodPressureUtils()
-                        .formatSystolic(averagePulse)
-                        .formattedValue!,
-                    unit: BloodPressureUtils()
-                        .formatSystolic(averagePulse)
-                        .unitString!,
+                    value: '$averagePulse',
+                    unit: BloodPressureField.systolic.siUnit,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,

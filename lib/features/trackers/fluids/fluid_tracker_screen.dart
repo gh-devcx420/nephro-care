@@ -7,13 +7,13 @@ import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
-import 'package:nephro_care/features/shared/generic_log_screen.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_utils.dart';
 import 'package:nephro_care/features/trackers/fluids/fluids_model.dart';
 import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
+import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 
 class FluidIntakeLogScreen extends ConsumerWidget {
   const FluidIntakeLogScreen({super.key});

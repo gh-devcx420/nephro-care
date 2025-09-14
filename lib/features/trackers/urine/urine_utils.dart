@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:nephro_care/features/shared/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
 import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
 import 'package:nephro_care/features/trackers/urine/urine_enums.dart';
 

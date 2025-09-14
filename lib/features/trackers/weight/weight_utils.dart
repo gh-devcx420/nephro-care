@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:nephro_care/features/shared/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
 import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
 import 'package:nephro_care/features/trackers/weight/weight_enums.dart';
 

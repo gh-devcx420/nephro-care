@@ -26,8 +26,9 @@ class NCAppbar extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          hGap2,
           CircleAvatar(
-            radius: 16,
+            radius: 18,
             backgroundImage:
                 user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
             backgroundColor: user?.photoURL == null
@@ -37,7 +38,7 @@ class NCAppbar extends ConsumerWidget {
                 ? const Iconify(Bx.bxs_user_circle)
                 : null,
           ),
-          hGap10,
+          hGap8,
           RichText(
             text: TextSpan(
               style: Theme.of(context).textTheme.labelMedium!.copyWith(

@@ -51,7 +51,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final loadedString = await SVGUtils.loadMultiColorSvg(
         context,
-        'assets/svg/doctor.svg',
+        'assets/svg/nc_doctor.svg',
         colorMap,
       );
 
@@ -95,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isLight = theme.brightness == Brightness.light;
-    const svgDimensions = Size(300, 300);
+    const svgDimensions = Size(370, 370);
 
     // Handle navigation after user state change
     ref.listen<dynamic>(authProvider, (previous, next) {
@@ -136,8 +136,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Center(
                     child: ClipRect(
                       child: SizedBox(
-                        height: svgDimensions.height * 0.7,
-                        width: svgDimensions.width * 0.7,
+                        height: svgDimensions.height * 0.8,
+                        width: svgDimensions.width * 0.8,
                         child: _processedSvgString != null &&
                                 _processedSvgString!.isNotEmpty
                             ? SvgPicture.string(
