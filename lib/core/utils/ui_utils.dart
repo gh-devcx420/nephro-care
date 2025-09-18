@@ -4,6 +4,51 @@ import 'package:intl/intl.dart';
 import 'package:nephro_care/core/widgets/nc_alert_dialogue.dart';
 
 class UIUtils {
+  static Future<bool> showNCConfirmationDialog({
+    required BuildContext context,
+    required String title,
+    required String content,
+    Color? titleColor,
+    String confirmText = 'Confirm',
+    Color? cancelColor,
+    Color? confirmColor,
+  }) async {
+    final theme = Theme.of(context);
+    final result = await showNCAlertDialog(
+      context: context,
+      titleText: title,
+      titleColor: titleColor,
+      content: Text(
+        content,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
+      ),
+      action1: TextButton(
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          Navigator.of(context).pop(false);
+        },
+        style: TextButton.styleFrom(
+          foregroundColor: cancelColor ?? theme.colorScheme.onSurface,
+        ),
+        child: const Text('Cancel'),
+      ),
+      action2: ElevatedButton(
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          Navigator.of(context).pop(true);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: confirmColor ?? theme.colorScheme.error,
+        ),
+        child: Text(confirmText),
+      ),
+    );
+    return result ?? false;
+  }
+
   static void showNCSnackBar({
     required BuildContext context,
     required String message,
@@ -22,47 +67,6 @@ class UIUtils {
           ),
         );
     }
-  }
-
-  // Utility Function to show a confirmation dialog with
-  // customizable title, content, and confirm button.
-  static Future<bool> showNCConfirmationDialog({
-    required BuildContext context,
-    required String title,
-    required String content,
-    String confirmText = 'Confirm',
-    Color? confirmColor,
-  }) async {
-    final theme = Theme.of(context);
-    final result = await showNCAlertDialog(
-      context: context,
-      titleText: title,
-      content: Text(
-        content,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-      ),
-      action1: TextButton(
-        onPressed: () {
-          HapticFeedback.lightImpact();
-          Navigator.of(context).pop(false);
-        },
-        child: const Text('Cancel'),
-      ),
-      action2: ElevatedButton(
-        onPressed: () {
-          HapticFeedback.lightImpact();
-          Navigator.of(context).pop(true);
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: confirmColor ?? theme.colorScheme.error,
-        ),
-        child: Text(confirmText),
-      ),
-    );
-    return result ?? false;
   }
 
   static RichText createRichTextValueWithUnit({

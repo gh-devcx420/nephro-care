@@ -21,13 +21,16 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Settings'),
         titleSpacing: 0,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         leading: IconButton(
           onPressed: () {
             ScaffoldMessenger.of(context).clearSnackBars();
             Navigator.of(context).pop();
           },
-          color: Theme.of(context).colorScheme.primary,
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
         automaticallyImplyLeading: false,
       ),

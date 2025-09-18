@@ -33,6 +33,7 @@ class TrackersMenuCard extends ConsumerWidget {
           scrollDirection: Axis.horizontal,
           child: IntrinsicHeight(
             child: Row(
+              spacing: 4,
               children: [
                 NCTrackerButton(
                   buttonTap: () {

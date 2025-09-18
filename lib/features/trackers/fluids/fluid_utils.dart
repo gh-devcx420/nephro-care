@@ -37,7 +37,6 @@ class FluidUtils implements TrackerUtils<FluidUnits> {
     return autoFormat(source: baseMeasurement);
   }
 
-  /// Converts any measurement to the appropriate unit (auto-scaling)
   Measurement<FluidUnits> autoFormat(
       {required Measurement<FluidUnits> source}) {
     if (!_isValidSource(source)) return _invalidFluidMeasure;
@@ -60,7 +59,6 @@ class FluidUtils implements TrackerUtils<FluidUnits> {
     );
   }
 
-  /// Converts any measurement to milliliters
   Measurement<FluidUnits> formatAsMilliliters(Measurement<FluidUnits> source) {
     if (!_isValidSource(source)) return _invalidFluidMeasure;
 
@@ -85,7 +83,6 @@ class FluidUtils implements TrackerUtils<FluidUnits> {
     );
   }
 
-  /// Converts any measurement to liters
   Measurement<FluidUnits> formatAsLitres(Measurement<FluidUnits> source) {
     if (!_isValidSource(source)) return _invalidFluidMeasure;
 
@@ -106,7 +103,6 @@ class FluidUtils implements TrackerUtils<FluidUnits> {
     );
   }
 
-  /// Converts between any two fluid units
   Measurement<FluidUnits> formatBetween({
     required Measurement<FluidUnits> source,
     required FluidUnits target,

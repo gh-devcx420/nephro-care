@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/themes/theme_config.dart';
-import 'package:nephro_care/core/themes/themes_provider.dart';
+import 'package:nephro_care/core/themes/theme_enums.dart';
+import 'package:nephro_care/core/themes/theme_provider.dart';
 
 class ThemeSettingsScreen extends ConsumerWidget {
   const ThemeSettingsScreen({super.key});
@@ -20,7 +21,7 @@ class ThemeSettingsScreen extends ConsumerWidget {
             ScaffoldMessenger.of(context).clearSnackBars();
             Navigator.of(context).pop();
           },
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.onSurface,
           icon: const Icon(Icons.arrow_back),
         ),
         automaticallyImplyLeading: false,
@@ -51,10 +52,9 @@ class ThemeSettingsScreen extends ConsumerWidget {
                       left: 12,
                     ),
                     child: Text(
-                      themeItem.value.identifier,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: themeItem
-                                .value.colorScheme.light.secondaryContainer,
+                      themeItem.value.displayName,
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -62,7 +62,7 @@ class ThemeSettingsScreen extends ConsumerWidget {
                   trailing: Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Iconify(
-                      themeItem.value.themeIcon,
+                      themeItem.key.iconIdentifier,
                       color: themeItem.value.colorScheme.light.primary,
                     ),
                   ),

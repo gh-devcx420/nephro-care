@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:nephro_care/core/constants/strings.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
-import 'package:nephro_care/core/themes/color_schemes.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_alert_dialogue.dart';
-import 'package:nephro_care/core/widgets/nc_icon_button.dart';
+import 'package:nephro_care/core/widgets/nc_date_picker.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
@@ -31,9 +31,6 @@ class LogScreen<T> extends ConsumerStatefulWidget {
   final String? headerText;
   final String? headerTitleString;
   final Widget Function(List<T> items)? headerActionButton;
-  final Color primaryColor;
-  final Color secondaryColor;
-  final Color backgroundColor;
   final FirestoreService firestoreService;
   final IconData listItemIcon;
   final StreamProviderFamily<Cache<T>, (String, DateTime)> dataProvider;
@@ -52,9 +49,6 @@ class LogScreen<T> extends ConsumerStatefulWidget {
     this.headerActionButton,
     this.headerText,
     this.headerTitleString,
-    required this.primaryColor,
-    required this.secondaryColor,
-    required this.backgroundColor,
     required this.firestoreService,
     required this.listItemIcon,
     required this.dataProvider,
@@ -72,6 +66,10 @@ class LogScreen<T> extends ConsumerStatefulWidget {
 }
 
 class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
+  static const double _minButtonHeight = kMinButtonHeight;
+  static const double _minButtonWidth = kMinButtonWidth;
+  static const double _defaultPaddingValue = 4.0;
+  static const double _deffaultRoundness = _defaultPaddingValue * 4;
   bool _isPressed = false;
 
   void _showSnackBar({
@@ -98,8 +96,10 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       child: Material(
         type: MaterialType.transparency,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: InkWell(
@@ -108,23 +108,27 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 Navigator.pop(context, value);
               },
               borderRadius: BorderRadius.circular(8),
-              splashColor: widget.primaryColor.withValues(alpha: 0.3),
+              splashColor:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
               highlightColor: Colors.transparent,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 6,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
                       icon,
                       size: 26,
-                      color: widget.primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     hGap8,
                     Text(
                       text,
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: widget.primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -151,7 +155,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
         final result = await showNCAlertDialog(
           context: context,
           titleText: Strings.logDetails,
-          titleColor: widget.primaryColor,
+          titleColor: Theme.of(context).colorScheme.primary,
           content: widget.logDetailsDialogBuilder(context, summary),
           action1: const SizedBox(),
           action2: ElevatedButton(
@@ -159,6 +163,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
               HapticFeedback.selectionClick();
               Navigator.of(context).pop(true);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
             child: const Text(
               Strings.okButton,
             ),
@@ -169,7 +176,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       loading: () {
         _showSnackBar(
           message: 'Loading summary...',
-          backgroundColor: widget.primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.primary,
         );
         return false;
       },
@@ -206,7 +213,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       content:
           '${Strings.editEntryContentPrefix}${widget.appBarTitle.toLowerCase()}${Strings.entrySuffix}',
       confirmText: Strings.editConfirmText,
-      confirmColor: widget.primaryColor,
+      confirmColor: Theme.of(context).colorScheme.primary,
     );
   }
 
@@ -272,8 +279,10 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
     return UIUtils.showNCConfirmationDialog(
       context: context,
       title: Strings.deleteAllEntriesTitle,
+      titleColor: Theme.of(context).colorScheme.primary,
       content:
           '${Strings.deleteAllEntriesContentPrefix}${widget.appBarTitle.toLowerCase()}${Strings.entriesForDateSuffix}',
+      cancelColor: Theme.of(context).colorScheme.primary,
       confirmText: Strings.deleteAllConfirmText,
     );
   }
@@ -318,11 +327,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
   @override
   Widget build(BuildContext context) {
     final errorColor = Theme.of(context).colorScheme.error;
-    final successColor = AppColors.successColor;
+    const successColor = AppColors.successColor;
     final selectedDate = ref.watch(selectedDateProvider);
     final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
-    final today =
-        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     final allowDeleteAll = ref.watch(allowDeleteAllProvider);
     final dataAsync = ref.watch(widget.dataProvider(
       (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
@@ -337,58 +344,27 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
           },
           icon: Icon(
             Icons.arrow_back,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         title: Text(
           widget.appBarTitle,
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w800,
+              ),
         ),
-        backgroundColor: widget.backgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         actions: [
-          NCIconButton(
-            onButtonTap: () async {
-              if (isToday) {
-                final pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDate,
-                  firstDate: DateTime(1990),
-                  lastDate: today,
-                );
-                HapticFeedback.lightImpact();
-                if (pickedDate != null && context.mounted) {
-                  final updatedDate = DateTime(
-                    pickedDate.year,
-                    pickedDate.month,
-                    pickedDate.day,
-                  );
-                  ref.read(selectedDateProvider.notifier).state = updatedDate;
-                  UIUtils.showNCSnackBar(
-                    context: context,
-                    message:
-                        'Showing Entries for ${DateTimeUtils.formatDateDM(updatedDate)}',
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    durationSeconds: 2,
-                  );
-                }
-              } else {
-                final updatedDate = today;
-                ref.read(selectedDateProvider.notifier).state = updatedDate;
-                UIUtils.showNCSnackBar(
-                  context: context,
-                  message: 'Showing Entries for Today',
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  durationSeconds: 1,
-                );
-              }
-            },
-            buttonIcon: isToday ? Icons.calendar_month : null,
-            iconifyIcon: !isToday ? const Iconify(Mdi.calendar_refresh) : null,
-            buttonText: !isToday ? 'Reset' : null,
-            buttonBackgroundColor: Theme.of(context).colorScheme.primary,
-            iconColor: Theme.of(context).colorScheme.onPrimary,
+          NCDatePicker(
+            dateProvider: selectedDateProvider,
+            dateFormatter: DateTimeUtils.formatDateDM,
+            prefixIcon: Icons.calendar_month,
+            suffixIconifyIcon: const Iconify(MaterialSymbols.replay),
+            //logScreenColorScheme: Theme.of(context).colorScheme.,
           ),
           hGap4,
           InkWell(
@@ -402,12 +378,11 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                   button.localToGlobal(
                       Offset(button.size.width,
                           MediaQuery.of(context).padding.top),
-                      // This sets the topmost position (below status bar)
                       ancestor: overlay),
                   button.localToGlobal(
-                      button.size.bottomRight(Offset(
-                          MediaQuery.of(context).padding.top,
-                          0)), // Adjust bottom-right to align with top
+                      button.size.bottomRight(
+                        Offset(MediaQuery.of(context).padding.top, 0),
+                      ),
                       ancestor: overlay),
                 ),
                 Offset.zero & overlay.size,
@@ -436,7 +411,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 context: context,
                 position: position,
                 items: itemsList,
-                color: widget.backgroundColor,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 elevation: 8,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -471,21 +446,25 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
             },
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(_deffaultRoundness),
             child: AnimatedScale(
-              scale: _isPressed ? 0.9 : 1.0,
-              duration: const Duration(milliseconds: 200),
+              scale: _isPressed ? kAnimationScaleMin : kAnimationScaleMax,
+              duration: kButtonTapDuration,
               curve: Curves.easeInOut,
               child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(24),
+                constraints: const BoxConstraints(
+                  minHeight: _minButtonHeight,
+                  minWidth: _minButtonWidth,
                 ),
-                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(_deffaultRoundness),
+                ),
+                padding: const EdgeInsets.all(_defaultPaddingValue),
                 child: Icon(
                   Icons.more_vert,
                   size: kButtonIconSize,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
               ),
             ),
@@ -493,7 +472,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
           hGap8,
         ],
       ),
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.only(
           left: 8,
@@ -509,18 +488,20 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 if (logItems.isNotEmpty)
                   Container(
                     width: double.infinity,
-                    color: widget.backgroundColor,
+                    color: Theme.of(context).colorScheme.surface,
                     padding: const EdgeInsets.only(left: 4.0),
                     child: Row(
                       children: [
                         Text(
                           widget.headerText ??
                               'Total ${widget.headerTitleString?.toLowerCase()} ${isToday ? 'for today :' : 'on ${DateTimeUtils.formatDateDM(selectedDate)}'}',
-                          style:
-                              Theme.of(context).textTheme.titleLarge!.copyWith(
-                                    //color: widget.primaryColor,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontWeight: FontWeight.w800,
+                              ),
                         ),
                         const Spacer(),
                         widget.headerActionButton != null
@@ -532,7 +513,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: widget.primaryColor,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primaryContainer,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
                                     child: UIUtils.createRichTextValueWithUnit(
@@ -544,7 +527,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                           .textTheme
                                           .titleMedium!
                                           .copyWith(
-                                            color: widget.backgroundColor,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryContainer,
                                             fontSize: kValueFontSize,
                                             fontWeight: FontWeight.w800,
                                           ),
@@ -552,7 +537,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                           .textTheme
                                           .titleMedium!
                                           .copyWith(
-                                            color: widget.backgroundColor,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimaryContainer,
                                             fontSize: kSIUnitFontSize,
                                             fontWeight: FontWeight.w800,
                                           ),
@@ -560,10 +547,13 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                   )
                                 : Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 4),
+                                      horizontal: 16,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primaryContainer,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
                                     child: Text(
@@ -574,7 +564,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                           .copyWith(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimary,
+                                                .onPrimaryContainer,
                                             fontSize: kValueFontSize,
                                             fontWeight: FontWeight.w800,
                                           ),
@@ -588,12 +578,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                       ? Center(
                           child: Text(
                             '${Strings.noEntriesPrefix}${isToday ? 'today.' : DateTimeUtils.formatDateDMY(selectedDate)} ${isToday ? '\n${Strings.addEntryPromptSuffix}${widget.appBarTitle.toLowerCase()}${Strings.toTrackNow}' : ''}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge!
-                                .copyWith(
-                                  color: widget.primaryColor,
-                                ),
+                            style: Theme.of(context).textTheme.titleLarge,
                             textAlign: TextAlign.center,
                           ),
                         )
@@ -613,7 +598,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                 clipBehavior: Clip.hardEdge,
                                 borderRadius: BorderRadius.circular(12),
                                 child: Container(
-                                  color: widget.primaryColor,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
                                   child: Dismissible(
                                     key: Key((logItem as dynamic).id),
                                     direction: isToday
@@ -659,7 +646,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                       borderRadius: BorderRadius.circular(12),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: widget.secondaryColor,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondaryContainer,
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -674,7 +663,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                               Icons.edit,
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .surfaceBright,
+                                                  .onSecondaryContainer,
                                             ),
                                             hGap16,
                                             Text(
@@ -683,8 +672,10 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                                   .textTheme
                                                   .titleMedium!
                                                   .copyWith(
-                                                    color:
-                                                        widget.backgroundColor,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSecondaryContainer,
+                                                    fontWeight: FontWeight.w800,
                                                   ),
                                             ),
                                           ],
@@ -697,7 +688,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                         decoration: BoxDecoration(
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .error,
+                                              .errorContainer,
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -714,8 +705,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                                   .textTheme
                                                   .titleMedium!
                                                   .copyWith(
-                                                    color:
-                                                        widget.backgroundColor,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onErrorContainer,
                                                   ),
                                             ),
                                             hGap16,
@@ -723,7 +715,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                               Icons.delete,
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .surfaceBright,
+                                                  .onErrorContainer,
                                             ),
                                             hGap8,
                                           ],
@@ -732,7 +724,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                     ),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: widget.primaryColor,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primaryContainer,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: widget.listItemBuilder(
@@ -773,11 +767,14 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 _showAddInputModalSheet();
               },
               elevation: 10,
-              backgroundColor: widget.primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               tooltip: 'Add ${widget.appBarTitle} Entry',
               child: Semantics(
                 label: 'Add new ${widget.appBarTitle.toLowerCase()} entry',
-                child: const Icon(Icons.add),
+                child: Icon(
+                  Icons.add,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
               ),
             )
           : null,

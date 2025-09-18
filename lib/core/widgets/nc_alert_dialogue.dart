@@ -11,14 +11,11 @@ Future<dynamic> showNCAlertDialog({
   return showDialog(
     context: context,
     builder: (context) {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
       return AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        backgroundColor: isDark
-            ? Theme.of(context).colorScheme.surfaceDim
-            : Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
         title: Text(titleText),
         titleTextStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
               color: titleColor ?? Theme.of(context).colorScheme.onSurface,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nephro_care/core/themes/theme_enums.dart';
 
 class ThemeColorScheme {
   final ColorScheme light;
@@ -11,31 +12,51 @@ class ThemeColorScheme {
 }
 
 class AppThemeItem {
-  final String identifier;
+  final String displayName;
   final ThemeColorScheme colorScheme;
   final String themeIcon;
 
   const AppThemeItem({
-    required this.identifier,
+    required this.displayName,
     required this.colorScheme,
     required this.themeIcon,
   });
 }
 
-class TrackersColorScheme {
-  final Color primary;
-  final Color onPrimary;
-  final Color secondary;
-  final Color onSecondary;
-  final Color tertiary;
-  final Color background;
+class ThemeInfo {
+  final ThemeName name;
+  final String displayName;
+  final String description;
+  final String iconIdentifier;
+  final bool isProfessional;
+  final String useCase;
 
-  const TrackersColorScheme({
-    required this.primary,
-    required this.onPrimary,
-    required this.secondary,
-    required this.onSecondary,
-    required this.tertiary,
-    required this.background,
+  const ThemeInfo({
+    required this.name,
+    required this.displayName,
+    required this.description,
+    required this.iconIdentifier,
+    required this.isProfessional,
+    required this.useCase,
+  });
+}
+
+class ThemePreview {
+  final ThemeName name;
+  final String displayName;
+  final String description;
+  final String iconIdentifier;
+  final bool isProfessional;
+  final Color primaryColor;
+  final Color primaryContainerColor;
+
+  const ThemePreview({
+    required this.name,
+    required this.displayName,
+    required this.description,
+    required this.iconIdentifier,
+    required this.isProfessional,
+    required this.primaryColor,
+    required this.primaryContainerColor,
   });
 }

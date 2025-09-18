@@ -53,14 +53,17 @@ class NCIconButton extends StatefulWidget {
 }
 
 class _NCIconButtonState extends State<NCIconButton> {
+  static const double _minButtonHeight = kMinButtonHeight;
+  static const double _minButtonWidth = kMinButtonWidth;
+  static const double _defaultPaddingValue = 4.0;
+  static const double _defaultRadiusValue = (_minButtonHeight * 2);
+
   bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
-    final iconSize = widget.iconSize ?? kButtonIconSize;
-
     return AnimatedScale(
-      scale: _isPressed ? 0.9 : 1.0,
+      scale: _isPressed ? kAnimationScaleMin : kAnimationScaleMax,
       duration: kButtonTapDuration,
       curve: Curves.easeInOut,
       child: InkWell(
@@ -76,17 +79,26 @@ class _NCIconButtonState extends State<NCIconButton> {
           });
         },
         child: Container(
-          padding: widget.buttonPadding ?? const EdgeInsets.all(8.0),
+          constraints: const BoxConstraints(
+            minHeight: _minButtonHeight,
+            minWidth: _minButtonWidth,
+          ),
+          padding: widget.buttonPadding ??
+              const EdgeInsets.all(_defaultPaddingValue),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(48.0),
+            borderRadius: BorderRadius.circular(_defaultRadiusValue),
             color: widget.buttonBackgroundColor ??
-                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primaryContainer,
           ),
           child: widget.buttonChild != null
-              ? SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: Center(child: widget.buttonChild!),
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: widget.buttonChild!,
+                    ),
+                  ],
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -95,36 +107,34 @@ class _NCIconButtonState extends State<NCIconButton> {
                     if (widget.buttonIcon != null)
                       Icon(
                         widget.buttonIcon,
-                        size: iconSize,
+                        size: widget.iconSize ?? kButtonIconSize,
                         color: widget.iconColor ??
-                            Theme.of(context).colorScheme.onPrimary,
+                            Theme.of(context).colorScheme.primary,
                       )
                     else if (widget.iconifyIcon != null)
                       Iconify(
                         widget.iconifyIcon!.icon,
-                        size: iconSize,
+                        size: widget.iconSize ?? kButtonIconSize,
                         color: widget.iconColor ??
-                            Theme.of(context).colorScheme.onPrimaryContainer,
+                            Theme.of(context).colorScheme.primary,
                       )
                     else
                       Icon(
                         Icons.help_outline,
-                        size: iconSize,
+                        size: widget.iconSize ?? kButtonIconSize,
                         color: widget.iconColor ??
-                            Theme.of(context).colorScheme.onPrimaryContainer,
+                            Theme.of(context).colorScheme.primary,
                       ),
                     if (widget.buttonText != null) ...[
                       widget.buttonSpacing ?? hGap6,
                       Text(
                         widget.buttonText!,
                         style: widget.buttonTextStyle ??
-                            Theme.of(context).textTheme.titleSmall!.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
                                   fontWeight: FontWeight.w800,
                                 ),
                       ),
+                      hGap6,
                     ],
                   ],
                 ),

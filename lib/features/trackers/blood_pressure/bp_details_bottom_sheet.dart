@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
-import 'package:nephro_care/core/themes/color_schemes.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
-import 'package:nephro_care/features/trackers/blood_pressure/bp_monitor_model.dart';
+import 'package:nephro_care/features/trackers/blood_pressure/bp_model.dart';
 import 'package:nephro_care/features/trackers/generic/generic_modal_sheet.dart';
 
 class BPTrackerModalSheet extends StatefulWidget {
@@ -215,7 +215,7 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
       onSave: (values, ref, FirestoreService firestoreService) async {
         HapticFeedback.selectionClick();
 
-        final successColor = AppColors.successColor;
+        const successColor = AppColors.successColor;
         final errorColor = Theme.of(context).colorScheme.error;
 
         final user = ref.read(authProvider);

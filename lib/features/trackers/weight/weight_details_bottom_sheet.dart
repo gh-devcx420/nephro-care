@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
-import 'package:nephro_care/core/themes/color_schemes.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';

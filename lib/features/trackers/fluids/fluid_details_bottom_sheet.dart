@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
-import 'package:nephro_care/core/themes/color_schemes.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
-import 'package:nephro_care/features/trackers/fluids/fluids_model.dart';
-import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_model.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_provider.dart';
 import 'package:nephro_care/features/trackers/generic/generic_modal_sheet.dart';
 
 class FluidIntakeModalSheet extends ConsumerStatefulWidget {

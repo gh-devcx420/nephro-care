@@ -19,8 +19,6 @@ class NCAppbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final User? user = ref.watch(authProvider);
-    // final isLight =
-    //     MediaQuery.of(context).platformBrightness == Brightness.light;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
@@ -69,7 +67,7 @@ class NCAppbar extends ConsumerWidget {
             prefixIcon: Icons.calendar_month,
             suffixIconifyIcon: const Iconify(MaterialSymbols.replay),
           ),
-          hGap4, // Match GenericLogScreen's hGap8
+          hGap4,
           NCIconButton(
             onButtonTap: () {
               Navigator.of(context).push(

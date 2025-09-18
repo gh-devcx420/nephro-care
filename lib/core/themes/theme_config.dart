@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:iconify_flutter/icons/whh.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
-import 'package:nephro_care/core/themes/color_schemes.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/themes/theme_enums.dart';
 import 'package:nephro_care/core/themes/theme_model.dart';
 
-Map<ThemeName, AppThemeItem> appThemes = {
-  ThemeName.eightball: AppThemeItem(
-    identifier: 'Eight Ball',
-    colorScheme: AppColorScheme.eightball,
-    themeIcon: Whh.eightball,
-  ),
-};
+Map<ThemeName, AppThemeItem> get appThemes {
+  return {
+    for (ThemeName theme in ThemeName.values)
+      theme: AppThemeItem(
+        displayName: theme.displayName,
+        colorScheme: AppColorScheme.getThemeColors(theme),
+        themeIcon: theme.iconIdentifier,
+      ),
+  };
+}
 
 abstract class AppTheme {
-  static lightTheme(ColorScheme colorScheme) {
+  static ThemeData lightTheme(ColorScheme colorScheme) {
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
@@ -22,35 +24,41 @@ abstract class AppTheme {
         toolbarHeight: 48,
         leadingWidth: 48,
         backgroundColor: colorScheme.surfaceContainerLow,
+        foregroundColor: colorScheme.onSurfaceVariant,
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurfaceVariant,
           fontSize: 18,
           fontWeight: FontWeight.w800,
+          height: 1.27,
+          letterSpacing: 0,
         ),
         iconTheme: IconThemeData(
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurfaceVariant,
         ),
         actionsIconTheme: IconThemeData(
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurfaceVariant,
         ),
+        elevation: 0,
       ),
       scaffoldBackgroundColor: colorScheme.surface,
       iconTheme: IconThemeData(
-        color: colorScheme.onPrimary,
+        color: colorScheme.primary,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
+        elevation: 2,
       ),
       textSelectionTheme: TextSelectionThemeData(
         selectionColor: colorScheme.primaryContainer,
+        cursorColor: colorScheme.primary,
       ),
       inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
           borderSide: BorderSide(
-            color: colorScheme.primary,
+            color: colorScheme.outline,
             width: kBorderThickness,
           ),
         ),
@@ -58,7 +66,7 @@ abstract class AppTheme {
           borderRadius: BorderRadius.circular(kBorderRadius),
           borderSide: BorderSide(
             color: colorScheme.primary,
-            width: kBorderThickness,
+            width: kBorderThickness * 1.5, // Thicker when focused
           ),
         ),
         errorBorder: OutlineInputBorder(
@@ -68,21 +76,35 @@ abstract class AppTheme {
             width: kBorderThickness,
           ),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderSide: BorderSide(
+            color: colorScheme.error,
+            width: kBorderThickness * 1.5,
+          ),
+        ),
         prefixIconColor: colorScheme.primary,
+        suffixIconColor: colorScheme.onSurfaceVariant,
         filled: true,
-        fillColor: colorScheme.surfaceDim,
+        fillColor: colorScheme.surfaceContainerLowest,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           padding: WidgetStateProperty.all(kTextButtonPadding),
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
-          foregroundColor: WidgetStateProperty.all(colorScheme.primary),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return colorScheme.onSurface.withValues(alpha: 0.38);
+            }
+            return colorScheme.primary;
+          }),
           textStyle: WidgetStateProperty.all(
-            TextStyle(
+            const TextStyle(
               fontFamily: 'JosefinSans',
               fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-              color: colorScheme.onPrimary,
+              fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
@@ -90,23 +112,31 @@ abstract class AppTheme {
               borderRadius: BorderRadius.circular(kBorderRadius),
             ),
           ),
-          minimumSize: WidgetStateProperty.all(
-            const Size(0, 0),
+          overlayColor: WidgetStateProperty.all(
+            colorScheme.primary.withValues(alpha: 0.08),
           ),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           padding: WidgetStateProperty.all(kElevatedButtonPadding),
-          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return colorScheme.onSurface.withValues(alpha: 0.12);
+            }
+            return colorScheme.primary;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return colorScheme.onSurface.withValues(alpha: 0.38);
+            }
+            return colorScheme.onPrimary;
+          }),
           textStyle: WidgetStateProperty.all(
-            TextStyle(
+            const TextStyle(
               fontFamily: 'JosefinSans',
               fontSize: kElevatedButtonFontSize,
-              fontWeight: FontWeight.w800,
-              color: colorScheme.onPrimary,
+              fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
@@ -114,31 +144,36 @@ abstract class AppTheme {
               borderRadius: BorderRadius.circular(kBorderRadius),
             ),
           ),
-          minimumSize: WidgetStateProperty.all(
-            const Size(0, 0),
-          ),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          elevation: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return 0;
+            if (states.contains(WidgetState.pressed)) return 1;
+            return 2;
+          }),
         ),
       ),
       datePickerTheme: DatePickerThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: colorScheme.surfaceContainerHigh,
         headerBackgroundColor: colorScheme.primary,
         headerForegroundColor: colorScheme.onPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        dayStyle: const TextStyle(
+          fontFamily: 'JosefinSans',
+          fontWeight: FontWeight.w500,
+        ),
         todayBackgroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return colorScheme.primary;
           }
-          return colorScheme.surface;
+          return colorScheme.primaryContainer;
         }),
         dayForegroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return colorScheme.onPrimary;
           }
           if (states.contains(WidgetState.disabled)) {
-            return colorScheme.onSurface.withOpacity(0.3);
+            return colorScheme.onSurface.withValues(alpha: 0.38);
           }
           return colorScheme.onSurface;
         }),
@@ -149,176 +184,132 @@ abstract class AppTheme {
           return Colors.transparent;
         }),
         todayBorder: BorderSide.none,
-        cancelButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kTextButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onSurface),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        confirmButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kElevatedButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
-          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
       ),
       timePickerTheme: TimePickerThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: colorScheme.surfaceContainerHigh,
         hourMinuteTextColor: colorScheme.onSurface,
-        // Static color for hour/minute text
-        dayPeriodTextColor: colorScheme.onSurface,
-        // Static color for AM/PM text
-        dialBackgroundColor: colorScheme.onInverseSurface,
+        dayPeriodTextColor: colorScheme.onSurfaceVariant,
+        dialBackgroundColor: colorScheme.surfaceContainerHighest,
         dialHandColor: colorScheme.primary,
+        dialTextColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorScheme.onPrimary;
+          }
+          return colorScheme.onSurface;
+        }),
         entryModeIconColor: colorScheme.primary,
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(12), // Matches DatePickerThemeData
-        ),
-        cancelButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kTextButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onSurface),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        confirmButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kElevatedButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
-          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       listTileTheme: ListTileThemeData(
-        tileColor: colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        tileColor: colorScheme.surfaceContainerLowest,
+        selectedTileColor: colorScheme.primaryContainer,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
         ),
         iconColor: colorScheme.primary,
+        selectedColor: colorScheme.onPrimaryContainer,
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
-          fontSize: 22,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: colorScheme.primary,
+          color: colorScheme.onSurface,
         ),
-        visualDensity: VisualDensity.comfortable,
         subtitleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.primary,
+          fontWeight: FontWeight.w400,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
       dialogTheme: DialogThemeData(
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.primary,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
         ),
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          color: colorScheme.primary,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
       snackBarTheme: SnackBarThemeData(
+        backgroundColor: colorScheme.inverseSurface,
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          color: colorScheme.onPrimary,
+          color: colorScheme.onInverseSurface,
         ),
-        backgroundColor: colorScheme.primary,
+        behavior: SnackBarBehavior.fixed,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        circularTrackColor: colorScheme.primary,
-        color: colorScheme.primaryContainer,
+        color: colorScheme.primary,
+        circularTrackColor: colorScheme.primaryContainer,
+        linearTrackColor: colorScheme.primaryContainer,
       ),
-      textTheme: textTheme(
-        colorScheme.onPrimaryContainer,
-      ),
+      textTheme: textTheme(colorScheme.onSurface),
     );
   }
 
-  static darkTheme(ColorScheme colorScheme) {
+  static ThemeData darkTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.primary,
+        toolbarHeight: 48,
+        leadingWidth: 48,
+        backgroundColor: colorScheme.surfaceContainer,
+        foregroundColor: colorScheme.onSurface,
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurface,
           fontSize: 18,
           fontWeight: FontWeight.w800,
+          height: 1.27,
+          letterSpacing: 0,
         ),
         iconTheme: IconThemeData(
-          color: colorScheme.onPrimary,
+          color: colorScheme.onSurface,
         ),
         actionsIconTheme: IconThemeData(
-          color: colorScheme.onPrimary,
+          color: colorScheme.onSurface,
         ),
+        elevation: 0,
       ),
+
       scaffoldBackgroundColor: colorScheme.surface,
       iconTheme: IconThemeData(
-        color: colorScheme.onPrimary,
+        color: colorScheme.primary,
       ),
+
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
+        elevation: 2,
       ),
+
       textSelectionTheme: TextSelectionThemeData(
-        selectionColor: colorScheme.secondaryContainer,
+        selectionColor: colorScheme.primaryContainer,
+        cursorColor: colorScheme.primary,
       ),
+
+      // Dark theme input styling
       inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
           borderSide: BorderSide(
-            color: colorScheme.primary,
+            color: colorScheme.outline,
             width: kBorderThickness,
           ),
         ),
@@ -326,7 +317,7 @@ abstract class AppTheme {
           borderRadius: BorderRadius.circular(kBorderRadius),
           borderSide: BorderSide(
             color: colorScheme.primary,
-            width: kBorderThickness,
+            width: kBorderThickness * 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(
@@ -336,23 +327,36 @@ abstract class AppTheme {
             width: kBorderThickness,
           ),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderSide: BorderSide(
+            color: colorScheme.error,
+            width: kBorderThickness * 1.5,
+          ),
+        ),
         prefixIconColor: colorScheme.primary,
+        suffixIconColor: colorScheme.onSurfaceVariant,
         filled: true,
-        fillColor: colorScheme.surfaceDim,
+        fillColor: colorScheme.surfaceContainerHighest,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
+
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
-          padding: WidgetStateProperty.all(
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
+          padding: WidgetStateProperty.all(kTextButtonPadding),
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return colorScheme.onSurface.withValues(alpha: 0.38);
+            }
+            return colorScheme.primary;
+          }),
           textStyle: WidgetStateProperty.all(
-            TextStyle(
+            const TextStyle(
               fontFamily: 'JosefinSans',
               fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-              color: colorScheme.onPrimary,
+              fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
@@ -360,23 +364,32 @@ abstract class AppTheme {
               borderRadius: BorderRadius.circular(kBorderRadius),
             ),
           ),
-          minimumSize: WidgetStateProperty.all(
-            const Size(0, 0),
+          overlayColor: WidgetStateProperty.all(
+            colorScheme.primary.withValues(alpha: 0.08),
           ),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
+
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           padding: WidgetStateProperty.all(kElevatedButtonPadding),
-          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return colorScheme.onSurface.withValues(alpha: 0.12);
+            }
+            return colorScheme.primary;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return colorScheme.onSurface.withValues(alpha: 0.38);
+            }
+            return colorScheme.onPrimary;
+          }),
           textStyle: WidgetStateProperty.all(
-            TextStyle(
+            const TextStyle(
               fontFamily: 'JosefinSans',
               fontSize: kElevatedButtonFontSize,
-              fontWeight: FontWeight.w800,
-              color: colorScheme.onPrimary,
+              fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
@@ -384,31 +397,37 @@ abstract class AppTheme {
               borderRadius: BorderRadius.circular(kBorderRadius),
             ),
           ),
-          minimumSize: WidgetStateProperty.all(
-            const Size(0, 0),
-          ),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          elevation: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) return 0;
+            if (states.contains(WidgetState.pressed)) return 1;
+            return 2;
+          }),
         ),
       ),
+
       datePickerTheme: DatePickerThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: colorScheme.surfaceContainerHigh,
         headerBackgroundColor: colorScheme.primary,
         headerForegroundColor: colorScheme.onPrimary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
+        dayStyle: const TextStyle(
+          fontFamily: 'JosefinSans',
+          fontWeight: FontWeight.w500,
+        ),
         todayBackgroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return colorScheme.primary;
           }
-          return colorScheme.surface;
+          return colorScheme.primaryContainer;
         }),
         dayForegroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return colorScheme.onPrimary;
           }
           if (states.contains(WidgetState.disabled)) {
-            return colorScheme.onSurface.withOpacity(0.3);
+            return colorScheme.onSurface.withValues(alpha: 0.38);
           }
           return colorScheme.onSurface;
         }),
@@ -419,301 +438,210 @@ abstract class AppTheme {
           return Colors.transparent;
         }),
         todayBorder: BorderSide.none,
-        cancelButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kTextButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onSurface),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        confirmButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kElevatedButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
-          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
       ),
+
       timePickerTheme: TimePickerThemeData(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: colorScheme.surfaceContainerHigh,
         hourMinuteTextColor: colorScheme.onSurface,
-        // Static color for hour/minute text
-        dayPeriodTextColor: colorScheme.onSurface,
-        // Static color for AM/PM text
-        dialBackgroundColor: colorScheme.onSecondary,
+        dayPeriodTextColor: colorScheme.onSurfaceVariant,
+        dialBackgroundColor: colorScheme.surfaceContainerHighest,
         dialHandColor: colorScheme.primary,
+        dialTextColor: WidgetStateColor.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colorScheme.onPrimary;
+          }
+          return colorScheme.onSurface;
+        }),
         entryModeIconColor: colorScheme.primary,
         shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(12), // Matches DatePickerThemeData
-        ),
-        cancelButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kTextButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onSurface),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        confirmButtonStyle: ButtonStyle(
-          padding: WidgetStateProperty.all(kElevatedButtonPadding),
-          foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
-          backgroundColor: WidgetStateProperty.all(colorScheme.primary),
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
-            ),
-          ),
-          textStyle: WidgetStateProperty.all(
-            const TextStyle(
-              fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
+
       listTileTheme: ListTileThemeData(
-        tileColor: colorScheme.primary,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        tileColor: colorScheme.surfaceContainerLow,
+        selectedTileColor: colorScheme.primaryContainer,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
+        ),
+        iconColor: colorScheme.primary,
+        selectedColor: colorScheme.onPrimaryContainer,
+        titleTextStyle: TextStyle(
+          fontFamily: 'JosefinSans',
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurface,
         ),
         subtitleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: colorScheme.onPrimary,
+          fontWeight: FontWeight.w400,
+          color: colorScheme.onSurfaceVariant,
         ),
-        dense: true,
       ),
+
       dialogTheme: DialogThemeData(
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         titleTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.onPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
         ),
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          color: colorScheme.onPrimary,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
+
       snackBarTheme: SnackBarThemeData(
+        backgroundColor: colorScheme.inverseSurface,
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: colorScheme.onPrimary,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onInverseSurface,
         ),
-        backgroundColor: colorScheme.primary,
+        behavior: SnackBarBehavior.fixed,
       ),
-      textTheme: textTheme(
-        colorScheme.onPrimaryContainer,
+
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: colorScheme.primary,
+        circularTrackColor: colorScheme.primaryContainer,
+        linearTrackColor: colorScheme.primaryContainer,
       ),
+
+      textTheme: textTheme(colorScheme.onSurface),
     );
   }
 
   static TextTheme textTheme(Color fontColor) {
     return TextTheme(
-      // Display styles (for large headers, e.g., app title or major stats)
       displayLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 57,
         fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: -0.5,
-        // Slightly negative for larger fonts to improve readability
-        textBaseline: TextBaseline.alphabetic, // Consistent baseline
+        height: 1.12,
+        letterSpacing: -0.25,
       ),
       displayMedium: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 45,
         fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: -0.25,
-        // Slightly negative for larger fonts
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.16,
+        letterSpacing: 0,
       ),
       displaySmall: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 36,
         fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.0,
-        // Neutral for smaller display size
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.22,
+        letterSpacing: 0,
       ),
-      // Headline styles (for section titles, e.g., "Your Progress")
       headlineLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 32,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Matches titleLarge for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.25,
+        letterSpacing: 0,
       ),
       headlineMedium: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 28,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Matches titleLarge
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.29,
+        letterSpacing: 0,
       ),
       headlineSmall: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 24,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Matches titleLarge
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.33,
+        letterSpacing: 0,
       ),
-      // Title styles (for card titles, e.g., "Taco" or "Calories")
       titleLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 18,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w500,
         color: fontColor,
-        height: 1.3,
-        // Retained as it fixed alignment in NCAppbar
-        letterSpacing: 0.1,
-        // Retained for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.27,
+        letterSpacing: 0,
       ),
       titleMedium: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 16,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w500,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Added to match titleLarge
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.5,
+        letterSpacing: 0.15,
       ),
       titleSmall: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 12,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w500,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
+        height: 1.43,
         letterSpacing: 0.1,
-        // Added to match titleLarge
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
       ),
-      // Body styles (for descriptions, e.g., "72g" or "70 bpm")
       bodyLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 18,
         fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Added for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.5,
+        letterSpacing: 0.5,
       ),
       bodyMedium: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Added for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.43,
+        letterSpacing: 0.25,
       ),
       bodySmall: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Added for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.33,
+        letterSpacing: 0.4,
       ),
-      // Label styles (for small annotations, e.g., "Today" or "%")
       labelLarge: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 16,
         fontWeight: FontWeight.w500,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
+        height: 1.43,
         letterSpacing: 0.1,
-        // Added for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
       ),
       labelMedium: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Added for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.33,
+        letterSpacing: 0.5,
       ),
       labelSmall: TextStyle(
         fontFamily: 'JosefinSans',
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: fontColor,
-        height: 1.3,
-        // Added for consistent vertical spacing
-        letterSpacing: 0.1,
-        // Added for consistency
-        textBaseline: TextBaseline.alphabetic, // Added for consistency
+        height: 1.45,
+        letterSpacing: 0.5,
       ),
     );
   }

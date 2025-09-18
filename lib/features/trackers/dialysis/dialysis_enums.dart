@@ -1,3 +1,3 @@
 enum DialysisField {
-  time, // Time of dialysis session
+  time,
 }

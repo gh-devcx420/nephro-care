@@ -3,14 +3,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/themes/theme_config.dart';
-import 'package:nephro_care/core/themes/themes_provider.dart';
+import 'package:nephro_care/core/themes/theme_provider.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/auth/login_screen.dart';
 import 'package:nephro_care/features/home/home_screen.dart';
-import 'package:nephro_care/features/trackers/blood_pressure/bp_tracker_screen.dart';
-import 'package:nephro_care/features/trackers/fluids/fluid_tracker_screen.dart';
-import 'package:nephro_care/features/trackers/urine/urine_tracker_screen.dart';
-import 'package:nephro_care/features/trackers/weight/weight_tracker_screen.dart';
+import 'package:nephro_care/features/trackers/blood_pressure/bp_log_screen.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_log_screen.dart';
+import 'package:nephro_care/features/trackers/urine/urine_log_screen.dart';
+import 'package:nephro_care/features/trackers/weight/weight_log_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingScreen extends StatelessWidget {

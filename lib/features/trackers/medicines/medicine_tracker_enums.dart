@@ -1,4 +1,6 @@
 enum MedicineField {
-  name, // Medication name
-  time, // Time of administration
+  name,
+  dosage,
+  strength,
+  time,
 }

@@ -37,7 +37,6 @@ class WeightUtils implements TrackerUtils<WeightUnits> {
     );
   }
 
-  /// Converts any measurement to grams
   Measurement<WeightUnits> formatAsGrams(Measurement<WeightUnits> source) {
     if (!_isValidSource(source)) return _invalidWeightMeasure;
 
@@ -63,7 +62,6 @@ class WeightUtils implements TrackerUtils<WeightUnits> {
     );
   }
 
-  /// Converts any measurement to kilograms
   Measurement<WeightUnits> formatAsKilograms(Measurement<WeightUnits> source) {
     if (!_isValidSource(source)) return _invalidWeightMeasure;
 
@@ -91,7 +89,6 @@ class WeightUtils implements TrackerUtils<WeightUnits> {
     );
   }
 
-  /// Converts any measurement to pounds
   Measurement<WeightUnits> formatAsPounds(Measurement<WeightUnits> source) {
     if (!_isValidSource(source)) return _invalidWeightMeasure;
 
@@ -118,7 +115,6 @@ class WeightUtils implements TrackerUtils<WeightUnits> {
     );
   }
 
-  /// Converts between any two weight units
   Measurement<WeightUnits> formatBetween({
     required Measurement<WeightUnits> source,
     required WeightUnits target,

@@ -18,8 +18,6 @@ class HomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NCAppbar(),
-                //vGap4,
-                //SummaryCard(),
                 vGap10,
                 TrackersMenuCard(),
                 vGap10,

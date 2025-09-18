@@ -69,22 +69,18 @@ class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
     );
   }
 
-  /// Formats systolic pressure
   Measurement<BloodPressureField> formatSystolic(num value) {
     return formatField(field: BloodPressureField.systolic, value: value);
   }
 
-  /// Formats diastolic pressure
   Measurement<BloodPressureField> formatDiastolic(num value) {
     return formatField(field: BloodPressureField.diastolic, value: value);
   }
 
-  /// Formats pulse rate
   Measurement<BloodPressureField> formatPulse(num value) {
     return formatField(field: BloodPressureField.pulse, value: value);
   }
 
-  /// Formats SpO2
   Measurement<BloodPressureField> formatSpO2(num value) {
     return formatField(field: BloodPressureField.spo2, value: value);
   }
@@ -109,16 +105,14 @@ class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
 
     return Measurement<BloodPressureField>(
       value: systolic.value,
-      // You could use average or systolic as primary value
       formattedValue: customDisplayValue,
       unit: BloodPressureField.systolic,
       unitString: BloodPressureField.systolic.siUnit,
       isValid: true,
-      displayValue: customDisplayValue, // Custom display for BP readings
+      displayValue: customDisplayValue,
     );
   }
 
-  /// Gets blood pressure category based on systolic and diastolic measurements
   String getBPCategory({
     required Measurement<BloodPressureField> systolic,
     required Measurement<BloodPressureField> diastolic,
@@ -150,7 +144,6 @@ class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
     }
   }
 
-  /// Gets pulse category
   String getPulseCategory(Measurement<BloodPressureField> pulse) {
     if (!_isValidSource(pulse) || pulse.unit != BloodPressureField.pulse) {
       return 'Invalid';
@@ -168,7 +161,6 @@ class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
     }
   }
 
-  /// Gets SpO2 category
   String getSpO2Category(Measurement<BloodPressureField> spo2) {
     if (!_isValidSource(spo2) || spo2.unit != BloodPressureField.spo2) {
       return 'Invalid';

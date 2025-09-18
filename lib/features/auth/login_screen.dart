@@ -20,10 +20,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? _processedSvgString;
   bool _isInitialized = false;
 
+  Color _getSvgColor(
+      String originalHex, ColorScheme colorScheme, bool isLight) {
+    switch (originalHex) {
+      case '#3fbdf1': // Main dark blue
+        return colorScheme.primary;
+
+      case '#9fdef9': // Light blue
+        return colorScheme.primaryContainer;
+
+      default:
+        return colorScheme.onSurface;
+    }
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Load SVG only once when dependencies are available
     if (!_isInitialized) {
       _loadSvg();
       _isInitialized = true;
@@ -37,15 +50,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLight = Theme.of(context).brightness == Brightness.light;
 
     final colorMap = {
-      '#2e2e41': isLight
-          ? colorScheme.onSurfaceVariant
-          : colorScheme.surfaceContainerLowest,
-      '#6c63ff': isLight ? colorScheme.primaryContainer : colorScheme.primary,
-      '#e8e9ea':
-          isLight ? colorScheme.onPrimary : colorScheme.onPrimaryContainer,
-      '#3f3c57': isLight
-          ? colorScheme.onSurfaceVariant
-          : colorScheme.surfaceContainerLowest,
+      '#3fbdf1': _getSvgColor('#3fbdf1', colorScheme, isLight),
+      '#9fdef9': _getSvgColor('#9fdef9', colorScheme, isLight),
+      '#ffffff': _getSvgColor('#ffffff', colorScheme, isLight),
     };
 
     try {
@@ -151,7 +158,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 160),
-                // Fixed spacing
                 Text(
                   'Welcome to NephroCare',
                   style: theme.textTheme.headlineSmall?.copyWith(
@@ -165,20 +171,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   onButtonTap: _handleGoogleSignIn,
                   buttonPadding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  buttonBackgroundColor: isLight
-                      ? colorScheme.primaryContainer
-                      : colorScheme.primary,
+                  buttonBackgroundColor: colorScheme.primaryContainer,
                   iconifyIcon: const Iconify(Bi.google),
-                  iconSize: 20,
-                  iconColor: isLight
-                      ? colorScheme.onPrimaryContainer
-                      : colorScheme.primaryContainer,
+                  iconSize: 16,
+                  iconColor: colorScheme.primary,
                   buttonSpacing: hGap8,
                   buttonText: 'Sign in with Google',
                   buttonTextStyle: theme.textTheme.titleMedium?.copyWith(
-                    color: isLight
-                        ? colorScheme.onPrimaryContainer
-                        : colorScheme.primaryContainer,
+                    color: colorScheme.primary,
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                   ),
@@ -189,7 +189,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             color: isLight
-                                ? colorScheme.onPrimaryContainer
+                                ? colorScheme.primary
                                 : colorScheme.primaryContainer,
                             backgroundColor: isLight
                                 ? colorScheme.primaryContainer

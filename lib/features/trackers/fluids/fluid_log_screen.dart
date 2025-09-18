@@ -10,9 +10,9 @@ import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_model.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_provider.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_utils.dart';
-import 'package:nephro_care/features/trackers/fluids/fluids_model.dart';
-import 'package:nephro_care/features/trackers/fluids/fluids_provider.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 
 class FluidIntakeLogScreen extends ConsumerWidget {
@@ -24,19 +24,19 @@ class FluidIntakeLogScreen extends ConsumerWidget {
 
     return LogScreen<FluidsModel>(
       appBarTitle: 'Fluid Log',
-      headerTitleString: 'fluids intake',
+      headerTitleString: 'fluid intake',
       headerActionButton: (items) {
         if (items.isEmpty) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(32),
             ),
             child: Text(
               'No Data',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                     fontSize: kValueFontSize,
                     fontWeight: FontWeight.w800,
                   ),
@@ -53,20 +53,24 @@ class FluidIntakeLogScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 color: total > fluidLimit
-                    ? Theme.of(context).colorScheme.error
-                    : Theme.of(context).colorScheme.primary,
+                    ? Theme.of(context).colorScheme.errorContainer
+                    : Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(32),
               ),
               child: UIUtils.createRichTextValueWithUnit(
                 value: FluidUtils().format(total).formattedValue!,
                 unit: FluidUtils().format(total).unitString!,
                 valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: total > fluidLimit
+                          ? Theme.of(context).colorScheme.onErrorContainer
+                          : Theme.of(context).colorScheme.onPrimaryContainer,
                       fontSize: kValueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                 unitStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: total > fluidLimit
+                          ? Theme.of(context).colorScheme.onErrorContainer
+                          : Theme.of(context).colorScheme.onPrimaryContainer,
                       fontSize: kSIUnitFontSize,
                       fontWeight: FontWeight.w800,
                     ),
@@ -75,9 +79,6 @@ class FluidIntakeLogScreen extends ConsumerWidget {
           },
         );
       },
-      primaryColor: Theme.of(context).colorScheme.primary,
-      secondaryColor: Theme.of(context).colorScheme.primaryContainer,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       listItemIcon: Icons.local_drink,
       dataProvider: fluidIntakeDataProvider,
       firestoreService: FirestoreService(),
@@ -88,7 +89,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
         leading: Icon(
           Icons.local_drink,
           size: 20,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
@@ -98,7 +99,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
           child: Text(
             'Drank: ${item.fluidName}',
             style: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),
@@ -111,12 +112,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
             value: FluidUtils().format(item.quantity).formattedValue!,
             unit: FluidUtils().format(item.quantity).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               fontSize: kValueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               fontSize: kSIUnitFontSize,
               fontWeight: FontWeight.w600,
             ),
@@ -127,12 +128,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               fontSize: kTimeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
               fontSize: kMeridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),

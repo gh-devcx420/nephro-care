@@ -52,7 +52,7 @@ class _NCTrackerButtonState extends State<NCTrackerButton> {
         });
       },
       child: AnimatedScale(
-        scale: _isPressed ? 0.9 : 1.0,
+        scale: _isPressed ? kAnimationScaleMin : kAnimationScaleMax,
         duration: kButtonTapDuration,
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -66,11 +66,6 @@ class _NCTrackerButtonState extends State<NCTrackerButton> {
               color: widget.buttonColor ??
                   Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                width: 1.5,
-                color: widget.buttonBorderColor ??
-                    Theme.of(context).colorScheme.onPrimary,
-              ),
             ),
             child: Center(
               child: Column(
@@ -80,14 +75,14 @@ class _NCTrackerButtonState extends State<NCTrackerButton> {
                       widget.buttonIcon,
                       size: widget.iconSize ?? 28.0,
                       color: widget.iconColor ??
-                          Theme.of(context).colorScheme.onPrimaryContainer,
+                          Theme.of(context).colorScheme.primary,
                     )
                   else if (widget.iconifyIcon != null)
                     Iconify(
                       widget.iconifyIcon!.icon,
                       size: widget.iconSize ?? 28.0,
                       color: widget.iconColor ??
-                          Theme.of(context).colorScheme.onPrimaryContainer,
+                          Theme.of(context).colorScheme.primary,
                     ),
                   vGap8,
                   Text(
@@ -95,8 +90,7 @@ class _NCTrackerButtonState extends State<NCTrackerButton> {
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w800,
                         ),
                   ),

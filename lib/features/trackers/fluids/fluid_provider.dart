@@ -5,7 +5,7 @@ import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
-import 'package:nephro_care/features/trackers/fluids/fluids_model.dart';
+import 'package:nephro_care/features/trackers/fluids/fluid_model.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
