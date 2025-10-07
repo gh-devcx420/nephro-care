@@ -61,16 +61,19 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return GenericInputModalSheet(
       dividerThickness: 2.0,
       dividerWidthFactor: 0.15,
-      title: 'Enter Blood Pressure Details:',
-      editTitle: 'Edit Blood Pressure',
+      addModeTitle: 'Enter Blood Pressure Details:',
+      editingModeTitle: 'Edit Blood Pressure',
       firestoreService: FirestoreService(),
       initialData: widget.bpMeasure,
-      primaryColor: Theme.of(context).colorScheme.primary,
-      secondaryColor: Theme.of(context).colorScheme.primaryContainer,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      primaryColor: colorScheme.primary,
+      secondaryColor: colorScheme.primaryContainer,
+      backgroundColor: colorScheme.surfaceContainerLow,
       initialFocusFieldKey: BloodPressureField.systolic.fieldKey,
       inputFields: [
         NCTextFieldConfig(
@@ -216,14 +219,14 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
         HapticFeedback.selectionClick();
 
         const successColor = AppColors.successColor;
-        final errorColor = Theme.of(context).colorScheme.error;
+        final errorColor = colorScheme.error;
 
         final user = ref.read(authProvider);
         if (user == null) {
           return Result(
             isSuccess: false,
             message: 'User not authenticated',
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: colorScheme.error,
           );
         }
 

@@ -21,6 +21,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     Measurement totalFormatter(List<WeightModel> items) {
       if (items.isEmpty) return Measurement.invalid();
@@ -42,7 +43,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
         leading: Icon(
           Icons.fitness_center,
           size: 20,
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          color: colorScheme.onPrimaryContainer,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
@@ -52,7 +53,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
           child: Text(
             'Weight',
             style: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),
@@ -65,12 +66,12 @@ class WeightTrackerLogScreen extends ConsumerWidget {
             value: WeightUtils().format(item.weight).formattedValue!,
             unit: WeightUtils().format(item.weight).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kValueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kSIUnitFontSize,
               fontWeight: FontWeight.w600,
             ),
@@ -81,12 +82,12 @@ class WeightTrackerLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kTimeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kMeridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),

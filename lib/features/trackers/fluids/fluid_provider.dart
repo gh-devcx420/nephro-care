@@ -50,6 +50,12 @@ class FluidIntakeStateNotifier
   }
 
   Stream<Cache<FluidsModel>> streamData() async* {
+    // Check authentication at the start
+    final currentUser = ref.read(authProvider);
+    if (currentUser == null || currentUser.uid != userId) {
+      return;
+    }
+
     if (state is AsyncData<Cache<FluidsModel>> &&
         DateTime.now()
                 .difference(
@@ -73,6 +79,12 @@ class FluidIntakeStateNotifier
           .snapshots();
 
       await for (final snapshot in stream) {
+        // Verify user is still authenticated and matches the userId
+        final user = ref.read(authProvider);
+        if (user == null || user.uid != userId) {
+          return;
+        }
+
         final fluidIntakes = snapshot.docs
             .map((doc) => FluidsModel.fromJson(doc.data()))
             .toList();
@@ -92,13 +104,26 @@ final fluidIntakeDataProvider =
         (ref, params) {
   final userId = params.$1;
   final selectedDate = params.$2;
+
+  // Watch auth state to ensure provider rebuilds on auth changes
+  final user = ref.watch(authProvider);
+  if (user == null || user.uid != userId) {
+    return Stream.value(Cache<FluidsModel>(
+      items: [],
+      lastFetched: DateTime.now(),
+    ));
+  }
+
   final notifier = FluidIntakeStateNotifier(ref, userId, selectedDate);
   return notifier.streamData();
 });
 
 final fluidIntakeListProvider = Provider<List<FluidsModel>>((ref) {
+  final user = ref.watch(authProvider);
+  if (user == null) return [];
+
   final data = ref.watch(fluidIntakeDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
+    (user.uid, ref.watch(selectedDateProvider)),
   ));
   return data.when(
     data: (cache) => cache.items,
@@ -108,10 +133,23 @@ final fluidIntakeListProvider = Provider<List<FluidsModel>>((ref) {
 });
 
 final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
-  final data = ref.watch(fluidIntakeDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
-  ));
   final selectedDate = ref.watch(selectedDateProvider);
+  final user = ref.watch(authProvider);
+
+  if (user == null) {
+    return {
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
+      'total': 0,
+      'lastTime': null,
+      'totalDrinksToday': 0,
+      'typeTotals': <String, double>{},
+    };
+  }
+
+  final data = ref.watch(fluidIntakeDataProvider(
+    (user.uid, selectedDate),
+  ));
 
   return data.when(
     data: (cache) {

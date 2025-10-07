@@ -10,7 +10,7 @@ Map<ThemeName, AppThemeItem> get appThemes {
       theme: AppThemeItem(
         displayName: theme.displayName,
         colorScheme: AppColorScheme.getThemeColors(theme),
-        themeIcon: theme.iconIdentifier,
+        themeIcon: theme.iconData,
       ),
   };
 }
@@ -243,11 +243,11 @@ abstract class AppTheme {
         ),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: colorScheme.inverseSurface,
+        backgroundColor: colorScheme.primaryContainer,
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w800,
           color: colorScheme.onInverseSurface,
         ),
         behavior: SnackBarBehavior.fixed,
@@ -257,6 +257,14 @@ abstract class AppTheme {
         circularTrackColor: colorScheme.primaryContainer,
         linearTrackColor: colorScheme.primaryContainer,
       ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: colorScheme.surfaceContainer,
+        modalBackgroundColor: colorScheme.surfaceContainer,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        dragHandleColor: colorScheme.onSurfaceVariant,
+      ),
       textTheme: textTheme(colorScheme.onSurface),
     );
   }
@@ -265,7 +273,6 @@ abstract class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-
       appBarTheme: AppBarTheme(
         toolbarHeight: 48,
         leadingWidth: 48,
@@ -287,24 +294,19 @@ abstract class AppTheme {
         ),
         elevation: 0,
       ),
-
       scaffoldBackgroundColor: colorScheme.surface,
       iconTheme: IconThemeData(
         color: colorScheme.primary,
       ),
-
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
         elevation: 2,
       ),
-
       textSelectionTheme: TextSelectionThemeData(
         selectionColor: colorScheme.primaryContainer,
         cursorColor: colorScheme.primary,
       ),
-
-      // Dark theme input styling
       inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(kBorderRadius),
@@ -341,7 +343,6 @@ abstract class AppTheme {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
-
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           padding: WidgetStateProperty.all(kTextButtonPadding),
@@ -369,7 +370,6 @@ abstract class AppTheme {
           ),
         ),
       ),
-
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           padding: WidgetStateProperty.all(kElevatedButtonPadding),
@@ -404,7 +404,6 @@ abstract class AppTheme {
           }),
         ),
       ),
-
       datePickerTheme: DatePickerThemeData(
         backgroundColor: colorScheme.surfaceContainerHigh,
         headerBackgroundColor: colorScheme.primary,
@@ -439,7 +438,6 @@ abstract class AppTheme {
         }),
         todayBorder: BorderSide.none,
       ),
-
       timePickerTheme: TimePickerThemeData(
         backgroundColor: colorScheme.surfaceContainerHigh,
         hourMinuteTextColor: colorScheme.onSurface,
@@ -457,7 +455,6 @@ abstract class AppTheme {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-
       listTileTheme: ListTileThemeData(
         tileColor: colorScheme.surfaceContainerLow,
         selectedTileColor: colorScheme.primaryContainer,
@@ -480,7 +477,6 @@ abstract class AppTheme {
           color: colorScheme.onSurfaceVariant,
         ),
       ),
-
       dialogTheme: DialogThemeData(
         backgroundColor: colorScheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(
@@ -499,24 +495,29 @@ abstract class AppTheme {
           color: colorScheme.onSurfaceVariant,
         ),
       ),
-
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: colorScheme.inverseSurface,
+        backgroundColor: colorScheme.primaryContainer,
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w800,
           color: colorScheme.onInverseSurface,
         ),
         behavior: SnackBarBehavior.fixed,
       ),
-
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: colorScheme.primary,
         circularTrackColor: colorScheme.primaryContainer,
         linearTrackColor: colorScheme.primaryContainer,
       ),
-
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: colorScheme.surfaceContainer,
+        modalBackgroundColor: colorScheme.surfaceContainer,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        dragHandleColor: colorScheme.onSurfaceVariant,
+      ),
       textTheme: textTheme(colorScheme.onSurface),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/themes/theme_config.dart';
 import 'package:nephro_care/core/themes/theme_enums.dart';
@@ -14,10 +14,12 @@ class ThemeSettingsScreen extends ConsumerWidget {
     final themeHandler = ref.watch(themeProvider.notifier);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Change Theme'),
+        title: const Text('Change Accent Color'),
         titleSpacing: 0,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         leading: IconButton(
           onPressed: () {
+            HapticFeedback.lightImpact();
             ScaffoldMessenger.of(context).clearSnackBars();
             Navigator.of(context).pop();
           },
@@ -32,50 +34,55 @@ class ThemeSettingsScreen extends ConsumerWidget {
           itemCount: appThemes.length,
           itemBuilder: (context, index) {
             final themeItem = appThemes.entries.elementAt(index);
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            final tileColorScheme = isDark
+                ? themeItem.value.colorScheme.dark
+                : themeItem.value.colorScheme.light;
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      themeItem.value.colorScheme.light.primary,
-                      themeItem.value.colorScheme.dark.primary,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              padding: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  themeHandler.setNewTheme(themeItem.key);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                visualDensity:
+                    const VisualDensity(vertical: -4, horizontal: -2),
+                leading: Container(
+                  decoration: BoxDecoration(
+                    color: tileColorScheme.primary,
+                    borderRadius: BorderRadius.circular(32),
                   ),
-                  borderRadius: BorderRadius.circular(10),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      themeItem.key.iconData,
+                      size: 14,
+                      color: tileColorScheme.primaryContainer,
+                    ),
+                  ),
                 ),
-                child: ListTile(
-                  title: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                    ),
-                    child: Text(
-                      themeItem.value.displayName,
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ),
-                  trailing: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Iconify(
-                      themeItem.key.iconIdentifier,
-                      color: themeItem.value.colorScheme.light.primary,
-                    ),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  dense: false,
-                  onTap: () {
-                    themeHandler.setNewTheme(themeItem.key);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
+                tileColor: tileColorScheme.primaryContainer,
+                title: Text(
+                  themeItem.value.displayName,
                 ),
+                titleTextStyle:
+                    Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: tileColorScheme.primary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                        ),
+                subtitle: Text(
+                  themeItem.key.description,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitleTextStyle:
+                    Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
               ),
             );
           },

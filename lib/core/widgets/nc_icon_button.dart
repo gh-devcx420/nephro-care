@@ -14,7 +14,7 @@ class NCIconButton extends StatefulWidget {
     this.iconifyIcon,
     this.iconSize,
     this.iconColor,
-    this.buttonSpacing,
+    this.gap,
     this.buttonText,
     this.buttonTextStyle,
     this.buttonChild,
@@ -29,7 +29,7 @@ class NCIconButton extends StatefulWidget {
     this.iconifyIcon,
     this.iconSize,
     this.iconColor,
-    this.buttonSpacing,
+    this.gap,
     this.buttonText,
     this.buttonTextStyle,
     this.buttonChild,
@@ -43,7 +43,7 @@ class NCIconButton extends StatefulWidget {
   final Iconify? iconifyIcon;
   final double? iconSize;
   final Color? iconColor;
-  final SizedBox? buttonSpacing;
+  final SizedBox? gap;
   final String? buttonText;
   final TextStyle? buttonTextStyle;
   final Widget? buttonChild;
@@ -88,7 +88,7 @@ class _NCIconButtonState extends State<NCIconButton> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(_defaultRadiusValue),
             color: widget.buttonBackgroundColor ??
-                Theme.of(context).colorScheme.primaryContainer,
+                Theme.of(context).colorScheme.primary,
           ),
           child: widget.buttonChild != null
               ? Row(
@@ -109,24 +109,24 @@ class _NCIconButtonState extends State<NCIconButton> {
                         widget.buttonIcon,
                         size: widget.iconSize ?? kButtonIconSize,
                         color: widget.iconColor ??
-                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.onPrimary,
                       )
                     else if (widget.iconifyIcon != null)
                       Iconify(
                         widget.iconifyIcon!.icon,
                         size: widget.iconSize ?? kButtonIconSize,
                         color: widget.iconColor ??
-                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.onPrimary,
                       )
                     else
                       Icon(
                         Icons.help_outline,
                         size: widget.iconSize ?? kButtonIconSize,
                         color: widget.iconColor ??
-                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.onPrimary,
                       ),
                     if (widget.buttonText != null) ...[
-                      widget.buttonSpacing ?? hGap6,
+                      widget.gap ?? hGap6,
                       Text(
                         widget.buttonText!,
                         style: widget.buttonTextStyle ??

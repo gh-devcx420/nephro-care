@@ -23,9 +23,9 @@ extension FluidsExtension on Fluids {
       case Fluids.name:
         return 'Fluid Name';
       case Fluids.quantity:
-        return 'Fluid Quantity';
+        return 'Quantity';
       case Fluids.time:
-        return 'Fluid Time';
+        return 'Time';
     }
   }
 

@@ -1,81 +1,80 @@
+import 'package:flutter/material.dart';
+
 enum ThemeName {
-  medicalBlue,
-  classicGreen,
   warmTeal,
-  gentleViolet,
-  energeticOrange,
+  limeGreen,
+  yellow,
+  pink,
+  violet,
+  brown,
 }
 
 extension ThemeNameExtension on ThemeName {
   String get displayName {
     switch (this) {
-      case ThemeName.medicalBlue:
-        return 'Medical Blue';
-      case ThemeName.classicGreen:
-        return 'Classic Green';
       case ThemeName.warmTeal:
         return 'Warm Teal';
-      case ThemeName.gentleViolet:
-        return 'Gentle Violet';
-      case ThemeName.energeticOrange:
-        return 'Energetic Orange';
+      case ThemeName.limeGreen:
+        return 'Lime Green';
+      case ThemeName.yellow:
+        return 'Yellow';
+      case ThemeName.pink:
+        return 'Pink';
+      case ThemeName.violet:
+        return 'Violet';
+      case ThemeName.brown:
+        return 'Brown';
     }
   }
 
   String get description {
     switch (this) {
-      case ThemeName.medicalBlue:
-        return 'Professional blue theme for clinical environments and trust';
-      case ThemeName.classicGreen:
-        return 'Traditional medical green for familiarity and calm';
       case ThemeName.warmTeal:
-        return 'Modern teal for sophisticated, contemporary feel';
-      case ThemeName.gentleViolet:
-        return 'Calming violet to reduce stress and promote wellness';
-      case ThemeName.energeticOrange:
-        return 'Motivating orange for energy and positive health habits';
+        return 'Modern, calm, and inviting.';
+      case ThemeName.limeGreen:
+        return 'Fresh, vibrant, and energizing.';
+      case ThemeName.yellow:
+        return 'Bright, cheerful, and optimistic.';
+      case ThemeName.pink:
+        return 'Playful, warm, and approachable.';
+      case ThemeName.violet:
+        return 'Peaceful, mindful, and supportive.';
+      case ThemeName.brown:
+        return 'Earthy, stable, and grounded.';
     }
   }
 
-  String get iconIdentifier {
+  IconData get iconData {
     switch (this) {
-      case ThemeName.medicalBlue:
-        return 'medical_services'; // Medical cross icon
-      case ThemeName.classicGreen:
-        return 'eco'; // Leaf icon for natural feel
       case ThemeName.warmTeal:
-        return 'spa'; // Spa icon for wellness
-      case ThemeName.gentleViolet:
-        return 'self_care'; // Self-care icon
-      case ThemeName.energeticOrange:
-        return 'energy_savings_leaf'; // Energy icon
-    }
-  }
-
-  bool get isProfessional {
-    switch (this) {
-      case ThemeName.medicalBlue:
-      case ThemeName.classicGreen:
-        return true; // Healthcare professional environments
-      case ThemeName.warmTeal:
-      case ThemeName.gentleViolet:
-      case ThemeName.energeticOrange:
-        return false; // Personal/patient use
+        return Icons.spa;
+      case ThemeName.limeGreen:
+        return Icons.local_florist;
+      case ThemeName.yellow:
+        return Icons.wb_sunny;
+      case ThemeName.pink:
+        return Icons.favorite;
+      case ThemeName.violet:
+        return Icons.self_improvement;
+      case ThemeName.brown:
+        return Icons.terrain;
     }
   }
 
   String get useCase {
     switch (this) {
-      case ThemeName.medicalBlue:
-        return 'Healthcare professionals, clinical settings';
-      case ThemeName.classicGreen:
-        return 'Traditional medical environments, familiarity';
       case ThemeName.warmTeal:
         return 'Modern wellness apps, spa-like experience';
-      case ThemeName.gentleViolet:
+      case ThemeName.limeGreen:
+        return 'Youthful energy, fitness apps';
+      case ThemeName.yellow:
+        return 'Motivational tools, positive interfaces';
+      case ThemeName.pink:
+        return 'Social apps, community engagement';
+      case ThemeName.violet:
         return 'Stress reduction, mental health focus';
-      case ThemeName.energeticOrange:
-        return 'Motivation, fitness tracking, goal achievement';
+      case ThemeName.brown:
+        return 'Natural themes, eco-friendly apps';
     }
   }
 }

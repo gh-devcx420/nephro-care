@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/bx.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -26,14 +25,16 @@ class NCAppbar extends ConsumerWidget {
         children: [
           hGap2,
           CircleAvatar(
-            radius: 18,
-            backgroundImage:
+            radius: 16,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            foregroundImage:
                 user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
-            backgroundColor: user?.photoURL == null
-                ? Theme.of(context).colorScheme.surfaceContainer
-                : Colors.transparent,
             child: user?.photoURL == null
-                ? const Iconify(Bx.bxs_user_circle)
+                ? Icon(
+                    Icons.person,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  )
                 : null,
           ),
           hGap8,
@@ -41,8 +42,8 @@ class NCAppbar extends ConsumerWidget {
             text: TextSpan(
               style: Theme.of(context).textTheme.labelMedium!.copyWith(
                     fontWeight: FontWeight.w700,
-                    height: 1.0,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    height: 1.2,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
               children: [
                 const TextSpan(
@@ -52,7 +53,7 @@ class NCAppbar extends ConsumerWidget {
                   text: (user?.displayName?.split(' ').first) ?? '',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.w700,
-                        height: 1.0,
+                        height: 0.8,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                 ),

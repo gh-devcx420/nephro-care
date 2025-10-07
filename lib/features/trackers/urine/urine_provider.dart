@@ -49,6 +49,11 @@ class UrineOutputStateNotifier
   }
 
   Stream<Cache<UrineModel>> streamData() async* {
+    final currentUser = ref.read(authProvider);
+    if (currentUser == null || currentUser.uid != userId) {
+      return;
+    }
+
     if (state is AsyncData<Cache<UrineModel>> &&
         DateTime.now()
                 .difference(
@@ -72,6 +77,11 @@ class UrineOutputStateNotifier
           .snapshots();
 
       await for (final snapshot in stream) {
+        final user = ref.read(authProvider);
+        if (user == null || user.uid != userId) {
+          return;
+        }
+
         final urineOutputs = snapshot.docs
             .map((doc) => UrineModel.fromJson(doc.data()))
             .toList();
@@ -90,13 +100,25 @@ final urineOutputDataProvider =
     StreamProvider.family<Cache<UrineModel>, (String, DateTime)>((ref, params) {
   final userId = params.$1;
   final selectedDate = params.$2;
+
+  final user = ref.watch(authProvider);
+  if (user == null || user.uid != userId) {
+    return Stream.value(Cache<UrineModel>(
+      items: [],
+      lastFetched: DateTime.now(),
+    ));
+  }
+
   final notifier = UrineOutputStateNotifier(ref, userId, selectedDate);
   return notifier.streamData();
 });
 
 final urineOutputListProvider = Provider<List<UrineModel>>((ref) {
+  final user = ref.watch(authProvider);
+  if (user == null) return [];
+
   final data = ref.watch(urineOutputDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
+    (user.uid, ref.watch(selectedDateProvider)),
   ));
   return data.when(
     data: (cache) => cache.items,
@@ -106,10 +128,22 @@ final urineOutputListProvider = Provider<List<UrineModel>>((ref) {
 });
 
 final urineOutputSummaryProvider = Provider<Map<String, dynamic>>((ref) {
-  final data = ref.watch(urineOutputDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
-  ));
   final selectedDate = ref.watch(selectedDateProvider);
+  final user = ref.watch(authProvider);
+
+  if (user == null) {
+    return {
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
+      'total': 0,
+      'lastTime': null,
+      'totalUrineToday': 0,
+    };
+  }
+
+  final data = ref.watch(urineOutputDataProvider(
+    (user.uid, selectedDate),
+  ));
 
   return data.when(
     data: (cache) {

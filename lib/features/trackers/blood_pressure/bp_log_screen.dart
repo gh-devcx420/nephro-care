@@ -20,6 +20,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return LogScreen<BPTrackerModel>(
       appBarTitle: 'Blood Pressure Log',
@@ -30,16 +31,16 @@ class BPTrackerLogScreen extends ConsumerWidget {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(32),
             ),
             child: Text(
               'No Data',
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    fontSize: kValueFontSize,
-                    fontWeight: FontWeight.w800,
-                  ),
+              style: theme.textTheme.titleMedium!.copyWith(
+                color: colorScheme.onPrimaryContainer,
+                fontSize: kValueFontSize,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           );
         }
@@ -55,26 +56,25 @@ class BPTrackerLogScreen extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(32),
           ),
           child: UIUtils.createRichTextValueWithUnit(
             value: bpReading,
             unit: BloodPressureField.systolic.siUnit,
-            valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  fontSize: kValueFontSize,
-                  fontWeight: FontWeight.w800,
-                ),
-            unitStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  fontSize: kSIUnitFontSize,
-                  fontWeight: FontWeight.w800,
-                ),
+            valueStyle: theme.textTheme.titleMedium!.copyWith(
+              color: colorScheme.onPrimaryContainer,
+              fontSize: kValueFontSize,
+              fontWeight: FontWeight.w800,
+            ),
+            unitStyle: theme.textTheme.titleMedium!.copyWith(
+              color: colorScheme.onPrimaryContainer,
+              fontSize: kSIUnitFontSize,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         );
       },
-      //logScreenColorScheme: bpColors,
       listItemIcon: Icons.monitor_heart_sharp,
       dataProvider: bpTrackerDataProvider,
       firestoreService: FirestoreService(),
@@ -85,7 +85,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
         leading: Icon(
           Icons.monitor_heart_sharp,
           size: 20,
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          color: colorScheme.onPrimaryContainer,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
@@ -97,12 +97,12 @@ class BPTrackerLogScreen extends ConsumerWidget {
             value: '${item.systolic}/${item.diastolic}',
             unit: BloodPressureField.systolic.siUnit,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kValueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kSIUnitFontSize,
               fontWeight: FontWeight.w800,
             ),
@@ -114,7 +114,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
           child: RichText(
             text: TextSpan(
               style: theme.textTheme.titleMedium!.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                color: colorScheme.onPrimaryContainer,
                 fontSize: kValueFontSize,
                 fontWeight: FontWeight.w800,
               ),
@@ -167,12 +167,12 @@ class BPTrackerLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kTimeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kMeridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),

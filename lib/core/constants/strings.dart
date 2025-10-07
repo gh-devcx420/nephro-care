@@ -33,6 +33,7 @@ class Strings {
 
   // Log Details Dialog strings.
   static const String logDetails = 'Log Details';
+  static const String settings = 'Settings';
   static const String okButton = 'Ok';
 
   // Empty State Message strings.

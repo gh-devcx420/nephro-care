@@ -8,6 +8,4 @@ analyzer:
     - custom_lint
 
 custom_lint:
-  rules:
-    - riverpod_final_provider
-    - riverpod_provider_naming
+  enable_all_lint_rules: true

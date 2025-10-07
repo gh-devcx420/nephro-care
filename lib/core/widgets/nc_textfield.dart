@@ -101,8 +101,17 @@ class _NCTextfieldState extends State<NCTextfield> {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(() {
-      if (_focusNode.hasFocus && NCTextfield.isFirstFocus == false) {
-        HapticFeedback.lightImpact();
+      if (_focusNode.hasFocus) {
+        // Collapse selection to hide handles on focus
+        if (widget.textFieldController.text.isNotEmpty) {
+          widget.textFieldController.selection = TextSelection.collapsed(
+            offset: widget.textFieldController.text.length,
+          );
+        }
+
+        if (NCTextfield.isFirstFocus == false) {
+          HapticFeedback.lightImpact();
+        }
       }
     });
     widget.textFieldController.addListener(_onTextChanged);
@@ -151,13 +160,15 @@ class _NCTextfieldState extends State<NCTextfield> {
           onSubmitted: widget.onSubmitted,
           onTapOutside: (event) => FocusScope.of(context).unfocus(),
           style: themeContext.textTheme.titleMedium!.copyWith(
-            color: widget.textColor ?? themeContext.colorScheme.primary,
+            color: widget.textColor ?? themeContext.colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
           ),
-          cursorColor: widget.cursorColor ?? themeContext.colorScheme.primary,
+          cursorColor: widget.cursorColor ?? themeContext.colorScheme.onSurface,
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: themeContext.textTheme.titleMedium!.copyWith(
-              color: widget.hintTextColor ?? themeContext.colorScheme.primary,
+              color: widget.hintTextColor ?? themeContext.colorScheme.outline,
+              fontWeight: FontWeight.w400,
             ),
             counter: null,
             counterText: '',
@@ -167,7 +178,7 @@ class _NCTextfieldState extends State<NCTextfield> {
               borderRadius: BorderRadius.circular(kBorderRadius),
               borderSide: BorderSide(
                 color: widget.enabledBorderColor ??
-                    themeContext.colorScheme.primary,
+                    themeContext.colorScheme.onSurface,
                 width: kBorderThickness,
               ),
             ),
@@ -175,7 +186,7 @@ class _NCTextfieldState extends State<NCTextfield> {
               borderRadius: BorderRadius.circular(kBorderRadius),
               borderSide: BorderSide(
                 color: widget.focusedBorderColor ??
-                    themeContext.colorScheme.primary,
+                    themeContext.colorScheme.onSurface,
                 width: kBorderThickness,
               ),
             ),
@@ -183,19 +194,20 @@ class _NCTextfieldState extends State<NCTextfield> {
               borderRadius: BorderRadius.circular(8.0),
             ),
             filled: true,
-            fillColor: widget.fillColor ?? themeContext.colorScheme.surfaceDim,
+            fillColor: widget.fillColor ??
+                themeContext.colorScheme.surfaceContainerHighest,
             prefixIcon: hasText
                 ? widget.activeFieldPrefixIcon
                 : widget.inactiveFieldPrefixIcon,
             prefixIconColor:
-                widget.prefixIconColor ?? themeContext.colorScheme.primary,
+                widget.prefixIconColor ?? themeContext.colorScheme.onSurface,
             suffixIcon: widget.textFieldController.text.isNotEmpty
                 ? InkWell(
                     onTap: widget.onSuffixIconTap,
                     child: Icon(
                       widget.suffixIcon ?? Icons.replay_sharp,
                       color: widget.suffixIconColor ??
-                          themeContext.colorScheme.primary,
+                          themeContext.colorScheme.onSurface,
                     ),
                   )
                 : null,

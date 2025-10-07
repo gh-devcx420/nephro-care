@@ -14,7 +14,7 @@ class ThemeColorScheme {
 class AppThemeItem {
   final String displayName;
   final ThemeColorScheme colorScheme;
-  final String themeIcon;
+  final IconData themeIcon;
 
   const AppThemeItem({
     required this.displayName,
@@ -27,16 +27,14 @@ class ThemeInfo {
   final ThemeName name;
   final String displayName;
   final String description;
-  final String iconIdentifier;
-  final bool isProfessional;
+  final IconData icon;
   final String useCase;
 
   const ThemeInfo({
     required this.name,
     required this.displayName,
     required this.description,
-    required this.iconIdentifier,
-    required this.isProfessional,
+    required this.icon,
     required this.useCase,
   });
 }
@@ -45,8 +43,7 @@ class ThemePreview {
   final ThemeName name;
   final String displayName;
   final String description;
-  final String iconIdentifier;
-  final bool isProfessional;
+  final IconData icon;
   final Color primaryColor;
   final Color primaryContainerColor;
 
@@ -54,8 +51,7 @@ class ThemePreview {
     required this.name,
     required this.displayName,
     required this.description,
-    required this.iconIdentifier,
-    required this.isProfessional,
+    required this.icon,
     required this.primaryColor,
     required this.primaryContainerColor,
   });

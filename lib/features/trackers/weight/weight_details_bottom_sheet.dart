@@ -44,12 +44,15 @@ class _WeightModalSheetState extends State<WeightModalSheet>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return GenericInputModalSheet(
-      title: 'Enter Weight Details:',
-      editTitle: 'Edit Weight',
-      primaryColor: Theme.of(context).colorScheme.primary,
-      secondaryColor: Theme.of(context).colorScheme.primaryContainer,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      addModeTitle: 'Enter Weight Details:',
+      editingModeTitle: 'Edit Weight',
+      primaryColor: colorScheme.primary,
+      secondaryColor: colorScheme.primaryContainer,
+      backgroundColor: colorScheme.surfaceContainerLow,
       firestoreService: FirestoreService(),
       dividerThickness: 2.0,
       dividerWidthFactor: 0.15,
@@ -113,8 +116,8 @@ class _WeightModalSheetState extends State<WeightModalSheet>
         ],
       ),
       onSave: (values, ref, FirestoreService firestoreService) async {
-        final successColor = AppColors.successColor;
-        final errorColor = Theme.of(context).colorScheme.error;
+        const successColor = AppColors.successColor;
+        final errorColor = colorScheme.error;
 
         if (selectedTime == null) {
           return Result(

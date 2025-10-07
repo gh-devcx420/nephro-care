@@ -54,6 +54,11 @@ class BPMonitorStateNotifier
   }
 
   Stream<Cache<BPTrackerModel>> streamData() async* {
+    final currentUser = ref.read(authProvider);
+    if (currentUser == null || currentUser.uid != userId) {
+      return;
+    }
+
     if (state is AsyncData<Cache<BPTrackerModel>> &&
         DateTime.now()
                 .difference((state as AsyncData<Cache<BPTrackerModel>>)
@@ -78,6 +83,11 @@ class BPMonitorStateNotifier
           .snapshots();
 
       await for (final snapshot in stream) {
+        final user = ref.read(authProvider);
+        if (user == null || user.uid != userId) {
+          return;
+        }
+
         final bpMonitors = snapshot.docs
             .map((doc) => BPTrackerModel.fromJson(doc.data()))
             .toList();
@@ -97,13 +107,25 @@ final bpTrackerDataProvider =
         (ref, params) {
   final userId = params.$1;
   final selectedDate = params.$2;
+
+  final user = ref.watch(authProvider);
+  if (user == null || user.uid != userId) {
+    return Stream.value(Cache<BPTrackerModel>(
+      items: [],
+      lastFetched: DateTime.now(),
+    ));
+  }
+
   final notifier = BPMonitorStateNotifier(ref, userId, selectedDate);
   return notifier.streamData();
 });
 
 final bpTrackerListProvider = Provider<List<BPTrackerModel>>((ref) {
+  final user = ref.watch(authProvider);
+  if (user == null) return [];
+
   final data = ref.watch(bpTrackerDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
+    (user.uid, ref.watch(selectedDateProvider)),
   ));
   return data.when(
     data: (cache) => cache.items,
@@ -113,14 +135,31 @@ final bpTrackerListProvider = Provider<List<BPTrackerModel>>((ref) {
 });
 
 final bpTrackerSummaryProvider = Provider<Map<String, dynamic>>((ref) {
+  final selectedDate = ref.watch(selectedDateProvider);
+  final user = ref.watch(authProvider);
+
+  if (user == null) {
+    return {
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
+      'totalMeasurements': 0,
+      'lastTime': null,
+      'averageSystolic': 0,
+      'averageDiastolic': 0,
+      'averagePulse': 0,
+      'averageSpo2': null,
+      'lastSystolic': null,
+      'lastDiastolic': null,
+    };
+  }
+
   final data = ref.watch(bpTrackerDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
+    (user.uid, selectedDate),
   ));
 
   return data.when(
     data: (cache) {
       final bpMonitors = cache.items;
-      final selectedDate = ref.watch(selectedDateProvider);
       if (bpMonitors.isEmpty) {
         return {
           'day': DateTimeUtils.formatWeekday(selectedDate),
@@ -164,8 +203,8 @@ final bpTrackerSummaryProvider = Provider<Map<String, dynamic>>((ref) {
       };
     },
     loading: () => {
-      'day': DateTimeUtils.formatWeekday(ref.watch(selectedDateProvider)),
-      'date': DateTimeUtils.formatDateDM(ref.watch(selectedDateProvider)),
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
       'totalMeasurements': 0,
       'lastTime': null,
       'averageSystolic': 0,
@@ -176,8 +215,8 @@ final bpTrackerSummaryProvider = Provider<Map<String, dynamic>>((ref) {
       'lastDiastolic': null,
     },
     error: (_, __) => {
-      'day': DateTimeUtils.formatWeekday(ref.watch(selectedDateProvider)),
-      'date': DateTimeUtils.formatDateDM(ref.watch(selectedDateProvider)),
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
       'totalMeasurements': 0,
       'lastTime': null,
       'averageSystolic': 0,

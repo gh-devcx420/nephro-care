@@ -17,14 +17,14 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<Result> saveEntry({
-    required String userId, // User ID for Firestore path
-    required String collection, // Collection name (e.g., 'urine')
-    required String docId, // Document ID
-    required Map<String, dynamic> data, // Data to save
-    required String successMessage, // Message on success
-    required Color successMessageColor, // Color for success feedback
-    required String errorMessagePrefix, // Error message prefix
-    required Color errorMessageColor, // Color for error feedback
+    required String userId,
+    required String collection,
+    required String docId,
+    required Map<String, dynamic> data,
+    required String successMessage,
+    required Color successMessageColor,
+    required String errorMessagePrefix,
+    required Color errorMessageColor,
   }) async {
     try {
       await _firestore

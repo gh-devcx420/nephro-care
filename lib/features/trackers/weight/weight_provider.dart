@@ -23,7 +23,7 @@ class WeightStateNotifier
   Future<void> _fetchData() async {
     try {
       final startOfDay =
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+      DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
       final snapshot = await FirebaseFirestore.instance
@@ -31,13 +31,13 @@ class WeightStateNotifier
           .doc(userId)
           .collection(WeightConstants.weightFirebaseCollectionName)
           .where('timestamp',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
           .orderBy('timestamp', descending: false)
           .get();
 
       final weights =
-          snapshot.docs.map((doc) => WeightModel.fromJson(doc.data())).toList();
+      snapshot.docs.map((doc) => WeightModel.fromJson(doc.data())).toList();
 
       state = AsyncValue.data(
         Cache<WeightModel>(
@@ -51,16 +51,22 @@ class WeightStateNotifier
   }
 
   Stream<Cache<WeightModel>> streamData() async* {
+    final currentUser = ref.read(authProvider);
+    if (currentUser == null || currentUser.uid != userId) {
+      return;
+    }
+
     if (state is AsyncData<Cache<WeightModel>> &&
-        DateTime.now()
-                .difference(
-                    (state as AsyncData<Cache<WeightModel>>).value.lastFetched)
-                .inMinutes <
+        DateTime
+            .now()
+            .difference(
+            (state as AsyncData<Cache<WeightModel>>).value.lastFetched)
+            .inMinutes <
             cacheDuration.inMinutes) {
       yield (state as AsyncData<Cache<WeightModel>>).value;
     } else {
       final startOfDay =
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+      DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
       final stream = FirebaseFirestore.instance
@@ -68,12 +74,17 @@ class WeightStateNotifier
           .doc(userId)
           .collection(WeightConstants.weightFirebaseCollectionName)
           .where('timestamp',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
           .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
           .orderBy('timestamp', descending: false)
           .snapshots();
 
       await for (final snapshot in stream) {
+        final user = ref.read(authProvider);
+        if (user == null || user.uid != userId) {
+          return;
+        }
+
         final weights = snapshot.docs
             .map((doc) => WeightModel.fromJson(doc.data()))
             .toList();
@@ -89,17 +100,29 @@ class WeightStateNotifier
 }
 
 final weightDataProvider =
-    StreamProvider.family<Cache<WeightModel>, (String, DateTime)>(
+StreamProvider.family<Cache<WeightModel>, (String, DateTime)>(
         (ref, params) {
-  final userId = params.$1;
-  final selectedDate = params.$2;
-  final notifier = WeightStateNotifier(ref, userId, selectedDate);
-  return notifier.streamData();
-});
+      final userId = params.$1;
+      final selectedDate = params.$2;
+
+      final user = ref.watch(authProvider);
+      if (user == null || user.uid != userId) {
+        return Stream.value(Cache<WeightModel>(
+          items: [],
+          lastFetched: DateTime.now(),
+        ));
+      }
+
+      final notifier = WeightStateNotifier(ref, userId, selectedDate);
+      return notifier.streamData();
+    });
 
 final weightListProvider = Provider<List<WeightModel>>((ref) {
+  final user = ref.watch(authProvider);
+  if (user == null) return [];
+
   final data = ref.watch(weightDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
+    (user.uid, ref.watch(selectedDateProvider)),
   ));
   return data.when(
     data: (cache) => cache.items,
@@ -109,10 +132,22 @@ final weightListProvider = Provider<List<WeightModel>>((ref) {
 });
 
 final weightSummaryProvider = Provider<Map<String, dynamic>>((ref) {
-  final data = ref.watch(weightDataProvider(
-    (ref.watch(authProvider)!.uid, ref.watch(selectedDateProvider)),
-  ));
   final selectedDate = ref.watch(selectedDateProvider);
+  final user = ref.watch(authProvider);
+
+  if (user == null) {
+    return {
+      'day': DateTimeUtils.formatWeekday(selectedDate),
+      'date': DateTimeUtils.formatDateDM(selectedDate),
+      'totalMeasurements': 0,
+      'lastTime': null,
+      'averageWeight': 0,
+    };
+  }
+
+  final data = ref.watch(weightDataProvider(
+    (user.uid, selectedDate),
+  ));
 
   return data.when(
     data: (cache) {
@@ -129,7 +164,7 @@ final weightSummaryProvider = Provider<Map<String, dynamic>>((ref) {
 
       final totalMeasurements = weights.length;
       final totalWeight =
-          weights.fold<double>(0, (total, w) => total + w.weight);
+      weights.fold<double>(0, (total, w) => total + w.weight);
       final latest = weights.last;
 
       return {
@@ -140,14 +175,16 @@ final weightSummaryProvider = Provider<Map<String, dynamic>>((ref) {
         'averageWeight': totalWeight / totalMeasurements,
       };
     },
-    loading: () => {
+    loading: () =>
+    {
       'day': DateTimeUtils.formatWeekday(selectedDate),
       'date': DateTimeUtils.formatDateDM(selectedDate),
       'totalMeasurements': 0,
       'lastTime': null,
       'averageWeight': 0,
     },
-    error: (_, __) => {
+    error: (_, __) =>
+    {
       'day': DateTimeUtils.formatWeekday(selectedDate),
       'date': DateTimeUtils.formatDateDM(selectedDate),
       'totalMeasurements': 0,

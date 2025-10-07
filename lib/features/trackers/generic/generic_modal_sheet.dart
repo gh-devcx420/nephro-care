@@ -73,8 +73,8 @@ mixin TimePickerMixin<T extends StatefulWidget> on State<T> {
 }
 
 class GenericInputModalSheet<T> extends StatefulWidget {
-  final String title;
-  final String editTitle;
+  final String addModeTitle;
+  final String editingModeTitle;
   final T? initialData;
   final Color? primaryColor;
   final Color? secondaryColor;
@@ -97,8 +97,8 @@ class GenericInputModalSheet<T> extends StatefulWidget {
 
   const GenericInputModalSheet({
     super.key,
-    required this.title,
-    required this.editTitle,
+    required this.addModeTitle,
+    required this.editingModeTitle,
     required this.primaryColor,
     required this.secondaryColor,
     this.backgroundColor,
@@ -218,10 +218,8 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
       enabledBorderColor: ncTextFieldConfig.inputWidgetColor,
       focusedBorderColor: ncTextFieldConfig.inputWidgetColor,
       prefixIconColor: ncTextFieldConfig.inputWidgetColor,
-      fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       cursorColor: ncTextFieldConfig.inputWidgetColor,
       textColor: ncTextFieldConfig.inputWidgetColor,
-      hintTextColor: Theme.of(context).colorScheme.secondaryContainer,
       selectionHandleColor: ncTextFieldConfig.inputWidgetColor,
     );
   }
@@ -295,8 +293,8 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
                       ),
                       child: Text(
                         widget.initialData != null
-                            ? widget.editTitle
-                            : widget.title,
+                            ? widget.editingModeTitle
+                            : widget.addModeTitle,
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                               fontWeight: FontWeight.w800,
                             ),
@@ -305,7 +303,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
                   ),
                 ],
               ),
-              vGap8,
+              vGap12,
               widget.layoutConfig(context, fields, _buildSubmitButton),
               vGap16,
             ],

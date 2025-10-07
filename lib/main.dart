@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/services/firebase_options.dart';
 import 'package:nephro_care/core/themes/theme_config.dart';
 import 'package:nephro_care/core/themes/theme_provider.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
@@ -39,7 +40,9 @@ class AuthWrapper extends ConsumerWidget {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   FirebaseFirestore.instance.settings =
       const Settings(persistenceEnabled: true);
   final prefs = await SharedPreferences.getInstance();

@@ -42,12 +42,15 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return GenericInputModalSheet(
-      title: 'Enter Urine Output Details:',
-      editTitle: 'Edit Urine Output',
-      primaryColor: Theme.of(context).colorScheme.primary,
-      secondaryColor: Theme.of(context).colorScheme.primaryContainer,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      addModeTitle: 'Enter Urine Output Details:',
+      editingModeTitle: 'Edit Urine Output',
+      primaryColor: colorScheme.primary,
+      secondaryColor: colorScheme.primaryContainer,
+      backgroundColor: colorScheme.surfaceContainerLow,
       firestoreService: FirestoreService(),
       dividerThickness: 2.0,
       dividerWidthFactor: 0.15,
@@ -55,13 +58,11 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
         NCTextFieldConfig(
           key: Urine.quantity.fieldKey,
           controller: _urineQuantityController,
-          hintText:
-              '${Urine.quantity.hintText} in ${UrineUnits.milliliters.siUnit}',
+          hintText: Urine.quantity.hintText,
           keyboardType: TextInputType.number,
           activeIcon: Icons.water_drop,
           inactiveIcon: Icons.water_drop_outlined,
-          semanticsLabel:
-              '${Urine.quantity.hintText} in ${UrineUnits.milliliters.siUnit}',
+          semanticsLabel: Urine.quantity.hintText,
           initialValue: widget.output?.quantity.toInt().toString() ?? '',
           validator: (value) {
             final numericQuantity = _urineQuantityController.numericValue;
@@ -115,14 +116,14 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
         ],
       ),
       onSave: (values, ref, FirestoreService firestoreService) async {
-        final successColor = AppColors.successColor;
-        final errorColor = Theme.of(context).colorScheme.error;
+        const successColor = AppColors.successColor;
+        final errorColor = colorScheme.error;
 
         if (selectedTime == null) {
           return Result(
             isSuccess: false,
             message: 'Please select a time',
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: colorScheme.error,
           );
         }
 

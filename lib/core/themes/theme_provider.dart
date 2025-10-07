@@ -15,7 +15,7 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
   final SharedPreferences prefs;
   static const String _themePreferenceKey = 'SelectedTheme';
 
-  ThemeSettingsNotifier(this.prefs) : super(ThemeName.medicalBlue) {
+  ThemeSettingsNotifier(this.prefs) : super(ThemeName.warmTeal) {
     _loadThemePreferences();
   }
 
@@ -23,7 +23,7 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
     if (appThemes[currentTheme] != null) {
       await prefs.setString(_themePreferenceKey, currentTheme.name);
     } else {
-      prefs.setString(_themePreferenceKey, ThemeName.medicalBlue.name);
+      prefs.setString(_themePreferenceKey, ThemeName.warmTeal.name);
     }
   }
 
@@ -31,17 +31,17 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
     String? storedThemeName = prefs.getString(_themePreferenceKey);
 
     if (storedThemeName == null) {
-      setNewTheme(ThemeName.medicalBlue);
+      setNewTheme(ThemeName.warmTeal);
       return;
     }
     try {
       ThemeName currentTheme = ThemeName.values.firstWhere(
         (theme) => theme.name == storedThemeName,
-        orElse: () => ThemeName.medicalBlue,
+        orElse: () => ThemeName.warmTeal,
       );
       setNewTheme(currentTheme);
     } catch (e) {
-      setNewTheme(ThemeName.medicalBlue);
+      setNewTheme(ThemeName.warmTeal);
     }
   }
 
@@ -56,10 +56,6 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
 
   String getCurrentThemeDescription() {
     return state.description;
-  }
-
-  bool isCurrentThemeProfessional() {
-    return state.isProfessional;
   }
 }
 
@@ -90,8 +86,7 @@ final currentThemeInfoProvider = Provider<ThemeInfo>((ref) {
     name: currentTheme,
     displayName: currentTheme.displayName,
     description: currentTheme.description,
-    iconIdentifier: currentTheme.iconIdentifier,
-    isProfessional: currentTheme.isProfessional,
+    icon: currentTheme.iconData,
     useCase: currentTheme.useCase,
   );
 });
@@ -104,8 +99,7 @@ final availableThemesProvider = Provider<List<ThemePreview>>((ref) {
       name: theme,
       displayName: theme.displayName,
       description: theme.description,
-      iconIdentifier: theme.iconIdentifier,
-      isProfessional: theme.isProfessional,
+      icon: theme.iconData,
       primaryColor: themeColors.light.primary,
       primaryContainerColor: themeColors.light.primaryContainer,
     );

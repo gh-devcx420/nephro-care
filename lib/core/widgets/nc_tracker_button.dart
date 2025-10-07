@@ -37,8 +37,29 @@ class NCTrackerButton extends StatefulWidget {
 class _NCTrackerButtonState extends State<NCTrackerButton> {
   bool _isPressed = false;
 
+  Widget? _buildIcon(BuildContext context) {
+    if (widget.buttonIcon != null) {
+      return Icon(
+        widget.buttonIcon,
+        size: widget.iconSize ?? 28.0,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    } else if (widget.iconifyIcon != null) {
+      return Iconify(
+        widget.iconifyIcon!.icon,
+        size: widget.iconSize ?? 28.0,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final defaultButtonSize = screenWidth * 0.25;
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
@@ -56,46 +77,36 @@ class _NCTrackerButtonState extends State<NCTrackerButton> {
         duration: kButtonTapDuration,
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            //minHeight: widget.buttonHeight ?? 90,
-            minWidth: widget.buttonWidth ?? 90,
+            minHeight: widget.buttonHeight ?? defaultButtonSize,
+            minWidth: widget.buttonWidth ?? defaultButtonSize,
           ),
           child: Container(
-            width: widget.buttonWidth,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: widget.buttonColor ??
-                  Theme.of(context).colorScheme.primaryContainer,
+              color: widget.buttonColor ?? colorScheme.primary,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Center(
-              child: Column(
-                children: [
-                  if (widget.buttonIcon != null)
-                    Icon(
-                      widget.buttonIcon,
-                      size: widget.iconSize ?? 28.0,
-                      color: widget.iconColor ??
-                          Theme.of(context).colorScheme.primary,
-                    )
-                  else if (widget.iconifyIcon != null)
-                    Iconify(
-                      widget.iconifyIcon!.icon,
-                      size: widget.iconSize ?? 28.0,
-                      color: widget.iconColor ??
-                          Theme.of(context).colorScheme.primary,
-                    ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              // Centers vertically
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (_buildIcon(context) != null) ...[
+                  _buildIcon(context)!,
                   vGap8,
-                  Text(
-                    widget.buttonText,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                  ),
                 ],
-              ),
+                Text(
+                  widget.buttonText,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium!.copyWith(
+                    color: colorScheme.onPrimary,
+                    fontWeight: FontWeight.w800,
+                    height: 1.2,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

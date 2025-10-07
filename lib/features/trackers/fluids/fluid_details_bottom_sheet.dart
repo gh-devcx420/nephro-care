@@ -46,16 +46,18 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final fluidDailyLimitProvider = ref.watch(fluidLimitProvider);
 
     return GenericInputModalSheet(
-      title: 'Enter Fluid Intake Details:',
-      editTitle: 'Edit Fluid Intake:',
+      addModeTitle: 'Enter Fluid Intake Details:',
+      editingModeTitle: 'Edit Fluid Intake:',
       initialData: widget.intake,
       firestoreService: FirestoreService(),
       initialFocusFieldKey: Fluids.name.fieldKey,
-      primaryColor: Theme.of(context).colorScheme.primary,
-      secondaryColor: Theme.of(context).colorScheme.primaryContainer,
+      primaryColor: colorScheme.primary,
+      secondaryColor: colorScheme.primaryContainer,
       inputFields: [
         NCTextFieldConfig(
           key: Fluids.name.fieldKey,
@@ -78,10 +80,8 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
         NCTextFieldConfig(
           key: Fluids.quantity.fieldKey,
           controller: _fluidQuantityController,
-          hintText:
-              '${Fluids.quantity.hintText} in ${FluidUnits.milliliters.siUnit}',
-          semanticsLabel:
-              '${Fluids.quantity.hintText} in ${FluidUnits.milliliters.siUnit}',
+          hintText: Fluids.quantity.hintText,
+          semanticsLabel: Fluids.quantity.hintText,
           activeIcon: Icons.water_drop,
           inactiveIcon: Icons.water_drop_outlined,
           keyboardType: TextInputType.number,
@@ -95,7 +95,7 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
               return 'Please enter a valid quantity.';
             }
             if (quantity <= 0) {
-              return 'Quantity cannot be 0 ${FluidUnits.milliliters.siUnit}.';
+              return 'Quantity cannot be 0 ${FluidUnits.milliliters.siUnit} or less.';
             }
             if (quantity > fluidDailyLimitProvider) {
               return 'Quantity cannot exceed $fluidDailyLimitProvider ${FluidUnits.milliliters.siUnit}.\nAdjust the limit in settings.';
@@ -142,14 +142,14 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
         ],
       ),
       onSave: (values, ref, FirestoreService firestoreService) async {
-        final successColor = AppColors.successColor;
-        final errorColor = Theme.of(context).colorScheme.error;
+        const successColor = AppColors.successColor;
+        final errorColor = colorScheme.error;
 
         if (selectedTime == null) {
           return Result(
             isSuccess: false,
             message: 'Please select a time',
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: colorScheme.error,
           );
         }
 

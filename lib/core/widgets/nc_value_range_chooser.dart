@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_utils.dart';
@@ -28,45 +29,54 @@ class NCValueRange extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceBright,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           InkWell(
-            onTap: () => updateValue(value - step),
-            borderRadius: BorderRadius.circular(6),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              updateValue(value - step);
+            },
             child: Icon(
               Icons.remove_circle,
               color: color ?? Theme.of(context).colorScheme.primary,
-              size: 30,
+              size: 24,
             ),
           ),
-          hGap8,
-          UIUtils.createRichTextValueWithUnit(
-            value: FluidUtils().format(value).formattedValue!,
-            unit: FluidUtils().format(value).unitString!,
-            valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: color ?? Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-            unitStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: color ?? Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                ),
+          hGap4,
+          Container(
+            constraints: const BoxConstraints(maxHeight: 30, maxWidth: 60),
+            child: Center(
+              child: UIUtils.createRichTextValueWithUnit(
+                value: FluidUtils().format(value).formattedValue!,
+                unit: FluidUtils().format(value).unitString!,
+                valueStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: color ?? Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                unitStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: color ?? Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                    ),
+              ),
+            ),
           ),
-          hGap8,
+          hGap4,
           InkWell(
-            onTap: () => updateValue(value + step),
-            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              updateValue(value + step);
+            },
             child: Icon(
               Icons.add_circle,
               color: color ?? Theme.of(context).colorScheme.primary,
-              size: 30,
+              size: 24,
             ),
           ),
         ],

@@ -23,6 +23,8 @@ class UrineOutputLogScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     Measurement totalFormatter(List<UrineModel> items) {
       final total = items.fold<double>(0, (sum, item) => sum + item.quantity);
       return UrineUtils().format(total);
@@ -41,7 +43,7 @@ class UrineOutputLogScreen extends ConsumerWidget {
         leading: Icon(
           Icons.water_drop,
           size: 20,
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          color: colorScheme.onPrimaryContainer,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
@@ -51,7 +53,7 @@ class UrineOutputLogScreen extends ConsumerWidget {
           child: Text(
             'Output: ${item.outputName}',
             style: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),
@@ -64,12 +66,12 @@ class UrineOutputLogScreen extends ConsumerWidget {
             value: UrineUtils().format(item.quantity).formattedValue!,
             unit: UrineUtils().format(item.quantity).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kValueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kSIUnitFontSize,
               fontWeight: FontWeight.w600,
             ),
@@ -80,12 +82,12 @@ class UrineOutputLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kTimeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: colorScheme.onPrimaryContainer,
               fontSize: kMeridiemIndicatorFontSize,
               fontWeight: FontWeight.w800,
             ),

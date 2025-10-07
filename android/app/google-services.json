@@ -1,45 +1,45 @@
 {
   "project_info": {
-    "project_number": "917778903922",
-    "project_id": "nephro-care-91dec",
-    "storage_bucket": "nephro-care-91dec.firebasestorage.app"
+    "project_number": "712002654833",
+    "project_id": "nephro-care-5f88e",
+    "storage_bucket": "nephro-care-5f88e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:917778903922:android:ca9ab18694e766c513a3eb",
+        "mobilesdk_app_id": "1:712002654833:android:f1ba749ff64763fa7dc1d0",
         "android_client_info": {
           "package_name": "com.nephrocare.nephro_care"
         }
       },
       "oauth_client": [
         {
-          "client_id": "917778903922-0h1l8ueb6ga3r3h5d9o01ucujg658n8r.apps.googleusercontent.com",
+          "client_id": "712002654833-nof86q3bhbm7eg56dfg4vtfuhm1kg704.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.nephrocare.nephro_care",
-            "certificate_hash": "fb697b5597a45457bbe073803f5ccd77ad94970c"
+            "certificate_hash": "e25791fab5d31f2a272fa9f0d3aff4ac045be822"
           }
         },
         {
-          "client_id": "917778903922-1voojmcdnlu33ljbdd7eu7obbc1lb2rr.apps.googleusercontent.com",
+          "client_id": "712002654833-gp9b48ksj310riukb2th68kep9hcdbsq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBzDYX10_68zVVn5h-pD8frKvin7N1qtJM"
+          "current_key": "AIzaSyALMLBVqsp53Kn8TNexIm5AKAlApi5aU4s"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "917778903922-1voojmcdnlu33ljbdd7eu7obbc1lb2rr.apps.googleusercontent.com",
+              "client_id": "712002654833-gp9b48ksj310riukb2th68kep9hcdbsq.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "917778903922-1g0k2ibdtki5lng1p0amkke2t4clic9e.apps.googleusercontent.com",
+              "client_id": "712002654833-0qfmml7fnt555aretnlogbmahc3tfqnt.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.nephrocare.nephroCare"

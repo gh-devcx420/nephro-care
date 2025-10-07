@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,42 +18,33 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = false;
-  String? _processedSvgString;
-  bool _isInitialized = false;
-
-  Color _getSvgColor(
-      String originalHex, ColorScheme colorScheme, bool isLight) {
-    switch (originalHex) {
-      case '#3fbdf1': // Main dark blue
-        return colorScheme.primary;
-
-      case '#9fdef9': // Light blue
-        return colorScheme.primaryContainer;
-
-      default:
-        return colorScheme.onSurface;
-    }
-  }
+  String _processedSvgString = '';
+  bool _isSvgLoading = true;
+  Brightness? _lastBrightness;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_isInitialized) {
+
+    final currentBrightness = Theme.of(context).brightness;
+
+    // Only reload if brightness actually changed
+    if (_lastBrightness != currentBrightness) {
+      _lastBrightness = currentBrightness;
       _loadSvg();
-      _isInitialized = true;
     }
   }
 
   Future<void> _loadSvg() async {
     if (!mounted) return;
 
+    setState(() => _isSvgLoading = true);
+
     final colorScheme = Theme.of(context).colorScheme;
-    final isLight = Theme.of(context).brightness == Brightness.light;
 
     final colorMap = {
-      '#3fbdf1': _getSvgColor('#3fbdf1', colorScheme, isLight),
-      '#9fdef9': _getSvgColor('#9fdef9', colorScheme, isLight),
-      '#ffffff': _getSvgColor('#ffffff', colorScheme, isLight),
+      '#3fbdf1': colorScheme.primary,
+      '#9fdef9': Colors.white,
     };
 
     try {
@@ -65,30 +57,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         setState(() {
           _processedSvgString = loadedString ?? '';
+          _isSvgLoading = false;
         });
       }
     } catch (e) {
-      // Handle SVG loading error gracefully
       debugPrint('Failed to load SVG: $e');
+      if (mounted) {
+        setState(() => _isSvgLoading = false);
+      }
     }
   }
 
   Future<void> _handleGoogleSignIn() async {
-    if (_isLoading) return; // Prevent multiple simultaneous requests
+    if (_isLoading) return;
 
     setState(() => _isLoading = true);
 
     try {
       await ref.read(authProvider.notifier).signInWithGoogle();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sign-in failed: ${e.toString()}'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign-in failed: ${e.toString()}'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -101,11 +96,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final user = ref.watch(authProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isLight = theme.brightness == Brightness.light;
-    const svgDimensions = Size(370, 370);
+    final screenSize = MediaQuery.sizeOf(context);
 
-    // Handle navigation after user state change
-    ref.listen<dynamic>(authProvider, (previous, next) {
+    final circleSize = screenSize.width * 0.85;
+    final svgSize = screenSize.width * 0.68;
+
+    ref.listen<User?>(authProvider, (previous, next) {
       if (next != null && mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -130,78 +126,131 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               children: [
-                // const SizedBox(height: 40),
-                // Fixed spacing instead of percentage
-                Container(
-                  height: svgDimensions.height,
-                  width: svgDimensions.width,
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest,
-                    borderRadius:
-                        BorderRadius.circular(svgDimensions.height * 2),
-                  ),
-                  child: Center(
-                    child: ClipRect(
-                      child: SizedBox(
-                        height: svgDimensions.height * 0.8,
-                        width: svgDimensions.width * 0.8,
-                        child: _processedSvgString != null &&
-                                _processedSvgString!.isNotEmpty
-                            ? SvgPicture.string(
-                                _processedSvgString!,
-                                clipBehavior: Clip.hardEdge,
-                                semanticsLabel: 'Doctor illustration',
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 160),
-                Text(
-                  'Welcome to NephroCare',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                  textAlign: TextAlign.center,
-                  semanticsLabel: 'Welcome to NephroCare',
-                ),
+                _buildHeader(theme),
+                const SizedBox(height: 50),
+                _buildIllustration(circleSize, svgSize, colorScheme),
+                const SizedBox(height: 80),
+                _buildSignInButton(theme, colorScheme),
                 vGap30,
-                NCIconButton(
-                  onButtonTap: _handleGoogleSignIn,
-                  buttonPadding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  buttonBackgroundColor: colorScheme.primaryContainer,
-                  iconifyIcon: const Iconify(Bi.google),
-                  iconSize: 16,
-                  iconColor: colorScheme.primary,
-                  buttonSpacing: hGap8,
-                  buttonText: 'Sign in with Google',
-                  buttonTextStyle: theme.textTheme.titleMedium?.copyWith(
-                    color: colorScheme.primary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                  ),
-                  buttonChild: _isLoading
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: isLight
-                                ? colorScheme.primary
-                                : colorScheme.primaryContainer,
-                            backgroundColor: isLight
-                                ? colorScheme.primaryContainer
-                                : colorScheme.primary,
-                          ),
-                        )
-                      : null,
-                ),
+                _buildTermsText(theme),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(ThemeData theme) {
+    return Column(
+      children: [
+        Text(
+          'NephroCare',
+          style: theme.textTheme.headlineLarge?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.w800,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        vGap4,
+        Text(
+          'Your Trusted Healthcare Partner',
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.w800,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIllustration(
+    double circleSize,
+    double svgSize,
+    ColorScheme colorScheme,
+  ) {
+    return Container(
+      height: circleSize,
+      width: circleSize,
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withValues(alpha: 0.7),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: _isSvgLoading
+            ? SizedBox(
+                height: svgSize * 0.3,
+                width: svgSize * 0.3,
+                child: CircularProgressIndicator(
+                  color: colorScheme.primary,
+                ),
+              )
+            : _processedSvgString.isNotEmpty
+                ? SizedBox(
+                    height: svgSize,
+                    width: svgSize,
+                    child: SvgPicture.string(
+                      _processedSvgString,
+                      fit: BoxFit.contain,
+                      semanticsLabel: 'Doctor illustration',
+                    ),
+                  )
+                : Icon(
+                    Icons.medical_services_outlined,
+                    size: svgSize * 0.5,
+                    color: colorScheme.primary.withValues(alpha: 0.5),
+                  ),
+      ),
+    );
+  }
+
+  Widget _buildSignInButton(ThemeData theme, ColorScheme colorScheme) {
+    return NCIconButton(
+      onButtonTap: _handleGoogleSignIn,
+      buttonPadding: const EdgeInsets.all(12),
+      buttonBackgroundColor: colorScheme.primary,
+      iconifyIcon: const Iconify(Bi.google),
+      iconSize: 20,
+      iconColor: colorScheme.onPrimary,
+      gap: hGap12,
+      buttonText: 'Sign in with Google',
+      buttonTextStyle: theme.textTheme.titleMedium?.copyWith(
+        color: colorScheme.onPrimary,
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+      ),
+      buttonChild: _isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation(colorScheme.onPrimary),
+              ),
+            )
+          : null,
+    );
+  }
+
+  Widget _buildTermsText(ThemeData theme) {
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: theme.textTheme.bodySmall,
+        children: const <TextSpan>[
+          TextSpan(text: 'By signing in, you agree to our '),
+          TextSpan(
+            text: 'Terms of Service ',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextSpan(text: 'and '),
+          TextSpan(
+            text: 'Privacy Policy',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextSpan(text: '.'),
+        ],
       ),
     );
   }

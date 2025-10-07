@@ -13,7 +13,7 @@ class NCDatePicker extends ConsumerStatefulWidget {
   final StateProvider<DateTime> dateProvider;
   final String Function(DateTime) dateFormatter;
   final VoidCallback? onDateSelected;
-  final ColorScheme? logScreenColorScheme;
+  final ColorScheme? customColorScheme;
   final IconData? prefixIcon;
   final Iconify? prefixIconifyIcon;
   final double? prefixIconSize;
@@ -29,7 +29,7 @@ class NCDatePicker extends ConsumerStatefulWidget {
     required this.dateProvider,
     required this.dateFormatter,
     this.onDateSelected,
-    this.logScreenColorScheme,
+    this.customColorScheme,
     this.prefixIcon,
     this.prefixIconifyIcon,
     this.prefixIconSize,
@@ -80,7 +80,7 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
     UIUtils.showNCSnackBar(
       context: context,
       message: message,
-      backgroundColor: widget.logScreenColorScheme?.primary,
+      backgroundColor: widget.customColorScheme?.primary,
       durationSeconds: 2,
     );
   }
@@ -118,15 +118,14 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
               return Theme(
                 data: Theme.of(context).copyWith(
                   datePickerTheme: DatePickerThemeData(
-                    headerBackgroundColor:
-                        widget.logScreenColorScheme?.primary ??
-                            Theme.of(context).colorScheme.primary,
+                    headerBackgroundColor: widget.customColorScheme?.primary ??
+                        Theme.of(context).colorScheme.primary,
                     headerForegroundColor:
                         Theme.of(context).colorScheme.onPrimary,
                     dayBackgroundColor:
                         WidgetStateProperty.resolveWith((states) {
                       if (states.contains(WidgetState.selected)) {
-                        return widget.logScreenColorScheme?.primary ??
+                        return widget.customColorScheme?.primary ??
                             Theme.of(context).colorScheme.primary;
                       }
                       return null;
@@ -142,16 +141,16 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                       return Theme.of(context).colorScheme.onSurface;
                     }),
                     todayBackgroundColor: WidgetStateProperty.all(
-                      widget.logScreenColorScheme?.primary ??
+                      widget.customColorScheme?.primary ??
                           Theme.of(context).colorScheme.primary,
                     ),
                     todayForegroundColor: WidgetStateProperty.all(
                       Theme.of(context).colorScheme.onPrimary,
                     ),
                     confirmButtonStyle: TextButton.styleFrom(
-                      foregroundColor: widget.logScreenColorScheme?.onPrimary ??
+                      foregroundColor: widget.customColorScheme?.onPrimary ??
                           Theme.of(context).colorScheme.onPrimary,
-                      backgroundColor: widget.logScreenColorScheme?.primary ??
+                      backgroundColor: widget.customColorScheme?.primary ??
                           Theme.of(context).colorScheme.primary,
                     ),
                     cancelButtonStyle: TextButton.styleFrom(
@@ -166,11 +165,9 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
 
           HapticFeedback.lightImpact();
 
-          // Only update if user picked a date (not cancelled)
           if (pickedDate != null) {
             _updateSelectedDate(pickedDate);
           }
-          // If cancelled, do nothing - keep current date
         },
         onHighlightChanged: (isHighlighted) {
           setState(() {
@@ -188,8 +185,8 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
             ),
             padding: const EdgeInsets.all(_defaultPaddingValue),
             decoration: BoxDecoration(
-              color: widget.logScreenColorScheme?.primaryContainer ??
-                  Theme.of(context).colorScheme.primaryContainer,
+              color: widget.customColorScheme?.primary ??
+                  Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(_defaultRadiusValue),
             ),
             child: Row(
@@ -203,8 +200,8 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                       minWidth: _innerContainerMinWidth,
                     ),
                     decoration: BoxDecoration(
-                      color: widget.logScreenColorScheme?.primary ??
-                          Theme.of(context).colorScheme.primary,
+                      color: widget.customColorScheme?.surface ??
+                          Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(_prefixBorderRadius),
                     ),
                     padding: const EdgeInsets.all(_defaultPaddingValue),
@@ -212,15 +209,13 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                         ? Icon(
                             widget.prefixIcon ?? Icons.calendar_month_outlined,
                             size: widget.prefixIconSize ?? _prefixIconSize,
-                            color: widget
-                                    .logScreenColorScheme?.primaryContainer ??
-                                Theme.of(context).colorScheme.primaryContainer)
+                            color: widget.customColorScheme?.primary ??
+                                Theme.of(context).colorScheme.primary)
                         : Iconify(
                             widget.prefixIconifyIcon!.icon,
                             size: widget.prefixIconSize ?? _prefixIconSize,
-                            color: widget
-                                    .logScreenColorScheme?.primaryContainer ??
-                                Theme.of(context).colorScheme.primaryContainer,
+                            color: widget.customColorScheme?.primary ??
+                                Theme.of(context).colorScheme.primary,
                           ),
                   ),
                   hGap6,
@@ -232,11 +227,8 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                     widget.dateFormatter(selectedDate),
                     style: widget.dateTextStyle ??
                         Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: widget.logScreenColorScheme
-                                      ?.onPrimaryContainer ??
-                                  Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                              color: widget.customColorScheme?.onPrimary ??
+                                  Theme.of(context).colorScheme.onPrimary,
                               height: 0,
                               fontWeight: FontWeight.w800,
                             ),
@@ -257,8 +249,8 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                         minWidth: _innerContainerMinWidth,
                       ),
                       decoration: BoxDecoration(
-                        color: widget.logScreenColorScheme?.primary ??
-                            Theme.of(context).colorScheme.primary,
+                        color: widget.customColorScheme?.surface ??
+                            Theme.of(context).colorScheme.surface,
                         borderRadius:
                             BorderRadius.circular(_suffixBorderRadius),
                       ),
@@ -267,20 +259,14 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                           ? Icon(
                               widget.suffixIcon ?? Icons.restart_alt,
                               size: widget.suffixIconSize ?? _suffixIconSize,
-                              color: widget
-                                      .logScreenColorScheme?.primaryContainer ??
-                                  Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
+                              color: widget.customColorScheme?.primary ??
+                                  Theme.of(context).colorScheme.primary,
                             )
                           : Iconify(
                               widget.suffixIconifyIcon!.icon,
                               size: widget.suffixIconSize ?? _suffixIconSize,
-                              color: widget
-                                      .logScreenColorScheme?.primaryContainer ??
-                                  Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
+                              color: widget.customColorScheme?.primary ??
+                                  Theme.of(context).colorScheme.primary,
                             ),
                     ),
                   ),

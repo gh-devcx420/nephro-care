@@ -22,39 +22,39 @@ abstract class AppColorScheme {
 
   static Color _getSeedColor(ThemeName themeName) {
     switch (themeName) {
-      case ThemeName.medicalBlue:
-        return SeedColors.medicalBlue;
-      case ThemeName.classicGreen:
-        return SeedColors.classicGreen;
       case ThemeName.warmTeal:
         return SeedColors.warmTeal;
-      case ThemeName.gentleViolet:
-        return SeedColors.gentleViolet;
-      case ThemeName.energeticOrange:
-        return SeedColors.energeticOrange;
+      case ThemeName.limeGreen:
+        return SeedColors.limeGreen;
+      case ThemeName.yellow:
+        return SeedColors.yellow;
+      case ThemeName.pink:
+        return SeedColors.pink;
+      case ThemeName.violet:
+        return SeedColors.violet;
+      case ThemeName.brown:
+        return SeedColors.brown;
     }
   }
 
-  static ThemeColorScheme get medicalBlue =>
-      getThemeColors(ThemeName.medicalBlue);
-
-  static ThemeColorScheme get classicGreen =>
-      getThemeColors(ThemeName.classicGreen);
-
   static ThemeColorScheme get warmTeal => getThemeColors(ThemeName.warmTeal);
 
-  static ThemeColorScheme get gentleViolet =>
-      getThemeColors(ThemeName.gentleViolet);
+  static ThemeColorScheme get limeGreen => getThemeColors(ThemeName.limeGreen);
 
-  static ThemeColorScheme get energeticOrange =>
-      getThemeColors(ThemeName.energeticOrange);
+  static ThemeColorScheme get yellow => getThemeColors(ThemeName.yellow);
+
+  static ThemeColorScheme get pink => getThemeColors(ThemeName.pink);
+
+  static ThemeColorScheme get violet => getThemeColors(ThemeName.violet);
+
+  static ThemeColorScheme get brown => getThemeColors(ThemeName.brown);
 }
 
 abstract class AppColors {
   static const Color successColor =
       Color(0xFF2E7D32); // Medical green for success
   static const Color warningColor = Color(0xFFFF8F00); // Amber for caution
-  static const Color dangerColor = Color(0xFFD32F2F); // Red for danger/critical
+  static const Color dangerColor = Color(0xFFDB4437); // Red for danger/critical
   static const Color infoColor = Color(0xFF1976D2); // Blue for information
   static const Color neutralColor = Color(0xFF616161); // Gray for neutral
 }

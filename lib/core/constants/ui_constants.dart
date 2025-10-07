@@ -18,7 +18,7 @@ const double kButtonVerticalPaddingValue = 8.0;
 const double kAnimationScaleMin = 0.95;
 const double kAnimationScaleMax = 1.0;
 
-const EdgeInsets kScaffoldBodyPadding = EdgeInsets.all(8);
+const EdgeInsets kScaffoldBodyPadding = EdgeInsets.symmetric(horizontal: 8);
 const EdgeInsets kCardPadding =
     EdgeInsets.symmetric(horizontal: 8, vertical: 8);
 const EdgeInsets kBottomModalSheetPadding =

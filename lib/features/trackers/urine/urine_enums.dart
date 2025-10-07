@@ -18,9 +18,9 @@ extension UrineExtension on Urine {
   String get hintText {
     switch (this) {
       case Urine.quantity:
-        return 'Urine Quantity';
+        return 'Quantity';
       case Urine.time:
-        return 'Urine Time';
+        return 'Time';
     }
   }
 
