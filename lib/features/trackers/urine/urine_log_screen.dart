@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/strings.dart';
+import 'package:nephro_care/core/constants/app_strings.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -67,12 +67,12 @@ class UrineOutputLogScreen extends ConsumerWidget {
             unit: UrineUtils().format(item.quantity).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kValueFontSize,
+              fontSize: UIConstants.valueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kSIUnitFontSize,
+              fontSize: UIConstants.siUnitFontSize,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -83,12 +83,12 @@ class UrineOutputLogScreen extends ConsumerWidget {
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kTimeFontSize,
+              fontSize: UIConstants.timeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kMeridiemIndicatorFontSize,
+              fontSize: UIConstants.meridiemIndicatorFontSize,
               fontWeight: FontWeight.w800,
             ),
             isMeridiemUpperCase: false,
@@ -107,7 +107,9 @@ class UrineOutputLogScreen extends ConsumerWidget {
         }
         return totalUrineTimes == 0
             ? Text(
-                '${Strings.noEntriesPrefix}${isToday ? 'today' : DateTimeUtils.formatDateDMY(selectedDate)}',
+                AppStrings.noEntriesMessage(isToday
+                    ? 'today'
+                    : DateTimeUtils.formatDateDMY(selectedDate)),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,11 +122,11 @@ class UrineOutputLogScreen extends ConsumerWidget {
                     value: '$totalUrineTimes',
                     unit: '',
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kValueFontSize,
+                      fontSize: UIConstants.valueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -138,11 +140,11 @@ class UrineOutputLogScreen extends ConsumerWidget {
                         : 'No data available for output ratio',
                     unit: outputPercent != null ? '%' : '',
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kValueFontSize,
+                      fontSize: UIConstants.valueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -152,11 +154,11 @@ class UrineOutputLogScreen extends ConsumerWidget {
                     prefixStyle: theme.textTheme.bodySmall,
                     timestamp: lastUrineTime,
                     timeStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kTimeFontSize,
+                      fontSize: UIConstants.timeFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kMeridiemIndicatorFontSize,
+                      fontSize: UIConstants.meridiemIndicatorFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                     isMeridiemUpperCase: false,

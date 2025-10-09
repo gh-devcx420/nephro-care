@@ -56,31 +56,31 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.outline,
-            width: kBorderThickness,
+            width: UIConstants.borderThickness,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.primary,
-            width: kBorderThickness * 1.5, // Thicker when focused
+            width: UIConstants.borderThickness * 1.5, // Thicker when focused
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.error,
-            width: kBorderThickness,
+            width: UIConstants.borderThickness,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.error,
-            width: kBorderThickness * 1.5,
+            width: UIConstants.borderThickness * 1.5,
           ),
         ),
         prefixIconColor: colorScheme.primary,
@@ -92,7 +92,7 @@ abstract class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
-          padding: WidgetStateProperty.all(kTextButtonPadding),
+          padding: WidgetStateProperty.all(UIConstants.textButtonPadding),
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.disabled)) {
@@ -103,13 +103,13 @@ abstract class AppTheme {
           textStyle: WidgetStateProperty.all(
             const TextStyle(
               fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
+              fontSize: UIConstants.textButtonFontSize,
               fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderRadius: BorderRadius.circular(UIConstants.borderRadius),
             ),
           ),
           overlayColor: WidgetStateProperty.all(
@@ -119,7 +119,7 @@ abstract class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          padding: WidgetStateProperty.all(kElevatedButtonPadding),
+          padding: WidgetStateProperty.all(UIConstants.elevatedButtonPadding),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.disabled)) {
               return colorScheme.onSurface.withValues(alpha: 0.12);
@@ -135,13 +135,13 @@ abstract class AppTheme {
           textStyle: WidgetStateProperty.all(
             const TextStyle(
               fontFamily: 'JosefinSans',
-              fontSize: kElevatedButtonFontSize,
+              fontSize: UIConstants.elevatedButtonFontSize,
               fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderRadius: BorderRadius.circular(UIConstants.borderRadius),
             ),
           ),
           elevation: WidgetStateProperty.resolveWith((states) {
@@ -207,7 +207,7 @@ abstract class AppTheme {
         selectedTileColor: colorScheme.primaryContainer,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
         ),
         iconColor: colorScheme.primary,
         selectedColor: colorScheme.onPrimaryContainer,
@@ -309,31 +309,31 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.outline,
-            width: kBorderThickness,
+            width: UIConstants.borderThickness,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.primary,
-            width: kBorderThickness * 1.5,
+            width: UIConstants.borderThickness * 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.error,
-            width: kBorderThickness,
+            width: UIConstants.borderThickness,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           borderSide: BorderSide(
             color: colorScheme.error,
-            width: kBorderThickness * 1.5,
+            width: UIConstants.borderThickness * 1.5,
           ),
         ),
         prefixIconColor: colorScheme.primary,
@@ -345,7 +345,7 @@ abstract class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
-          padding: WidgetStateProperty.all(kTextButtonPadding),
+          padding: WidgetStateProperty.all(UIConstants.textButtonPadding),
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.disabled)) {
@@ -356,13 +356,13 @@ abstract class AppTheme {
           textStyle: WidgetStateProperty.all(
             const TextStyle(
               fontFamily: 'JosefinSans',
-              fontSize: kTextButtonFontSize,
+              fontSize: UIConstants.textButtonFontSize,
               fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderRadius: BorderRadius.circular(UIConstants.borderRadius),
             ),
           ),
           overlayColor: WidgetStateProperty.all(
@@ -372,7 +372,7 @@ abstract class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          padding: WidgetStateProperty.all(kElevatedButtonPadding),
+          padding: WidgetStateProperty.all(UIConstants.elevatedButtonPadding),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.disabled)) {
               return colorScheme.onSurface.withValues(alpha: 0.12);
@@ -388,13 +388,13 @@ abstract class AppTheme {
           textStyle: WidgetStateProperty.all(
             const TextStyle(
               fontFamily: 'JosefinSans',
-              fontSize: kElevatedButtonFontSize,
+              fontSize: UIConstants.elevatedButtonFontSize,
               fontWeight: FontWeight.w700,
             ),
           ),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderRadius: BorderRadius.circular(UIConstants.borderRadius),
             ),
           ),
           elevation: WidgetStateProperty.resolveWith((states) {
@@ -460,7 +460,7 @@ abstract class AppTheme {
         selectedTileColor: colorScheme.primaryContainer,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(kBorderRadius),
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius),
         ),
         iconColor: colorScheme.primary,
         selectedColor: colorScheme.onPrimaryContainer,

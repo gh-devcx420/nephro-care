@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/provider_constants.dart';
+import 'package:nephro_care/core/constants/app_constants.dart';
 import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
@@ -14,7 +14,8 @@ class FluidIntakeStateNotifier
   final String userId;
   final DateTime selectedDate;
   final Ref ref;
-  static final cacheDuration = Duration(minutes: kCacheDurationInMinutes);
+  static const cacheDuration =
+      Duration(minutes: AppConstants.cacheDurationMinutes);
 
   FluidIntakeStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {

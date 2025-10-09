@@ -11,7 +11,7 @@ class NotesCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(kBorderRadius),
+        borderRadius: BorderRadius.circular(UIConstants.borderRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -175,19 +175,19 @@ class _NCTextfieldState extends State<NCTextfield> {
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderRadius: BorderRadius.circular(UIConstants.borderRadius),
               borderSide: BorderSide(
                 color: widget.enabledBorderColor ??
                     themeContext.colorScheme.onSurface,
-                width: kBorderThickness,
+                width: UIConstants.borderThickness,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(kBorderRadius),
+              borderRadius: BorderRadius.circular(UIConstants.borderRadius),
               borderSide: BorderSide(
                 color: widget.focusedBorderColor ??
                     themeContext.colorScheme.onSurface,
-                width: kBorderThickness,
+                width: UIConstants.borderThickness,
               ),
             ),
             border: OutlineInputBorder(

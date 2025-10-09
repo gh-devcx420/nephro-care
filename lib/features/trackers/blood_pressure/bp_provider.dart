@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/provider_constants.dart';
 import 'package:nephro_care/core/utils/date_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_provider.dart';
@@ -8,12 +7,15 @@ import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_model.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 
+import '../../../core/constants/app_constants.dart';
+
 class BPMonitorStateNotifier
     extends StateNotifier<AsyncValue<Cache<BPTrackerModel>>> {
   final String userId;
   final DateTime selectedDate;
   final Ref ref;
-  static final cacheDuration = Duration(minutes: kCacheDurationInMinutes);
+  static const cacheDuration =
+      Duration(minutes: AppConstants.cacheDurationMinutes);
 
   BPMonitorStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {

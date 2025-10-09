@@ -22,9 +22,9 @@ class SummaryCard extends StatelessWidget {
         ),
         vGap4,
         Container(
-          padding: kCardPadding,
+          padding: UIConstants.cardPadding,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(kBorderRadius),
+            borderRadius: BorderRadius.circular(UIConstants.borderRadius),
             color: Theme.of(context).colorScheme.onPrimary,
           ),
           child: const Column(

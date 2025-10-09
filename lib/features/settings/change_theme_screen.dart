@@ -29,7 +29,7 @@ class ThemeSettingsScreen extends ConsumerWidget {
         automaticallyImplyLeading: false,
       ),
       body: Padding(
-        padding: kScaffoldBodyPadding,
+        padding: UIConstants.scaffoldBodyPadding,
         child: ListView.builder(
           itemCount: appThemes.length,
           itemBuilder: (context, index) {

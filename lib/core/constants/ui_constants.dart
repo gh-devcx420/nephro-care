@@ -1,34 +1,47 @@
 import 'package:flutter/material.dart';
 
-const double kBorderRadius = 12.0;
-const double kBorderThickness = 2.0;
-const double kTrackerIconSize = 22.0;
+class UIConstants {
+  UIConstants._();
 
-const double kMinButtonHeight = 32.0;
-const double kMinButtonWidth = 32.0;
-const double kButtonIconSize = 20.0;
-const Duration kButtonTapDuration = Duration(milliseconds: 100);
+  // Border & Shape Constants
+  static const double borderRadius = 12.0;
+  static const double borderThickness = 2.0;
 
-const double kToolsIconSize = 22.0;
-const double kElevatedButtonFontSize = 16.0;
-const double kTextButtonFontSize = 16.0;
-const double kButtonHorizontalPaddingValue = 8.0;
-const double kButtonVerticalPaddingValue = 8.0;
+  // Icon Constants
+  static const double trackerIconSize = 22.0;
+  static const double toolsIconSize = 22.0;
+  static const double buttonIconSize = 20.0;
 
-const double kAnimationScaleMin = 0.95;
-const double kAnimationScaleMax = 1.0;
+  // Button Constants
+  static const double minButtonHeight = 32.0;
+  static const double minButtonWidth = 32.0;
+  static const double buttonHorizontalPadding = 8.0;
+  static const double buttonVerticalPadding = 8.0;
+  static const Duration buttonTapDuration = Duration(milliseconds: 100);
 
-const EdgeInsets kScaffoldBodyPadding = EdgeInsets.symmetric(horizontal: 8);
-const EdgeInsets kCardPadding =
-    EdgeInsets.symmetric(horizontal: 8, vertical: 8);
-const EdgeInsets kBottomModalSheetPadding =
-    EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
-const EdgeInsets kElevatedButtonPadding =
-    EdgeInsets.symmetric(horizontal: 20, vertical: 10);
-const EdgeInsets kTextButtonPadding =
-    EdgeInsets.symmetric(horizontal: 20, vertical: 10);
+  // Font Constants
+  static const double elevatedButtonFontSize = 16.0;
+  static const double textButtonFontSize = 16.0;
+  static const double valueFontSize = 14.0;
+  static const double siUnitFontSize = 12.0;
+  static const double timeFontSize = 14.0;
+  static const double meridiemIndicatorFontSize = 12.0;
 
-const double kValueFontSize = 14.0;
-const double kSIUnitFontSize = 12.0;
-const double kTimeFontSize = 14.0;
-const double kMeridiemIndicatorFontSize = 12.0;
+  // Padding Value Constants
+
+  // Padding Preset Constants
+  static const EdgeInsets scaffoldBodyPadding =
+      EdgeInsets.symmetric(horizontal: 8);
+  static const EdgeInsets cardPadding =
+      EdgeInsets.symmetric(horizontal: 8, vertical: 8);
+  static const EdgeInsets bottomModalSheetPadding =
+      EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
+  static const EdgeInsets elevatedButtonPadding =
+      EdgeInsets.symmetric(horizontal: 20, vertical: 10);
+  static const EdgeInsets textButtonPadding =
+      EdgeInsets.symmetric(horizontal: 20, vertical: 10);
+
+  // Animation Constants
+  static const double animationScaleMin = 0.95;
+  static const double animationScaleMax = 1.0;
+}

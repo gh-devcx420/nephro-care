@@ -10,10 +10,10 @@ class ToolsMenuCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: kCardPadding,
+      padding: UIConstants.cardPadding,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceBright,
-        borderRadius: BorderRadius.circular(kBorderRadius),
+        borderRadius: BorderRadius.circular(UIConstants.borderRadius),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

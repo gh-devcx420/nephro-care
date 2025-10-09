@@ -44,8 +44,8 @@ class NCDatePicker extends ConsumerStatefulWidget {
 }
 
 class _NCDatePickerState extends ConsumerState<NCDatePicker> {
-  static const double _minButtonHeight = kMinButtonHeight;
-  static const double _minButtonWidth = kMinButtonWidth;
+  static const double _minButtonHeight = UIConstants.minButtonHeight;
+  static const double _minButtonWidth = UIConstants.minButtonWidth;
   static const double _defaultPaddingValue = 4.0;
   static const double _defaultRadiusValue = _minButtonHeight / 2;
 
@@ -175,8 +175,10 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
           });
         },
         child: AnimatedScale(
-          scale: _isPressed ? kAnimationScaleMin : kAnimationScaleMax,
-          duration: kButtonTapDuration,
+          scale: _isPressed
+              ? UIConstants.animationScaleMin
+              : UIConstants.animationScaleMax,
+          duration: UIConstants.buttonTapDuration,
           curve: Curves.easeInOut,
           child: Container(
             constraints: const BoxConstraints(

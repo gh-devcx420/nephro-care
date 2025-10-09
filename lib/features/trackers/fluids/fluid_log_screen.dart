@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/strings.dart';
+import 'package:nephro_care/core/constants/app_strings.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -41,7 +41,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
               'No Data',
               style: theme.textTheme.titleMedium!.copyWith(
                 color: colorScheme.onError,
-                fontSize: kValueFontSize,
+                fontSize: UIConstants.valueFontSize,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -62,14 +62,14 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                 color: isLimitExceeded
                     ? colorScheme.onErrorContainer
                     : colorScheme.onPrimaryContainer,
-                fontSize: kValueFontSize,
+                fontSize: UIConstants.valueFontSize,
                 fontWeight: FontWeight.w800,
               ),
               unitStyle: theme.textTheme.titleMedium!.copyWith(
                 color: isLimitExceeded
                     ? colorScheme.onErrorContainer
                     : colorScheme.onPrimaryContainer,
-                fontSize: kSIUnitFontSize,
+                fontSize: UIConstants.siUnitFontSize,
                 fontWeight: FontWeight.w800,
               ),
             );
@@ -128,12 +128,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
             unit: FluidUtils().format(item.quantity).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kValueFontSize,
+              fontSize: UIConstants.valueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kSIUnitFontSize,
+              fontSize: UIConstants.siUnitFontSize,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -144,12 +144,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kTimeFontSize,
+              fontSize: UIConstants.timeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kMeridiemIndicatorFontSize,
+              fontSize: UIConstants.meridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),
             isMeridiemUpperCase: false,
@@ -166,7 +166,9 @@ class FluidIntakeLogScreen extends ConsumerWidget {
 
         return totalDrinksToday == 0
             ? Text(
-                '${Strings.noEntriesPrefix}${isToday ? 'today' : DateTimeUtils.formatDateDMY(selectedDate)}.',
+                AppStrings.noEntriesMessage(
+                  isToday ? 'today' : DateTimeUtils.formatDateDMY(selectedDate),
+                ),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +184,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                     ),
                     unit: '',
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -204,12 +206,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                                 .unitString!,
                             valueStyle: theme.textTheme.titleMedium!.copyWith(
                               color: color,
-                              fontSize: kValueFontSize,
+                              fontSize: UIConstants.valueFontSize,
                               fontWeight: FontWeight.w800,
                             ),
                             unitStyle: theme.textTheme.titleMedium!.copyWith(
                               color: color,
-                              fontSize: kSIUnitFontSize,
+                              fontSize: UIConstants.siUnitFontSize,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -225,12 +227,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                               .unitString!,
                           valueStyle: theme.textTheme.titleMedium!.copyWith(
                             color: colorScheme.onPrimary,
-                            fontSize: kValueFontSize,
+                            fontSize: UIConstants.valueFontSize,
                             fontWeight: FontWeight.w800,
                           ),
                           unitStyle: theme.textTheme.titleMedium!.copyWith(
                             color: colorScheme.onPrimary,
-                            fontSize: kSIUnitFontSize,
+                            fontSize: UIConstants.siUnitFontSize,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
@@ -246,12 +248,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                                 .format(entry.value)
                                 .formattedValue!,
                             valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                              fontSize: kValueFontSize,
+                              fontSize: UIConstants.valueFontSize,
                               fontWeight: FontWeight.w800,
                             ),
                             unit: FluidUtils().format(entry.value).unitString!,
                             unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                              fontSize: kSIUnitFontSize,
+                              fontSize: UIConstants.siUnitFontSize,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -263,11 +265,11 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                     prefixStyle: theme.textTheme.bodySmall,
                     timestamp: lastDrinkTime,
                     timeStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kTimeFontSize,
+                      fontSize: UIConstants.timeFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kMeridiemIndicatorFontSize,
+                      fontSize: UIConstants.meridiemIndicatorFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     isMeridiemUpperCase: false,

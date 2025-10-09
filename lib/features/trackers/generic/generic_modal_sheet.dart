@@ -273,7 +273,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SingleChildScrollView(
         child: Padding(
-          padding: kBottomModalSheetPadding,
+          padding: UIConstants.bottomModalSheetPadding,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

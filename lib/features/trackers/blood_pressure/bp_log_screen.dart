@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/strings.dart';
+import 'package:nephro_care/core/constants/app_strings.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -38,7 +38,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
               'No Data',
               style: theme.textTheme.titleMedium!.copyWith(
                 color: colorScheme.onPrimaryContainer,
-                fontSize: kValueFontSize,
+                fontSize: UIConstants.valueFontSize,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -64,12 +64,12 @@ class BPTrackerLogScreen extends ConsumerWidget {
             unit: BloodPressureField.systolic.siUnit,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kValueFontSize,
+              fontSize: UIConstants.valueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kSIUnitFontSize,
+              fontSize: UIConstants.siUnitFontSize,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -98,12 +98,12 @@ class BPTrackerLogScreen extends ConsumerWidget {
             unit: BloodPressureField.systolic.siUnit,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kValueFontSize,
+              fontSize: UIConstants.valueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kSIUnitFontSize,
+              fontSize: UIConstants.siUnitFontSize,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -115,21 +115,21 @@ class BPTrackerLogScreen extends ConsumerWidget {
             text: TextSpan(
               style: theme.textTheme.titleMedium!.copyWith(
                 color: colorScheme.onPrimaryContainer,
-                fontSize: kValueFontSize,
+                fontSize: UIConstants.valueFontSize,
                 fontWeight: FontWeight.w800,
               ),
               children: [
                 TextSpan(
                   text: '${BloodPressureField.pulse.hintText}: ${item.pulse}',
                   style: const TextStyle(
-                    fontSize: kValueFontSize,
+                    fontSize: UIConstants.valueFontSize,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 TextSpan(
                   text: ' ${BloodPressureField.pulse.siUnit}',
                   style: const TextStyle(
-                    fontSize: kSIUnitFontSize,
+                    fontSize: UIConstants.siUnitFontSize,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -145,14 +145,14 @@ class BPTrackerLogScreen extends ConsumerWidget {
                     text:
                         '${BloodPressureField.spo2.hintText}: ${item.spo2!.toInt()}',
                     style: const TextStyle(
-                      fontSize: kValueFontSize,
+                      fontSize: UIConstants.valueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                   TextSpan(
                     text: ' ${BloodPressureField.spo2.siUnit}',
                     style: const TextStyle(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -168,12 +168,12 @@ class BPTrackerLogScreen extends ConsumerWidget {
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kTimeFontSize,
+              fontSize: UIConstants.timeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
               color: colorScheme.onPrimaryContainer,
-              fontSize: kMeridiemIndicatorFontSize,
+              fontSize: UIConstants.meridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),
             isMeridiemUpperCase: false,
@@ -197,7 +197,9 @@ class BPTrackerLogScreen extends ConsumerWidget {
 
         return lastBpTime == null
             ? Text(
-                '${Strings.noEntriesPrefix}${isToday ? 'today' : DateTimeUtils.formatDateDMY(selectedDate)}.',
+                AppStrings.noEntriesMessage(isToday
+                    ? 'today'
+                    : DateTimeUtils.formatDateDMY(selectedDate)),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,11 +212,11 @@ class BPTrackerLogScreen extends ConsumerWidget {
                     value: '$totalMeasurements',
                     unit: '',
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kValueFontSize,
+                      fontSize: UIConstants.valueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -226,11 +228,11 @@ class BPTrackerLogScreen extends ConsumerWidget {
                         '${averageSystolic.toInt()}/${averageDiastolic.toInt()}',
                     unit: BloodPressureField.systolic.siUnit,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kValueFontSize,
+                      fontSize: UIConstants.valueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -241,11 +243,11 @@ class BPTrackerLogScreen extends ConsumerWidget {
                     value: '$averagePulse',
                     unit: BloodPressureField.systolic.siUnit,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kValueFontSize,
+                      fontSize: UIConstants.valueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -258,11 +260,11 @@ class BPTrackerLogScreen extends ConsumerWidget {
                         ? ''
                         : BloodPressureField.spo2.siUnit,
                     valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kValueFontSize,
+                      fontSize: UIConstants.valueFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kSIUnitFontSize,
+                      fontSize: UIConstants.siUnitFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -272,11 +274,11 @@ class BPTrackerLogScreen extends ConsumerWidget {
                     prefixStyle: theme.textTheme.bodySmall,
                     timestamp: lastBpTime,
                     timeStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kTimeFontSize,
+                      fontSize: UIConstants.timeFontSize,
                       fontWeight: FontWeight.w800,
                     ),
                     meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: kMeridiemIndicatorFontSize,
+                      fontSize: UIConstants.meridiemIndicatorFontSize,
                       fontWeight: FontWeight.w600,
                     ),
                     isMeridiemUpperCase: false,

@@ -73,8 +73,10 @@ class _NCTrackerButtonState extends State<NCTrackerButton> {
         });
       },
       child: AnimatedScale(
-        scale: _isPressed ? kAnimationScaleMin : kAnimationScaleMax,
-        duration: kButtonTapDuration,
+        scale: _isPressed
+            ? UIConstants.animationScaleMin
+            : UIConstants.animationScaleMax,
+        duration: UIConstants.buttonTapDuration,
         child: ConstrainedBox(
           constraints: BoxConstraints(
             minHeight: widget.buttonHeight ?? defaultButtonSize,

@@ -103,7 +103,7 @@ class SettingsScreen extends ConsumerWidget {
         automaticallyImplyLeading: false,
       ),
       body: Padding(
-        padding: kScaffoldBodyPadding,
+        padding: UIConstants.scaffoldBodyPadding,
         child: ListView(
           children: [
             _buildSettingTile(

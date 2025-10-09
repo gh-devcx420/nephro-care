@@ -53,8 +53,8 @@ class NCIconButton extends StatefulWidget {
 }
 
 class _NCIconButtonState extends State<NCIconButton> {
-  static const double _minButtonHeight = kMinButtonHeight;
-  static const double _minButtonWidth = kMinButtonWidth;
+  static const double _minButtonHeight = UIConstants.minButtonHeight;
+  static const double _minButtonWidth = UIConstants.minButtonWidth;
   static const double _defaultPaddingValue = 4.0;
   static const double _defaultRadiusValue = (_minButtonHeight * 2);
 
@@ -63,8 +63,10 @@ class _NCIconButtonState extends State<NCIconButton> {
   @override
   Widget build(BuildContext context) {
     return AnimatedScale(
-      scale: _isPressed ? kAnimationScaleMin : kAnimationScaleMax,
-      duration: kButtonTapDuration,
+      scale: _isPressed
+          ? UIConstants.animationScaleMin
+          : UIConstants.animationScaleMax,
+      duration: UIConstants.buttonTapDuration,
       curve: Curves.easeInOut,
       child: InkWell(
         splashColor: Colors.transparent,
@@ -107,21 +109,21 @@ class _NCIconButtonState extends State<NCIconButton> {
                     if (widget.buttonIcon != null)
                       Icon(
                         widget.buttonIcon,
-                        size: widget.iconSize ?? kButtonIconSize,
+                        size: widget.iconSize ?? UIConstants.buttonIconSize,
                         color: widget.iconColor ??
                             Theme.of(context).colorScheme.onPrimary,
                       )
                     else if (widget.iconifyIcon != null)
                       Iconify(
                         widget.iconifyIcon!.icon,
-                        size: widget.iconSize ?? kButtonIconSize,
+                        size: widget.iconSize ?? UIConstants.buttonIconSize,
                         color: widget.iconColor ??
                             Theme.of(context).colorScheme.onPrimary,
                       )
                     else
                       Icon(
                         Icons.help_outline,
-                        size: widget.iconSize ?? kButtonIconSize,
+                        size: widget.iconSize ?? UIConstants.buttonIconSize,
                         color: widget.iconColor ??
                             Theme.of(context).colorScheme.onPrimary,
                       ),

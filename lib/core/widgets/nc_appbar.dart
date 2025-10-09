@@ -18,6 +18,8 @@ class NCAppbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final User? user = ref.watch(authProvider);
+    final currentDateTime = DateTime.now();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
@@ -46,8 +48,8 @@ class NCAppbar extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
               children: [
-                const TextSpan(
-                  text: 'Good Morning\n',
+                TextSpan(
+                  text: 'Good ${DateTimeUtils.getTimeOfDay(currentDateTime)}\n',
                 ),
                 TextSpan(
                   text: (user?.displayName?.split(' ').first) ?? '',
@@ -78,7 +80,7 @@ class NCAppbar extends ConsumerWidget {
               );
             },
             buttonIcon: Icons.settings,
-            iconSize: kButtonIconSize,
+            iconSize: UIConstants.buttonIconSize,
           ),
         ],
       ),

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
-import 'package:nephro_care/core/constants/strings.dart';
+import 'package:nephro_care/core/constants/app_strings.dart';
 import 'package:nephro_care/core/constants/ui_constants.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
@@ -66,8 +66,8 @@ class LogScreen<T> extends ConsumerStatefulWidget {
 }
 
 class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
-  static const double _minButtonHeight = kMinButtonHeight;
-  static const double _minButtonWidth = kMinButtonWidth;
+  static const double _minButtonHeight = UIConstants.minButtonHeight;
+  static const double _minButtonWidth = UIConstants.minButtonWidth;
   static const double _defaultPaddingValue = 4.0;
   static const double _defaultRoundness = _defaultPaddingValue * 4;
   bool _isPressed = false;
@@ -157,7 +157,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
         final summary = ref.read(widget.summaryProvider);
         final result = await showNCAlertDialog(
           context: context,
-          titleText: Strings.logDetails,
+          titleText: AppStrings.logDetails,
           content: widget.logDetailsDialogBuilder(context, summary),
           action1: const SizedBox(),
           action2: ElevatedButton(
@@ -169,7 +169,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
             child: const Text(
-              Strings.okButton,
+              AppStrings.ok,
             ),
           ),
         );
@@ -211,10 +211,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
   Future<bool> _showEditConfirmationDialog() async {
     return UIUtils.showNCConfirmationDialog(
       context: context,
-      title: Strings.editEntryTitle,
-      content:
-          '${Strings.editEntryContentPrefix}${widget.appBarTitle.toLowerCase()}${Strings.entrySuffix}',
-      confirmText: Strings.editConfirmText,
+      title: AppStrings.editEntryTitle,
+      content: AppStrings.editEntryContent(widget.appBarTitle.toLowerCase()),
+      confirmText: AppStrings.editConfirm,
       confirmColor: Theme.of(context).colorScheme.primary,
     );
   }
@@ -238,10 +237,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
   Future<bool> _showDeleteConfirmationDialog() async {
     return UIUtils.showNCConfirmationDialog(
       context: context,
-      title: Strings.deleteEntryTitle,
-      content:
-          '${Strings.deleteEntryContentPrefix}${widget.appBarTitle.toLowerCase()}${Strings.entrySuffix}',
-      confirmText: Strings.deleteConfirmText,
+      title: AppStrings.deleteEntryTitle,
+      content: AppStrings.deleteEntryContent(widget.appBarTitle.toLowerCase()),
+      confirmText: AppStrings.deleteConfirm,
     );
   }
 
@@ -255,7 +253,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
 
     if (user == null) {
       _showSnackBar(
-        message: Strings.userNotAuthenticated,
+        message: AppStrings.userNotAuthenticated,
         backgroundColor: errorColor,
       );
       return;
@@ -265,9 +263,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       userId: user.uid,
       collection: widget.firestoreCollection,
       docId: logItemId,
-      successMessage: Strings.entryDeletedSuccessfully,
+      successMessage: AppStrings.entryDeletedSuccess,
       successColor: successColor,
-      errorMessagePrefix: Strings.failedToDeleteEntryPrefix,
+      errorMessagePrefix: AppStrings.failedToDeleteEntry,
       errorColor: errorColor,
     );
     _showSnackBar(
@@ -283,10 +281,11 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
 
     return UIUtils.showNCConfirmationDialog(
       context: context,
-      title: Strings.deleteAllEntriesTitle,
-      content:
-          '${Strings.deleteAllEntriesContentPrefix} ${isToday ? 'for today?' : 'for ${DateTimeUtils.formatDateDM(selectedDate)}?'}',
-      confirmText: Strings.deleteAllConfirmText,
+      title: AppStrings.deleteAllEntriesTitle,
+      content: isToday
+          ? '${AppStrings.deleteAllEntriesPrompt}for today?'
+          : '${AppStrings.deleteAllEntriesPrompt}for ${DateTimeUtils.formatDateDM(selectedDate)}?',
+      confirmText: AppStrings.deleteAllConfirm,
     );
   }
 
@@ -300,7 +299,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
 
     if (user == null) {
       _showSnackBar(
-        message: Strings.userNotAuthenticated,
+        message: AppStrings.userNotAuthenticated,
         backgroundColor: errorColor,
       );
       return;
@@ -314,9 +313,9 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       collection: widget.firestoreCollection,
       docIds: docIds,
       successMessage:
-          '${Strings.allEntriesDeletedSuccessfullyPrefix} ${Strings.allEntriesDeletedSuccessfullySuffix}',
+          AppStrings.allEntriesDeleted(widget.appBarTitle.toLowerCase()),
       successMessageColor: successColor,
-      errorMessagePrefix: Strings.failedToDeleteEntryPrefix,
+      errorMessagePrefix: AppStrings.failedToDeleteEntry,
       errorColor: errorColor,
     );
 
@@ -410,7 +409,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 buildPopupMenuItem(
                   value: 'details',
                   icon: Icons.info,
-                  text: Strings.logDetails,
+                  text: AppStrings.logDetails,
                 ),
               ];
               if (allowDeleteAll &&
@@ -420,7 +419,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                   buildPopupMenuItem(
                     value: 'delete_all',
                     icon: Icons.delete_forever,
-                    text: Strings.deleteAllConfirmText,
+                    text: AppStrings.deleteAllConfirm,
                   ),
                 );
               }
@@ -466,8 +465,10 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
             highlightColor: Colors.transparent,
             borderRadius: BorderRadius.circular(_defaultRoundness),
             child: AnimatedScale(
-              scale: _isPressed ? kAnimationScaleMin : kAnimationScaleMax,
-              duration: kButtonTapDuration,
+              scale: _isPressed
+                  ? UIConstants.animationScaleMin
+                  : UIConstants.animationScaleMax,
+              duration: UIConstants.buttonTapDuration,
               curve: Curves.easeInOut,
               child: Container(
                 constraints: const BoxConstraints(
@@ -481,7 +482,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 padding: const EdgeInsets.all(_defaultPaddingValue),
                 child: Icon(
                   Icons.more_vert,
-                  size: kButtonIconSize,
+                  size: UIConstants.buttonIconSize,
                   color: colorScheme.onPrimary,
                 ),
               ),
@@ -540,14 +541,14 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                           theme.textTheme.titleMedium!.copyWith(
                                         color: theme
                                             .colorScheme.onPrimaryContainer,
-                                        fontSize: kValueFontSize,
+                                        fontSize: UIConstants.valueFontSize,
                                         fontWeight: FontWeight.w800,
                                       ),
                                       unitStyle:
                                           theme.textTheme.titleMedium!.copyWith(
                                         color: theme
                                             .colorScheme.onPrimaryContainer,
-                                        fontSize: kSIUnitFontSize,
+                                        fontSize: UIConstants.siUnitFontSize,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
@@ -567,7 +568,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                           theme.textTheme.titleMedium!.copyWith(
                                         color: theme
                                             .colorScheme.onPrimaryContainer,
-                                        fontSize: kValueFontSize,
+                                        fontSize: UIConstants.valueFontSize,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
@@ -579,7 +580,11 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                   child: logItems.isEmpty
                       ? Center(
                           child: Text(
-                            '${Strings.noEntriesPrefix}${isToday ? 'today.' : DateTimeUtils.formatDateDMY(selectedDate)} ${isToday ? '\n${Strings.addEntryPromptSuffix}${widget.appBarTitle.toLowerCase()}${Strings.toTrackNow}' : ''}',
+                            isToday
+                                ? '${AppStrings.noEntriesMessage('today')}.\n${AppStrings.addEntryMessage(widget.appBarTitle.toLowerCase())}'
+                                : AppStrings.noEntriesMessage(
+                                    DateTimeUtils.formatDateDMY(selectedDate),
+                                  ),
                             style: theme.textTheme.titleLarge,
                             textAlign: TextAlign.center,
                           ),
