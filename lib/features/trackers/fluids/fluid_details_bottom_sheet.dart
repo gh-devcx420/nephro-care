@@ -68,7 +68,7 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
           inactiveIcon: Icons.local_drink_outlined,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Please enter a valid fluids name';
+              return 'Please enter a valid fluids name.';
             }
             if (value.length > FluidConstants.fluidNameMaxChars) {
               return 'Fluid name too long.\nMaximum ${FluidConstants.fluidNameMaxChars} characters allowed.';
@@ -98,7 +98,8 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
               return 'Quantity cannot be 0 ${FluidUnits.milliliters.siUnit} or less.';
             }
             if (quantity > fluidDailyLimitProvider) {
-              return 'Quantity cannot exceed $fluidDailyLimitProvider ${FluidUnits.milliliters.siUnit}.\nAdjust the limit in settings.';
+              var limit = fluidDailyLimitProvider.toInt();
+              return 'Quantity cannot exceed your daily limit: $limit${FluidUnits.milliliters.siUnit}.';
             }
             return null;
           },
@@ -122,7 +123,7 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
             });
             showTimePickerDialog();
           },
-          validator: (value) => value!.isEmpty ? 'Please select a time' : null,
+          validator: (value) => value!.isEmpty ? 'Please select a time.' : null,
           textInputAction: TextInputAction.done,
         ),
       ],

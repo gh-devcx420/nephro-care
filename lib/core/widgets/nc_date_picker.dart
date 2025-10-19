@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
+import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
 
 class NCDatePicker extends ConsumerStatefulWidget {
   final DateTime? firstDate;
@@ -15,11 +15,11 @@ class NCDatePicker extends ConsumerStatefulWidget {
   final VoidCallback? onDateSelected;
   final ColorScheme? customColorScheme;
   final IconData? prefixIcon;
-  final Iconify? prefixIconifyIcon;
+  final NephroCareIcon? prefixNCIcon;
   final double? prefixIconSize;
   final TextStyle? dateTextStyle;
   final IconData? suffixIcon;
-  final Iconify? suffixIconifyIcon;
+  final NephroCareIcon? suffixNCIcon;
   final double? suffixIconSize;
 
   const NCDatePicker({
@@ -31,11 +31,11 @@ class NCDatePicker extends ConsumerStatefulWidget {
     this.onDateSelected,
     this.customColorScheme,
     this.prefixIcon,
-    this.prefixIconifyIcon,
+    this.prefixNCIcon,
     this.prefixIconSize,
     this.dateTextStyle,
     this.suffixIcon,
-    this.suffixIconifyIcon,
+    this.suffixNCIcon,
     this.suffixIconSize,
   });
 
@@ -65,7 +65,6 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
   final today =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
-  // Helper method to show consistent snackbar
   void _showDateSelectedSnackbar(DateTime date) {
     if (!context.mounted) return;
 
@@ -85,7 +84,6 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
     );
   }
 
-  // Helper method to update date and show snackbar
   void _updateSelectedDate(DateTime newDate) {
     final updatedDate = DateTime(newDate.year, newDate.month, newDate.day);
     ref.read(widget.dateProvider.notifier).state = updatedDate;
@@ -213,8 +211,8 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                             size: widget.prefixIconSize ?? _prefixIconSize,
                             color: widget.customColorScheme?.primary ??
                                 Theme.of(context).colorScheme.primary)
-                        : Iconify(
-                            widget.prefixIconifyIcon!.icon,
+                        : NephroCareIcon(
+                            widget.prefixNCIcon!.icon,
                             size: widget.prefixIconSize ?? _prefixIconSize,
                             color: widget.customColorScheme?.primary ??
                                 Theme.of(context).colorScheme.primary,
@@ -231,8 +229,8 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                         Theme.of(context).textTheme.titleMedium!.copyWith(
                               color: widget.customColorScheme?.onPrimary ??
                                   Theme.of(context).colorScheme.onPrimary,
-                              height: 0,
                               fontWeight: FontWeight.w800,
+                              height: 1.0,
                             ),
                   ),
                 ),
@@ -264,8 +262,8 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                               color: widget.customColorScheme?.primary ??
                                   Theme.of(context).colorScheme.primary,
                             )
-                          : Iconify(
-                              widget.suffixIconifyIcon!.icon,
+                          : NephroCareIcon(
+                              widget.suffixNCIcon!.icon,
                               size: widget.suffixIconSize ?? _suffixIconSize,
                               color: widget.customColorScheme?.primary ??
                                   Theme.of(context).colorScheme.primary,

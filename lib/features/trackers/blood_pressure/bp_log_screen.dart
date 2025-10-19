@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/app_strings.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_strings.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
@@ -16,6 +16,38 @@ import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 
 class BPTrackerLogScreen extends ConsumerWidget {
   const BPTrackerLogScreen({super.key});
+
+  TextStyle _getValueStyle(
+    BuildContext context, {
+    Color? errorColor,
+    required bool shouldUseErrorColors,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return theme.textTheme.titleMedium!.copyWith(
+      color: shouldUseErrorColors
+          ? errorColor ?? colorScheme.error
+          : colorScheme.onSurface,
+      fontSize: UIConstants.valueFontSize,
+      fontWeight: FontWeight.w800,
+    );
+  }
+
+  TextStyle _getUnitStyle(
+    BuildContext context, {
+    Color? errorColor,
+    required bool shouldUseErrorColors,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return theme.textTheme.titleMedium!.copyWith(
+      color: shouldUseErrorColors
+          ? errorColor ?? colorScheme.error
+          : colorScheme.onSurface,
+      fontSize: UIConstants.siUnitFontSize,
+      fontWeight: FontWeight.w600,
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,21 +88,20 @@ class BPTrackerLogScreen extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(32),
           ),
           child: UIUtils.createRichTextValueWithUnit(
             value: bpReading,
             unit: BloodPressureField.systolic.siUnit,
-            valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.valueFontSize,
-              fontWeight: FontWeight.w800,
+            valueStyle: _getValueStyle(
+              context,
+              shouldUseErrorColors:
+                  false, //check for high or low bp and decide color
             ),
-            unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.siUnitFontSize,
-              fontWeight: FontWeight.w800,
+            unitStyle: _getUnitStyle(
+              context,
+              shouldUseErrorColors: false,
             ),
           ),
         );
@@ -85,7 +116,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
         leading: Icon(
           Icons.monitor_heart_sharp,
           size: 20,
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurface,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
@@ -96,15 +127,13 @@ class BPTrackerLogScreen extends ConsumerWidget {
             prefixText: 'BP: ',
             value: '${item.systolic}/${item.diastolic}',
             unit: BloodPressureField.systolic.siUnit,
-            valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.valueFontSize,
-              fontWeight: FontWeight.w800,
+            valueStyle: _getValueStyle(
+              context,
+              shouldUseErrorColors: false,
             ),
-            unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.siUnitFontSize,
-              fontWeight: FontWeight.w800,
+            unitStyle: _getUnitStyle(
+              context,
+              shouldUseErrorColors: false,
             ),
           ),
         ),
@@ -114,7 +143,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
           child: RichText(
             text: TextSpan(
               style: theme.textTheme.titleMedium!.copyWith(
-                color: colorScheme.onPrimaryContainer,
+                color: colorScheme.onSurface,
                 fontSize: UIConstants.valueFontSize,
                 fontWeight: FontWeight.w800,
               ),
@@ -167,12 +196,12 @@ class BPTrackerLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.timeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.meridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),

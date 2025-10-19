@@ -60,13 +60,11 @@ class _WeightModalSheetState extends State<WeightModalSheet>
         NCTextFieldConfig(
           key: Weight.weightValue.fieldKey,
           controller: _weightController,
-          hintText:
-              '${Weight.weightValue.hintText} in ${WeightUnits.kilograms.siUnit}',
+          hintText: Weight.weightValue.hintText,
           keyboardType: TextInputType.number,
           activeIcon: Icons.monitor_weight,
           inactiveIcon: Icons.monitor_weight_outlined,
-          semanticsLabel:
-              '${Weight.weightValue.hintText} in ${WeightUnits.kilograms.siUnit}',
+          semanticsLabel: Weight.weightValue.hintText,
           initialValue: widget.weightInput?.weight.toString() ?? '',
           validator: (value) {
             final numericValue = _weightController.numericValue;
@@ -74,7 +72,7 @@ class _WeightModalSheetState extends State<WeightModalSheet>
             if (weight == null ||
                 weight < WeightConstants.minWeightInKG ||
                 weight > WeightConstants.maxWeightInKG) {
-              return 'Please enter a valid weight (${WeightConstants.minWeightInKG} – ${WeightConstants.maxWeightInKG} ${WeightUnits.kilograms.siUnit}).';
+              return 'Weight  must be between ${WeightConstants.minWeightInKG.toInt()} – ${WeightConstants.maxWeightInKG.toInt()} ${WeightUnits.kilograms.siUnit}.';
             }
             return null;
           },
@@ -82,7 +80,7 @@ class _WeightModalSheetState extends State<WeightModalSheet>
         ),
         NCTextFieldConfig(
           key: Weight.time.fieldKey,
-          hintText: 'Time',
+          hintText: Weight.time.hintText,
           controller: timeController,
           keyboardType: TextInputType.none,
           activeIcon: Icons.timer_rounded,
@@ -97,7 +95,7 @@ class _WeightModalSheetState extends State<WeightModalSheet>
             });
             showTimePickerDialog();
           },
-          validator: (value) => value!.isEmpty ? 'Please select a time' : null,
+          validator: (value) => value!.isEmpty ? 'Please select a time.' : null,
           textInputAction: TextInputAction.done,
         ),
       ],

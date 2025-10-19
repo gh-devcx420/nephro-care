@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
+import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
 
 class NCIconButton extends StatefulWidget {
   const NCIconButton({
@@ -11,7 +11,7 @@ class NCIconButton extends StatefulWidget {
     this.buttonBackgroundColor,
     this.buttonPadding,
     this.buttonIcon,
-    this.iconifyIcon,
+    this.ncButtonIcon,
     this.iconSize,
     this.iconColor,
     this.gap,
@@ -26,21 +26,21 @@ class NCIconButton extends StatefulWidget {
     this.buttonBackgroundColor,
     this.buttonPadding,
     this.buttonIcon,
-    this.iconifyIcon,
+    this.ncButtonIcon,
     this.iconSize,
     this.iconColor,
     this.gap,
     this.buttonText,
     this.buttonTextStyle,
     this.buttonChild,
-  }) : assert(buttonIcon != null || iconifyIcon != null,
-            'Either buttonIcon or iconifyIcon must be provided');
+  }) : assert(buttonIcon != null || ncButtonIcon != null,
+            'Either buttonIcon or ncButtonIcon must be provided');
 
   final VoidCallback onButtonTap;
   final Color? buttonBackgroundColor;
   final EdgeInsets? buttonPadding;
   final IconData? buttonIcon;
-  final Iconify? iconifyIcon;
+  final NephroCareIcon? ncButtonIcon;
   final double? iconSize;
   final Color? iconColor;
   final SizedBox? gap;
@@ -59,6 +59,29 @@ class _NCIconButtonState extends State<NCIconButton> {
   static const double _defaultRadiusValue = (_minButtonHeight * 2);
 
   bool _isPressed = false;
+
+  Widget? _buildIcon(BuildContext context) {
+    if (widget.buttonIcon != null) {
+      return Icon(
+        widget.buttonIcon,
+        size: widget.iconSize ?? UIConstants.chipIconSize,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    } else if (widget.ncButtonIcon != null) {
+      return NephroCareIcon(
+        widget.ncButtonIcon!.icon,
+        size: widget.iconSize ?? UIConstants.chipIconSize,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    } else {
+      Icon(
+        Icons.help_outline,
+        size: widget.iconSize ?? UIConstants.chipIconSize,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,27 +129,9 @@ class _NCIconButtonState extends State<NCIconButton> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (widget.buttonIcon != null)
-                      Icon(
-                        widget.buttonIcon,
-                        size: widget.iconSize ?? UIConstants.buttonIconSize,
-                        color: widget.iconColor ??
-                            Theme.of(context).colorScheme.onPrimary,
-                      )
-                    else if (widget.iconifyIcon != null)
-                      Iconify(
-                        widget.iconifyIcon!.icon,
-                        size: widget.iconSize ?? UIConstants.buttonIconSize,
-                        color: widget.iconColor ??
-                            Theme.of(context).colorScheme.onPrimary,
-                      )
-                    else
-                      Icon(
-                        Icons.help_outline,
-                        size: widget.iconSize ?? UIConstants.buttonIconSize,
-                        color: widget.iconColor ??
-                            Theme.of(context).colorScheme.onPrimary,
-                      ),
+                    if (_buildIcon(context) != null) ...[
+                      _buildIcon(context)!,
+                    ],
                     if (widget.buttonText != null) ...[
                       widget.gap ?? hGap6,
                       Text(

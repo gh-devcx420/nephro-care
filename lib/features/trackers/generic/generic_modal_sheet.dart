@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_divider.dart';
 import 'package:nephro_care/core/widgets/nc_textfield.dart';
@@ -172,7 +172,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
             context: context,
             message: validationError,
             backgroundColor: errorColor,
-            durationSeconds: 1,
+            durationSeconds: 4,
           );
           return;
         }

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/material_symbols.dart';
-import 'package:nephro_care/core/constants/app_strings.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_icons.dart';
+import 'package:nephro_care/core/constants/nc_app_strings.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_alert_dialogue.dart';
 import 'package:nephro_care/core/widgets/nc_date_picker.dart';
+import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
 
 class Cache<T> {
@@ -243,38 +243,6 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
     );
   }
 
-  Future<void> _deleteEntry({
-    required String userId,
-    required String logItemId,
-    required Color errorColor,
-    required Color successColor,
-  }) async {
-    final user = ref.read(authProvider);
-
-    if (user == null) {
-      _showSnackBar(
-        message: AppStrings.userNotAuthenticated,
-        backgroundColor: errorColor,
-      );
-      return;
-    }
-
-    final result = await widget.firestoreService.deleteEntry(
-      userId: user.uid,
-      collection: widget.firestoreCollection,
-      docId: logItemId,
-      successMessage: AppStrings.entryDeletedSuccess,
-      successColor: successColor,
-      errorMessagePrefix: AppStrings.failedToDeleteEntry,
-      errorColor: errorColor,
-    );
-    _showSnackBar(
-      message: result.message,
-      backgroundColor: result.backgroundColor,
-      snackbarDuration: 2,
-    );
-  }
-
   Future<bool> _showDeleteAllConfirmationDialog() async {
     final selectedDate = ref.watch(selectedDateProvider);
     final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
@@ -289,11 +257,11 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
     );
   }
 
-  Future<void> _deleteAllEntries({
-    required String userId,
-    required List<T> logItems,
+  Future<void> _deleteEntries({
+    required List<String> docIds,
     required Color errorColor,
     required Color successColor,
+    String? successMessage,
   }) async {
     final user = ref.read(authProvider);
 
@@ -305,19 +273,30 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       return;
     }
 
-    final docIds =
-        logItems.map((item) => (item as dynamic).id as String).toList();
+    final Result result;
 
-    final result = await widget.firestoreService.deleteAllEntries(
-      userId: user.uid,
-      collection: widget.firestoreCollection,
-      docIds: docIds,
-      successMessage:
-          AppStrings.allEntriesDeleted(widget.appBarTitle.toLowerCase()),
-      successMessageColor: successColor,
-      errorMessagePrefix: AppStrings.failedToDeleteEntry,
-      errorColor: errorColor,
-    );
+    if (docIds.length == 1) {
+      result = await widget.firestoreService.deleteEntry(
+        userId: user.uid,
+        collection: widget.firestoreCollection,
+        docId: docIds.first,
+        successMessage: successMessage ?? AppStrings.entryDeletedSuccess,
+        successColor: successColor,
+        errorMessagePrefix: AppStrings.failedToDeleteEntry,
+        errorColor: errorColor,
+      );
+    } else {
+      result = await widget.firestoreService.deleteAllEntries(
+        userId: user.uid,
+        collection: widget.firestoreCollection,
+        docIds: docIds,
+        successMessage: successMessage ??
+            AppStrings.allEntriesDeleted(widget.appBarTitle.toLowerCase()),
+        successMessageColor: successColor,
+        errorMessagePrefix: AppStrings.failedToDeleteEntry,
+        errorColor: errorColor,
+      );
+    }
 
     _showSnackBar(
       message: result.message,
@@ -375,12 +354,10 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
         surfaceTintColor: Colors.transparent,
         actions: [
           NCDatePicker(
-            dateProvider: selectedDateProvider,
-            dateFormatter: DateTimeUtils.formatDateDM,
-            prefixIcon: Icons.calendar_month,
-            suffixIconifyIcon: const Iconify(MaterialSymbols.replay),
-            //logScreenColorScheme: colorScheme.,
-          ),
+              dateProvider: selectedDateProvider,
+              dateFormatter: DateTimeUtils.formatDateDM,
+              prefixIcon: Icons.calendar_month,
+              suffixNCIcon: const NephroCareIcon(NCIcons.cancel)),
           hGap4,
           InkWell(
             onTap: () async {
@@ -439,17 +416,16 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                 if (value == 'delete_all') {
                   final confirmed = await _showDeleteAllConfirmationDialog();
                   if (confirmed) {
-                    final user = ref.read(authProvider);
                     final items =
                         widget.itemsExtractor(dataAsync.asData!.value);
-                    if (user != null) {
-                      await _deleteAllEntries(
-                        userId: user.uid,
-                        logItems: items,
-                        errorColor: errorColor,
-                        successColor: successColor,
-                      );
-                    }
+                    final docIds = items
+                        .map((item) => (item as dynamic).id as String)
+                        .toList();
+                    await _deleteEntries(
+                      docIds: docIds,
+                      errorColor: errorColor,
+                      successColor: successColor,
+                    );
                   }
                 } else if (value == 'details') {
                   await _showLogDetailsDialog();
@@ -529,7 +505,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.primaryContainer,
+                                      color: theme.colorScheme.surface,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
                                     child: UIUtils.createRichTextValueWithUnit(
@@ -539,15 +515,13 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                           .headerValue!(logItems).unitString!,
                                       valueStyle:
                                           theme.textTheme.titleMedium!.copyWith(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
+                                        color: theme.colorScheme.onSurface,
                                         fontSize: UIConstants.valueFontSize,
                                         fontWeight: FontWeight.w800,
                                       ),
                                       unitStyle:
                                           theme.textTheme.titleMedium!.copyWith(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
+                                        color: theme.colorScheme.onSurface,
                                         fontSize: UIConstants.siUnitFontSize,
                                         fontWeight: FontWeight.w800,
                                       ),
@@ -605,7 +579,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                 clipBehavior: Clip.hardEdge,
                                 borderRadius: BorderRadius.circular(12),
                                 child: Container(
-                                  color: theme.colorScheme.primaryContainer,
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
                                   child: Dismissible(
                                     key: Key((logItem as dynamic).id),
                                     direction: isToday
@@ -629,17 +604,14 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                       }
                                       return false;
                                     },
-                                    onDismissed: (direction) {
-                                      final user = ref.read(authProvider);
-                                      if (user == null) return;
+                                    onDismissed: (direction) async {
                                       if (direction ==
                                           DismissDirection.endToStart) {
                                         HapticFeedback.selectionClick();
-                                        _deleteEntry(
-                                          userId: user.uid,
-                                          logItemId: (logItem as dynamic).id,
-                                          successColor: successColor,
+                                        await _deleteEntries(
+                                          docIds: [(logItem as dynamic).id],
                                           errorColor: errorColor,
+                                          successColor: successColor,
                                         );
                                       } else if (direction ==
                                           DismissDirection.startToEnd) {
@@ -651,8 +623,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                       borderRadius: BorderRadius.circular(12),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: theme
-                                              .colorScheme.secondaryContainer,
+                                          color: theme.colorScheme
+                                              .surfaceContainerLowest,
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -665,8 +637,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                           children: [
                                             Icon(
                                               Icons.edit,
-                                              color: theme.colorScheme
-                                                  .onSecondaryContainer,
+                                              color:
+                                                  theme.colorScheme.onSurface,
                                             ),
                                             hGap16,
                                             Text(
@@ -674,8 +646,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                               style: theme
                                                   .textTheme.titleMedium!
                                                   .copyWith(
-                                                color: theme.colorScheme
-                                                    .onSecondaryContainer,
+                                                color:
+                                                    theme.colorScheme.onSurface,
                                                 fontWeight: FontWeight.w800,
                                               ),
                                             ),
@@ -722,8 +694,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                     ),
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color:
-                                            theme.colorScheme.primaryContainer,
+                                        color: theme.colorScheme
+                                            .surfaceContainerHighest,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: widget.listItemBuilder(

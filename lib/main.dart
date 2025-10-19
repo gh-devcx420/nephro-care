@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,8 +42,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseFirestore.instance.settings =
-      const Settings(persistenceEnabled: true);
   final prefs = await SharedPreferences.getInstance();
   runApp(
     ProviderScope(
@@ -61,25 +58,35 @@ class NephroCare extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Don't call MediaQuery.of here - we're not in the right context yet
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: _buildTheme(context, ref, ThemeMode.light),
+      darkTheme: _buildTheme(context, ref, ThemeMode.dark),
+      themeMode: ThemeMode.system,
+      home: const AuthWrapper(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/fluid_log': (context) => const FluidIntakeLogScreen(),
+        '/urine_log': (context) => const UrineOutputLogScreen(),
+        '/bp_tracker_log': (context) => const BPTrackerLogScreen(),
+        '/weight_tracker_log': (context) => const WeightTrackerLogScreen(),
+      },
+    );
+  }
+
+  ThemeData _buildTheme(BuildContext context, WidgetRef ref, ThemeMode mode) {
     try {
       final colorSchemes = ref.watch(colorSchemesProvider);
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme(colorSchemes[ThemeMode.light]!),
-        darkTheme: AppTheme.darkTheme(colorSchemes[ThemeMode.dark]!),
-        themeMode: ThemeMode.system,
-        home: const AuthWrapper(),
-        routes: {
-          '/login': (context) => const LoginScreen(),
-          '/home': (context) => const HomeScreen(),
-          '/fluid_log': (context) => const FluidIntakeLogScreen(),
-          '/urine_log': (context) => const UrineOutputLogScreen(),
-          '/bp_tracker_log': (context) => const BPTrackerLogScreen(),
-          '/weight_tracker_log': (context) => const WeightTrackerLogScreen(),
-        },
-      );
+      if (mode == ThemeMode.light) {
+        return AppTheme.lightTheme(colorSchemes[ThemeMode.light]!);
+      } else {
+        return AppTheme.darkTheme(colorSchemes[ThemeMode.dark]!);
+      }
     } catch (e) {
-      return const LoadingScreen();
+      return ThemeData();
     }
   }
 }

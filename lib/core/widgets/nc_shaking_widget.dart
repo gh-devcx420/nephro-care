@@ -37,7 +37,6 @@ class _ShakingWidgetState extends State<ShakingWidget>
       vsync: this,
     );
 
-    // Create shake animation that goes: 0 -> right -> left -> right -> left -> 0
     _offsetAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 0.0, end: widget.shakeOffset)
@@ -48,19 +47,19 @@ class _ShakingWidgetState extends State<ShakingWidget>
         tween:
             Tween<double>(begin: widget.shakeOffset, end: -widget.shakeOffset)
                 .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 2,
+        weight: 4,
       ),
       TweenSequenceItem(
         tween:
             Tween<double>(begin: -widget.shakeOffset, end: widget.shakeOffset)
                 .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 3,
+        weight: 6,
       ),
       TweenSequenceItem(
         tween:
             Tween<double>(begin: widget.shakeOffset, end: -widget.shakeOffset)
                 .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 2,
+        weight: 4,
       ),
       TweenSequenceItem(
         tween: Tween<double>(begin: -widget.shakeOffset, end: 0.0)

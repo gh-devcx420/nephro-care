@@ -79,20 +79,18 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
         NCTextFieldConfig(
           key: BloodPressureField.systolic.fieldKey,
           controller: _systolicController,
-          hintText:
-              '${BloodPressureField.systolic.hintText} in (${BloodPressureField.systolic.siUnit})',
+          hintText: BloodPressureField.systolic.hintText,
           keyboardType: TextInputType.number,
           activeIcon: Icons.monitor_heart,
           inactiveIcon: Icons.monitor_heart_outlined,
-          semanticsLabel:
-              '${BloodPressureField.systolic.hintText} in ${BloodPressureField.systolic.siUnit}',
+          semanticsLabel: BloodPressureField.systolic.hintText,
           validator: (value) {
             final numericSystolic = _systolicController.numericValue;
             final systolic = int.tryParse(numericSystolic);
             if (systolic == null ||
                 systolic < BloodPressureConstants.systolicMin ||
                 systolic > BloodPressureConstants.systolicMax) {
-              return 'Please enter a valid systolic value (${BloodPressureConstants.systolicMin}–${BloodPressureConstants.systolicMax} ${BloodPressureField.systolic.siUnit}).';
+              return 'Systolic must be between ${BloodPressureConstants.systolicMin.toInt()}–${BloodPressureConstants.systolicMax.toInt()} ${BloodPressureField.systolic.siUnit}.';
             }
             return null;
           },
@@ -102,20 +100,18 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
         NCTextFieldConfig(
           key: BloodPressureField.diastolic.fieldKey,
           controller: _diastolicController,
-          hintText:
-              '${BloodPressureField.diastolic.hintText} in (${BloodPressureField.diastolic.siUnit})',
+          hintText: BloodPressureField.diastolic.hintText,
           keyboardType: TextInputType.number,
           activeIcon: Icons.monitor_heart,
           inactiveIcon: Icons.monitor_heart_outlined,
-          semanticsLabel:
-              '${BloodPressureField.diastolic.hintText} in (${BloodPressureField.diastolic.siUnit})',
+          semanticsLabel: BloodPressureField.diastolic.hintText,
           validator: (value) {
             final numericDiastolic = _diastolicController.numericValue;
             final diastolic = int.tryParse(numericDiastolic);
             if (diastolic == null ||
                 diastolic < BloodPressureConstants.diastolicMin ||
                 diastolic > BloodPressureConstants.diastolicMax) {
-              return 'Please enter a valid diastolic value (${BloodPressureConstants.diastolicMin}–${BloodPressureConstants.diastolicMax} ${BloodPressureField.diastolic.siUnit}).';
+              return 'Diastolic must be between ${BloodPressureConstants.diastolicMin.toInt()} – ${BloodPressureConstants.diastolicMax.toInt()} ${BloodPressureField.diastolic.siUnit}.';
             }
             return null;
           },
@@ -125,20 +121,18 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
         NCTextFieldConfig(
           key: BloodPressureField.pulse.fieldKey,
           controller: _pulseController,
-          hintText:
-              '${BloodPressureField.pulse.hintText} in (${BloodPressureField.pulse.siUnit})',
+          hintText: BloodPressureField.pulse.hintText,
           keyboardType: TextInputType.number,
           activeIcon: Icons.favorite,
           inactiveIcon: Icons.favorite_border,
-          semanticsLabel:
-              '${BloodPressureField.pulse.hintText} in ${BloodPressureField.pulse.siUnit}',
+          semanticsLabel: BloodPressureField.pulse.hintText,
           validator: (value) {
             final numericPulse = _pulseController.numericValue;
             final pulse = int.tryParse(numericPulse);
             if (pulse == null ||
                 pulse < BloodPressureConstants.pulseMin ||
                 pulse > BloodPressureConstants.pulseMax) {
-              return 'Please enter a valid pulse value (${BloodPressureConstants.pulseMin}–${BloodPressureConstants.pulseMax} ${BloodPressureField.pulse.siUnit}).';
+              return 'Pulse must be between  ${BloodPressureConstants.pulseMin.toInt()}–${BloodPressureConstants.pulseMax.toInt()} ${BloodPressureField.pulse.siUnit}.';
             }
             return null;
           },
@@ -148,13 +142,11 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
         NCTextFieldConfig(
           key: BloodPressureField.spo2.fieldKey,
           controller: _spo2Controller,
-          hintText:
-              '${BloodPressureField.spo2.hintText} in (${BloodPressureField.spo2.siUnit})',
+          hintText: BloodPressureField.spo2.hintText,
           keyboardType: TextInputType.number,
           activeIcon: Icons.air,
           inactiveIcon: Icons.air_outlined,
-          semanticsLabel:
-              '${BloodPressureField.spo2.hintText} in (${BloodPressureField.spo2.siUnit})',
+          semanticsLabel: BloodPressureField.spo2.hintText,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return null;
@@ -164,7 +156,7 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
             if (spo2 == null ||
                 spo2 <= BloodPressureConstants.spo2Min ||
                 spo2 > BloodPressureConstants.spo2Max) {
-              return 'SpO2 must be between ${BloodPressureConstants.spo2Min}–${BloodPressureConstants.spo2Max} ${BloodPressureField.spo2.siUnit}';
+              return 'SpO2 must be between ${BloodPressureConstants.spo2Min.toInt()}–${BloodPressureConstants.spo2Max.toInt()} ${BloodPressureField.spo2.siUnit}.';
             }
             return null;
           },
@@ -186,7 +178,7 @@ class _BPTrackerModalSheetState extends State<BPTrackerModalSheet>
             });
             showTimePickerDialog();
           },
-          validator: (value) => value!.isEmpty ? 'Please select a time' : null,
+          validator: (value) => value!.isEmpty ? 'Please select a time.' : null,
           textInputAction: TextInputAction.done,
         ),
       ],

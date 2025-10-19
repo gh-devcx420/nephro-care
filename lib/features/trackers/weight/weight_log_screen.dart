@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/app_strings.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_strings.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
 import 'package:nephro_care/features/trackers/weight/weight_constants.dart';

@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/app_constants.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/constants/nc_app_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_model.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
@@ -106,7 +106,6 @@ final fluidIntakeDataProvider =
   final userId = params.$1;
   final selectedDate = params.$2;
 
-  // Watch auth state to ensure provider rebuilds on auth changes
   final user = ref.watch(authProvider);
   if (user == null || user.uid != userId) {
     return Stream.value(Cache<FluidsModel>(

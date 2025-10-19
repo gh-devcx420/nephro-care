@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nephro_care/core/utils/color_utils.dart';
 
 class SVGUtils {
+  /// Load SVG without caching - bypasses DefaultAssetBundle cache
+  static Future<String?> _loadSvgWithoutCache(String assetPath) async {
+    try {
+      final ByteData byteData = await rootBundle.load(assetPath);
+      final String svgContent =
+          String.fromCharCodes(byteData.buffer.asUint8List());
+      return svgContent;
+    } catch (e) {
+      debugPrint('Failed to load SVG: $assetPath - Error: $e');
+      return null;
+    }
+  }
+
   static Future<String?> convertSvgToString(
       BuildContext context, String assetPath) async {
     try {
-      return await DefaultAssetBundle.of(context).loadString(assetPath);
+      return await _loadSvgWithoutCache(assetPath);
     } catch (e) {
-      debugPrint('Failed to load SVG: $assetPath');
+      debugPrint('Failed to load SVG: $assetPath - Error: $e');
       return null;
     }
   }
@@ -17,12 +31,12 @@ class SVGUtils {
     if (svgString == null) return null;
 
     String result = svgString;
+
     colorMap.forEach((oldColor, newColor) {
-      result = result.replaceAll(
-        oldColor,
-        ColorUtils.colorToHex(newColor),
-      );
+      final hex = ColorUtils.colorToHex(newColor);
+      result = result.replaceAll(oldColor, hex);
     });
+
     return result;
   }
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/app_strings.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_strings.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_provider.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
@@ -19,6 +19,38 @@ import 'package:nephro_care/features/trackers/urine/urine_utils.dart';
 
 class UrineOutputLogScreen extends ConsumerWidget {
   const UrineOutputLogScreen({super.key});
+
+  TextStyle _getValueStyle(
+    BuildContext context, {
+    Color? errorColor,
+    required bool shouldUseErrorColors,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return theme.textTheme.titleMedium!.copyWith(
+      color: shouldUseErrorColors
+          ? errorColor ?? colorScheme.error
+          : colorScheme.onSurface,
+      fontSize: UIConstants.valueFontSize,
+      fontWeight: FontWeight.w800,
+    );
+  }
+
+  TextStyle _getUnitStyle(
+    BuildContext context, {
+    Color? errorColor,
+    required bool shouldUseErrorColors,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return theme.textTheme.titleMedium!.copyWith(
+      color: shouldUseErrorColors
+          ? errorColor ?? colorScheme.error
+          : colorScheme.onSurface,
+      fontSize: UIConstants.siUnitFontSize,
+      fontWeight: FontWeight.w600,
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,7 +75,7 @@ class UrineOutputLogScreen extends ConsumerWidget {
         leading: Icon(
           Icons.water_drop,
           size: 20,
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurface,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
@@ -53,7 +85,7 @@ class UrineOutputLogScreen extends ConsumerWidget {
           child: Text(
             'Output: ${item.outputName}',
             style: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),
@@ -65,15 +97,13 @@ class UrineOutputLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextValueWithUnit(
             value: UrineUtils().format(item.quantity).formattedValue!,
             unit: UrineUtils().format(item.quantity).unitString!,
-            valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.valueFontSize,
-              fontWeight: FontWeight.w800,
+            valueStyle: _getValueStyle(
+              context,
+              shouldUseErrorColors: false,
             ),
-            unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.siUnitFontSize,
-              fontWeight: FontWeight.w600,
+            unitStyle: _getUnitStyle(
+              context,
+              shouldUseErrorColors: false,
             ),
           ),
         ),
@@ -82,12 +112,12 @@ class UrineOutputLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.timeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.meridiemIndicatorFontSize,
               fontWeight: FontWeight.w800,
             ),

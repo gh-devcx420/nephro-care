@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/app_constants.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/constants/nc_app_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
 import 'package:nephro_care/features/trackers/weight/weight_model.dart';

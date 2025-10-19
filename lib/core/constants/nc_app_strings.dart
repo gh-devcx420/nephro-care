@@ -65,7 +65,7 @@ class AppStrings {
 
 /*
 // Before (Old way):
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/constants/strings.dart';
 import 'package:nephro_care/core/constants/provider_constants.dart';
 
@@ -74,9 +74,9 @@ final title = Strings.editEntryTitle;
 final cache = kCacheDurationInMinutes;
 
 // After (New way):
-import 'package:nephro_care/core/constants/ui_constants.dart';
-import 'package:nephro_care/core/constants/app_strings.dart';
-import 'package:nephro_care/core/constants/app_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_strings.dart';
+import 'package:nephro_care/core/constants/nc_app_constants.dart';
 
 final radius = UIConstants.borderRadius;
 final title = AppStrings.editEntryTitle;

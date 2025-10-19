@@ -63,9 +63,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '712002654833',
     projectId: 'nephro-care-5f88e',
     storageBucket: 'nephro-care-5f88e.firebasestorage.app',
-    androidClientId: '712002654833-nof86q3bhbm7eg56dfg4vtfuhm1kg704.apps.googleusercontent.com',
-    iosClientId: '712002654833-0qfmml7fnt555aretnlogbmahc3tfqnt.apps.googleusercontent.com',
+    androidClientId:
+        '712002654833-nof86q3bhbm7eg56dfg4vtfuhm1kg704.apps.googleusercontent.com',
+    iosClientId:
+        '712002654833-0qfmml7fnt555aretnlogbmahc3tfqnt.apps.googleusercontent.com',
     iosBundleId: 'com.nephrocare.nephroCare',
   );
-
 }

@@ -74,7 +74,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
               return 'Quantity cannot be 0 ${UrineUnits.milliliters.siUnit}.';
             }
             if (quantity > 1500) {
-              return 'Quantity won\'t usually exceed ${UrineConstants.urineBladderMaxCapacity} ${UrineUnits.milliliters.siUnit}.';
+              return 'Quantity won\'t usually exceed ${UrineConstants.urineBladderMaxCapacity.toInt()} ${UrineUnits.milliliters.siUnit}.';
             }
             return null;
           },
@@ -82,7 +82,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
         ),
         NCTextFieldConfig(
           key: Urine.time.fieldKey,
-          hintText: 'Time',
+          hintText: Urine.time.hintText,
           keyboardType: TextInputType.none,
           activeIcon: Icons.timer_rounded,
           inactiveIcon: Icons.timer_outlined,
@@ -97,7 +97,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
             });
             showTimePickerDialog();
           },
-          validator: (value) => value!.isEmpty ? 'Please select a time' : null,
+          validator: (value) => value!.isEmpty ? 'Please select a time.' : null,
           textInputAction: TextInputAction.done,
         ),
       ],

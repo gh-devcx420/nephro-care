@@ -2,11 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/bi.dart';
+import 'package:nephro_care/core/constants/nc_app_icons.dart';
+import 'package:nephro_care/core/themes/theme_provider.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/svg_utils.dart';
 import 'package:nephro_care/core/widgets/nc_icon_button.dart';
+import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -28,9 +29,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final currentBrightness = Theme.of(context).brightness;
 
-    // Only reload if brightness actually changed
-    if (_lastBrightness != currentBrightness) {
+    if (_lastBrightness == null || _lastBrightness != currentBrightness) {
       _lastBrightness = currentBrightness;
+      setState(() {
+        _isSvgLoading = true;
+        _processedSvgString = '';
+      });
       _loadSvg();
     }
   }
@@ -38,13 +42,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _loadSvg() async {
     if (!mounted) return;
 
-    setState(() => _isSvgLoading = true);
+    final colorSchemes = ref.read(colorSchemesProvider);
+    final brightness = Theme.of(context).brightness;
 
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = brightness == Brightness.light
+        ? colorSchemes[ThemeMode.light]!
+        : colorSchemes[ThemeMode.dark]!;
 
     final colorMap = {
       '#3fbdf1': colorScheme.primary,
-      '#9fdef9': Colors.white,
+      '#9fdef9': colorScheme.primaryContainer,
     };
 
     try {
@@ -61,7 +68,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         });
       }
     } catch (e) {
-      debugPrint('Failed to load SVG: $e');
       if (mounted) {
         setState(() => _isSvgLoading = false);
       }
@@ -113,9 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (user != null) {
       return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -147,7 +151,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Text(
           'NephroCare',
           style: theme.textTheme.headlineLarge?.copyWith(
-            color: theme.colorScheme.primary,
             fontWeight: FontWeight.w800,
           ),
           textAlign: TextAlign.center,
@@ -156,7 +159,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Text(
           'Your Trusted Healthcare Partner',
           style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.primary,
             fontWeight: FontWeight.w800,
           ),
           textAlign: TextAlign.center,
@@ -174,7 +176,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       height: circleSize,
       width: circleSize,
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withValues(alpha: 0.7),
+        color: colorScheme.surfaceContainer,
         shape: BoxShape.circle,
       ),
       child: Center(
@@ -192,8 +194,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     width: svgSize,
                     child: SvgPicture.string(
                       _processedSvgString,
+                      key: ValueKey(
+                        '${_processedSvgString.hashCode}_${Theme.of(context).brightness}',
+                      ),
                       fit: BoxFit.contain,
                       semanticsLabel: 'Doctor illustration',
+                      placeholderBuilder: (context) {
+                        return CircularProgressIndicator(
+                          color: colorScheme.primary,
+                        );
+                      },
                     ),
                   )
                 : Icon(
@@ -210,7 +220,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       onButtonTap: _handleGoogleSignIn,
       buttonPadding: const EdgeInsets.all(12),
       buttonBackgroundColor: colorScheme.primary,
-      iconifyIcon: const Iconify(Bi.google),
+      ncButtonIcon: const NephroCareIcon(NCIcons.google),
       iconSize: 20,
       iconColor: colorScheme.onPrimary,
       gap: hGap12,
@@ -226,7 +236,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               width: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation(colorScheme.onPrimary),
+                valueColor: AlwaysStoppedAnimation(
+                  colorScheme.onPrimary,
+                ),
               ),
             )
           : null,
@@ -238,16 +250,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: theme.textTheme.bodySmall,
-        children: const <TextSpan>[
+        children: const [
           TextSpan(text: 'By signing in, you agree to our '),
           TextSpan(
             text: 'Terms of Service ',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           TextSpan(text: 'and '),
           TextSpan(
             text: 'Privacy Policy',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           TextSpan(text: '.'),
         ],

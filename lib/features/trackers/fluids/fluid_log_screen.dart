@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/app_strings.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_strings.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_pulsing_widget.dart';
 import 'package:nephro_care/core/widgets/nc_shaking_widget.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
@@ -19,6 +19,38 @@ import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
 
 class FluidIntakeLogScreen extends ConsumerWidget {
   const FluidIntakeLogScreen({super.key});
+
+  TextStyle _getValueStyle(
+    BuildContext context, {
+    Color? errorColor,
+    required bool shouldUseErrorColors,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return theme.textTheme.titleMedium!.copyWith(
+      color: shouldUseErrorColors
+          ? errorColor ?? colorScheme.error
+          : colorScheme.onSurface,
+      fontSize: UIConstants.valueFontSize,
+      fontWeight: FontWeight.w800,
+    );
+  }
+
+  TextStyle _getUnitStyle(
+    BuildContext context, {
+    Color? errorColor,
+    required bool shouldUseErrorColors,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return theme.textTheme.titleMedium!.copyWith(
+      color: shouldUseErrorColors
+          ? errorColor ?? colorScheme.error
+          : colorScheme.onSurface,
+      fontSize: UIConstants.siUnitFontSize,
+      fontWeight: FontWeight.w600,
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,7 +82,6 @@ class FluidIntakeLogScreen extends ConsumerWidget {
 
         return Consumer(
           builder: (context, ref, child) {
-            final fluidLimit = ref.watch(fluidLimitProvider);
             final total =
                 items.fold<double>(0, (sum, item) => sum + item.quantity);
             final isLimitExceeded = total > fluidLimit;
@@ -58,28 +89,16 @@ class FluidIntakeLogScreen extends ConsumerWidget {
             final textWidget = UIUtils.createRichTextValueWithUnit(
               value: FluidUtils().format(total).formattedValue!,
               unit: FluidUtils().format(total).unitString!,
-              valueStyle: theme.textTheme.titleMedium!.copyWith(
-                color: isLimitExceeded
-                    ? colorScheme.onErrorContainer
-                    : colorScheme.onPrimaryContainer,
-                fontSize: UIConstants.valueFontSize,
-                fontWeight: FontWeight.w800,
-              ),
-              unitStyle: theme.textTheme.titleMedium!.copyWith(
-                color: isLimitExceeded
-                    ? colorScheme.onErrorContainer
-                    : colorScheme.onPrimaryContainer,
-                fontSize: UIConstants.siUnitFontSize,
-                fontWeight: FontWeight.w800,
-              ),
+              valueStyle: _getValueStyle(context,
+                  shouldUseErrorColors: isLimitExceeded),
+              unitStyle:
+                  _getUnitStyle(context, shouldUseErrorColors: isLimitExceeded),
             );
 
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
-                color: isLimitExceeded
-                    ? colorScheme.errorContainer
-                    : colorScheme.primaryContainer,
+                color: colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(32),
               ),
               child: isLimitExceeded
@@ -103,18 +122,18 @@ class FluidIntakeLogScreen extends ConsumerWidget {
       listItemBuilder: (context, item) => ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+        dense: true,
         leading: Icon(
           Icons.local_drink,
           size: 20,
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurface,
         ),
-        dense: true,
         title: Semantics(
           label: 'Intake type: ${item.fluidName}',
           child: Text(
             'Drank: ${item.fluidName}',
             style: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),
@@ -126,15 +145,13 @@ class FluidIntakeLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextValueWithUnit(
             value: FluidUtils().format(item.quantity).formattedValue!,
             unit: FluidUtils().format(item.quantity).unitString!,
-            valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.valueFontSize,
-              fontWeight: FontWeight.w800,
+            valueStyle: _getValueStyle(
+              context,
+              shouldUseErrorColors: false,
             ),
-            unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
-              fontSize: UIConstants.siUnitFontSize,
-              fontWeight: FontWeight.w600,
+            unitStyle: _getUnitStyle(
+              context,
+              shouldUseErrorColors: false,
             ),
           ),
         ),
@@ -143,12 +160,12 @@ class FluidIntakeLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.timeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.meridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),
@@ -179,13 +196,14 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                     prefixText: '• Number of drinks today: ',
                     prefixStyle: theme.textTheme.bodySmall,
                     value: '$totalDrinksToday',
-                    valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
                     unit: '',
-                    unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.siUnitFontSize,
-                      fontWeight: FontWeight.w800,
+                    valueStyle: _getValueStyle(
+                      context,
+                      shouldUseErrorColors: false,
+                    ),
+                    unitStyle: _getUnitStyle(
+                      context,
+                      shouldUseErrorColors: false,
                     ),
                   ),
                   vGap16,
@@ -193,7 +211,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                       ? PulsingWidget(
                           errorColor: colorScheme.error,
                           normalColor: colorScheme.primary.withValues(alpha: 0),
-                          duration: const Duration(seconds: 1),
+                          duration: const Duration(seconds: 2),
                           builder: (color) =>
                               UIUtils.createRichTextValueWithUnit(
                             prefixText: '• Total Fluid Quantity: ',
@@ -204,15 +222,15 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                             unit: FluidUtils()
                                 .format(totalFluidQuantityToday)
                                 .unitString!,
-                            valueStyle: theme.textTheme.titleMedium!.copyWith(
-                              color: color,
-                              fontSize: UIConstants.valueFontSize,
-                              fontWeight: FontWeight.w800,
+                            valueStyle: _getValueStyle(
+                              context,
+                              shouldUseErrorColors: true,
+                              errorColor: color,
                             ),
-                            unitStyle: theme.textTheme.titleMedium!.copyWith(
-                              color: color,
-                              fontSize: UIConstants.siUnitFontSize,
-                              fontWeight: FontWeight.w800,
+                            unitStyle: _getUnitStyle(
+                              context,
+                              shouldUseErrorColors: true,
+                              errorColor: color,
                             ),
                           ),
                         )
@@ -225,15 +243,13 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                           unit: FluidUtils()
                               .format(totalFluidQuantityToday)
                               .unitString!,
-                          valueStyle: theme.textTheme.titleMedium!.copyWith(
-                            color: colorScheme.onPrimary,
-                            fontSize: UIConstants.valueFontSize,
-                            fontWeight: FontWeight.w800,
+                          valueStyle: _getValueStyle(
+                            context,
+                            shouldUseErrorColors: false,
                           ),
-                          unitStyle: theme.textTheme.titleMedium!.copyWith(
-                            color: colorScheme.onPrimary,
-                            fontSize: UIConstants.siUnitFontSize,
-                            fontWeight: FontWeight.w800,
+                          unitStyle: _getUnitStyle(
+                            context,
+                            shouldUseErrorColors: false,
                           ),
                         ),
                   ...(summary['typeTotals'] as Map<String, dynamic>? ?? {})

@@ -20,22 +20,24 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
   }
 
   Future<void> _storeThemePreferences(ThemeName currentTheme) async {
-    if (appThemes[currentTheme] != null) {
-      await prefs.setString(_themePreferenceKey, currentTheme.name);
-    } else {
-      prefs.setString(_themePreferenceKey, ThemeName.warmTeal.name);
-    }
+    await prefs.setString(
+      _themePreferenceKey,
+      appThemes[currentTheme] != null
+          ? currentTheme.name
+          : ThemeName.warmTeal.name,
+    );
   }
 
   void _loadThemePreferences() {
-    String? storedThemeName = prefs.getString(_themePreferenceKey);
+    final storedThemeName = prefs.getString(_themePreferenceKey);
 
     if (storedThemeName == null) {
       setNewTheme(ThemeName.warmTeal);
       return;
     }
+
     try {
-      ThemeName currentTheme = ThemeName.values.firstWhere(
+      final currentTheme = ThemeName.values.firstWhere(
         (theme) => theme.name == storedThemeName,
         orElse: () => ThemeName.warmTeal,
       );
@@ -49,14 +51,6 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
     state = newTheme;
     _storeThemePreferences(newTheme);
   }
-
-  String getCurrentThemeDisplayName() {
-    return state.displayName;
-  }
-
-  String getCurrentThemeDescription() {
-    return state.description;
-  }
 }
 
 final themeProvider = StateNotifierProvider<ThemeSettingsNotifier, ThemeName>(
@@ -69,12 +63,11 @@ final themeProvider = StateNotifierProvider<ThemeSettingsNotifier, ThemeName>(
 final colorSchemesProvider = Provider<Map<ThemeMode, ColorScheme>>(
   (ref) {
     final currentTheme = ref.watch(themeProvider);
-
-    final theme = appThemes[currentTheme]!;
+    final themeColors = AppColorScheme.getThemeColors(currentTheme);
 
     return {
-      ThemeMode.light: theme.colorScheme.light,
-      ThemeMode.dark: theme.colorScheme.dark
+      ThemeMode.light: themeColors.light,
+      ThemeMode.dark: themeColors.dark,
     };
   },
 );

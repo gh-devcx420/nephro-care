@@ -60,7 +60,9 @@ class UIUtils {
         ..clearSnackBars()
         ..showSnackBar(
           SnackBar(
-            content: Text(message),
+            content: Text(
+              message,
+            ),
             backgroundColor:
                 backgroundColor ?? Theme.of(context).colorScheme.primary,
             duration: Duration(seconds: durationSeconds ?? 1),

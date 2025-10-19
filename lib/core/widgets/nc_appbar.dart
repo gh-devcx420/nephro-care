@@ -1,15 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/material_symbols.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_icons.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/utils/date_utils.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/widgets/nc_date_picker.dart';
 import 'package:nephro_care/core/widgets/nc_icon_button.dart';
+import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
-import 'package:nephro_care/features/settings/settings_provider.dart';
 import 'package:nephro_care/features/settings/settings_screen.dart';
 
 class NCAppbar extends ConsumerWidget {
@@ -68,7 +68,7 @@ class NCAppbar extends ConsumerWidget {
             dateProvider: selectedDateProvider,
             dateFormatter: DateTimeUtils.formatDateDM,
             prefixIcon: Icons.calendar_month,
-            suffixIconifyIcon: const Iconify(MaterialSymbols.replay),
+            suffixNCIcon: const NephroCareIcon(NCIcons.cancel),
           ),
           hGap4,
           NCIconButton(

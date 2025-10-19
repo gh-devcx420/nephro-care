@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/themes/theme_enums.dart';
 import 'package:nephro_care/core/themes/theme_model.dart';
@@ -246,16 +246,16 @@ abstract class AppTheme {
         backgroundColor: colorScheme.primaryContainer,
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
           color: colorScheme.onInverseSurface,
         ),
         behavior: SnackBarBehavior.fixed,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: colorScheme.primary,
-        circularTrackColor: colorScheme.primaryContainer,
-        linearTrackColor: colorScheme.primaryContainer,
+        color: colorScheme.primaryContainer,
+        circularTrackColor: colorScheme.primary,
+        linearTrackColor: colorScheme.primary,
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: colorScheme.surfaceContainer,
@@ -499,16 +499,16 @@ abstract class AppTheme {
         backgroundColor: colorScheme.primaryContainer,
         contentTextStyle: TextStyle(
           fontFamily: 'JosefinSans',
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-          color: colorScheme.onInverseSurface,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurface,
         ),
         behavior: SnackBarBehavior.fixed,
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: colorScheme.primary,
-        circularTrackColor: colorScheme.primaryContainer,
-        linearTrackColor: colorScheme.primaryContainer,
+        color: colorScheme.primaryContainer,
+        circularTrackColor: colorScheme.primary,
+        linearTrackColor: colorScheme.primary,
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: colorScheme.surfaceContainer,

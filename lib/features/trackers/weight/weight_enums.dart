@@ -18,7 +18,7 @@ extension WeightExtensions on Weight {
   String get hintText {
     switch (this) {
       case Weight.weightValue:
-        return 'Weight Value';
+        return 'Weight';
       case Weight.time:
         return 'Time';
     }

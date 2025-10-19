@@ -42,6 +42,11 @@ class DateTimeUtils {
         date1.day == date2.day;
   }
 
+  static bool isToday(DateTime date) {
+    final now = DateTime.now();
+    return isSameDay(now, date);
+  }
+
   // Utility Function to format Time in hh:mm a format (10:00 am).
   static String formatTime(DateTime? pickedTime) {
     final formatter = DateFormat('h:mm a');

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 
 class NCTextfield extends StatefulWidget {
   // Identification & Core Control
@@ -102,7 +102,6 @@ class _NCTextfieldState extends State<NCTextfield> {
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
-        // Collapse selection to hide handles on focus
         if (widget.textFieldController.text.isNotEmpty) {
           widget.textFieldController.selection = TextSelection.collapsed(
             offset: widget.textFieldController.text.length,

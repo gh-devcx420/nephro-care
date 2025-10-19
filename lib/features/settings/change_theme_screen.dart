@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/ui_constants.dart';
+import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/themes/theme_config.dart';
 import 'package:nephro_care/core/themes/theme_enums.dart';
 import 'package:nephro_care/core/themes/theme_provider.dart';
