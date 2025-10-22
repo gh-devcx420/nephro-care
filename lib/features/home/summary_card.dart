@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
+import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_overview_chip.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_provider.dart';
@@ -14,8 +16,16 @@ import 'package:nephro_care/features/trackers/urine/urine_utils.dart';
 import 'package:nephro_care/features/trackers/weight/weight_provider.dart';
 import 'package:nephro_care/features/trackers/weight/weight_utils.dart';
 
-class SummaryCard extends ConsumerWidget {
+class SummaryCard extends ConsumerStatefulWidget {
   const SummaryCard({super.key});
+
+  @override
+  ConsumerState<SummaryCard> createState() => _SummaryCardState();
+}
+
+class _SummaryCardState extends ConsumerState<SummaryCard> {
+  bool _isExpanded = true;
+  DateTime? _lastSelectedDate;
 
   DateTime? _getLatestUpdateTime(
     List<DateTime?> times,
@@ -40,12 +50,54 @@ class SummaryCard extends ConsumerWidget {
     return formattedValue;
   }
 
+  String _getDateLabel(DateTime selectedDate) {
+    if (DateTimeUtils.isToday(selectedDate)) {
+      return 'Today';
+    } else {
+      return DateTimeUtils.formatWeekday(selectedDate);
+    }
+  }
+
+  bool _hasAnyData(
+      Map<String, dynamic> fluidSummary,
+      Map<String, dynamic> urineSummary,
+      Map<String, dynamic> bpSummary,
+      Map<String, dynamic> weightSummary) {
+    final hasFluid = fluidSummary['total'] != null && fluidSummary['total'] > 0;
+    final hasUrine = urineSummary['total'] != null && urineSummary['total'] > 0;
+    final hasBP = (bpSummary['lastSystolic'] != null &&
+            bpSummary['lastSystolic'] > 0) ||
+        (bpSummary['lastDiastolic'] != null && bpSummary['lastDiastolic'] > 0);
+    final hasWeight = weightSummary['averageWeight'] != null &&
+        weightSummary['averageWeight'] > 0;
+
+    return hasFluid || hasUrine || hasBP || hasWeight;
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final selectedDate = ref.watch(selectedDateProvider);
     final fluidSummary = ref.watch(fluidIntakeSummaryProvider);
     final urineSummary = ref.watch(urineOutputSummaryProvider);
     final bpSummary = ref.watch(bpTrackerSummaryProvider);
     final weightSummary = ref.watch(weightSummaryProvider);
+
+    final hasData =
+        _hasAnyData(fluidSummary, urineSummary, bpSummary, weightSummary);
+
+    // Auto-collapse when there's no data AND the date has changed
+    if (_lastSelectedDate != selectedDate) {
+      _lastSelectedDate = selectedDate;
+      if (!hasData) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              _isExpanded = false;
+            });
+          }
+        });
+      }
+    }
 
     final lastUpdated = _getLatestUpdateTime(
       [
@@ -87,14 +139,14 @@ class SummaryCard extends ConsumerWidget {
                 height: 35,
                 width: 35,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.surfaceContainerLowest,
                   borderRadius:
                       BorderRadius.circular(UIConstants.borderRadius * 0.5),
                 ),
                 child: Icon(
-                  Icons.health_and_safety,
+                  Icons.bar_chart,
                   size: 24,
-                  color: theme.colorScheme.onPrimary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               hGap6,
@@ -110,13 +162,7 @@ class SummaryCard extends ConsumerWidget {
                   ),
                   if (lastUpdated != null)
                     UIUtils.createRichTextTimestamp(
-                      prefixText: 'Today • ',
-                      prefixStyle: theme.textTheme.titleSmall!.copyWith(
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                        fontWeight: FontWeight.w800,
-                        height: 0.9,
-                      ),
+                      prefixText: '${_getDateLabel(selectedDate)} • ',
                       timestamp: lastUpdated,
                       timeStyle: theme.textTheme.titleSmall!.copyWith(
                         color:
@@ -131,94 +177,119 @@ class SummaryCard extends ConsumerWidget {
                         height: 0.9,
                       ),
                       isMeridiemUpperCase: false,
-                    ),
+                    )
+                  else
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: _getDateLabel(selectedDate),
+                            style: theme.textTheme.titleSmall!.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
+                                fontWeight: FontWeight.w800,
+                                height: 0.9),
+                          ),
+                        ],
+                      ),
+                    )
                 ],
               ),
               const Spacer(),
               InkWell(
                 onTap: () {
                   HapticFeedback.lightImpact();
+                  setState(() {
+                    _isExpanded = !_isExpanded;
+                  });
                 },
-                child: Icon(
-                  Icons.more_vert_rounded,
-                  color: theme.colorScheme.onSurface,
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Icon(
+                    _isExpanded
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
               ),
             ],
           ),
-          vGap12,
-          Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: NCOverviewChip(
-                      onChipTap: () {
-                        Navigator.pushNamed(context, '/fluid_log');
-                      },
-                      chipTitle: 'Fluid Intake',
-                      dataValue: _getDisplayValue(
-                        fluidMeasurement.formattedValue,
-                        fluidMeasurement.unitString,
+          if (_isExpanded) ...[
+            vGap12,
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: NCOverviewChip(
+                        onChipTap: () {
+                          Navigator.pushNamed(context, '/fluid_log');
+                        },
+                        chipTitle: 'Fluid Intake',
+                        dataValue: _getDisplayValue(
+                          fluidMeasurement.formattedValue,
+                          fluidMeasurement.unitString,
+                        ),
+                        siUnit: fluidMeasurement.unitString ?? 'ml',
+                        lastEntryDateTime: fluidSummary['lastTime'],
                       ),
-                      siUnit: fluidMeasurement.unitString ?? 'ml',
-                      lastEntryDateTime: fluidSummary['lastTime'],
                     ),
-                  ),
-                  hGap12,
-                  Expanded(
-                    child: NCOverviewChip(
-                      onChipTap: () {
-                        Navigator.pushNamed(context, '/urine_log');
-                      },
-                      chipTitle: 'Urine Output',
-                      dataValue: _getDisplayValue(
-                        urineMeasurement.formattedValue,
-                        urineMeasurement.unitString,
+                    hGap12,
+                    Expanded(
+                      child: NCOverviewChip(
+                        onChipTap: () {
+                          Navigator.pushNamed(context, '/urine_log');
+                        },
+                        chipTitle: 'Urine Output',
+                        dataValue: _getDisplayValue(
+                          urineMeasurement.formattedValue,
+                          urineMeasurement.unitString,
+                        ),
+                        siUnit: urineMeasurement.unitString ?? 'ml',
+                        lastEntryDateTime: urineSummary['lastTime'],
                       ),
-                      siUnit: urineMeasurement.unitString ?? 'ml',
-                      lastEntryDateTime: urineSummary['lastTime'],
                     ),
-                  ),
-                ],
-              ),
-              vGap12,
-              Row(
-                children: [
-                  Expanded(
-                    child: NCOverviewChip(
-                      onChipTap: () {
-                        Navigator.pushNamed(context, '/bp_tracker_log');
-                      },
-                      chipTitle: 'Blood Pressure',
-                      dataValue: _getDisplayValue(
-                        bpMeasurement.displayValue,
-                        bpMeasurement.unitString,
+                  ],
+                ),
+                vGap12,
+                Row(
+                  children: [
+                    Expanded(
+                      child: NCOverviewChip(
+                        onChipTap: () {
+                          Navigator.pushNamed(context, '/bp_tracker_log');
+                        },
+                        chipTitle: 'Blood Pressure',
+                        dataValue: _getDisplayValue(
+                          bpMeasurement.displayValue,
+                          bpMeasurement.unitString,
+                        ),
+                        siUnit: bpMeasurement.unitString ?? 'mmHg',
+                        lastEntryDateTime: bpSummary['lastTime'],
                       ),
-                      siUnit: bpMeasurement.unitString ?? 'mmHg',
-                      lastEntryDateTime: bpSummary['lastTime'],
                     ),
-                  ),
-                  hGap12,
-                  Expanded(
-                    child: NCOverviewChip(
-                      onChipTap: () {
-                        Navigator.pushNamed(context, '/weight_tracker_log');
-                      },
-                      chipTitle: 'Weight',
-                      dataValue: _getDisplayValue(
-                        weightMeasurement.formattedValue,
-                        weightMeasurement.unitString,
+                    hGap12,
+                    Expanded(
+                      child: NCOverviewChip(
+                        onChipTap: () {
+                          Navigator.pushNamed(context, '/weight_tracker_log');
+                        },
+                        chipTitle: 'Weight',
+                        dataValue: _getDisplayValue(
+                          weightMeasurement.formattedValue,
+                          weightMeasurement.unitString,
+                        ),
+                        siUnit: weightMeasurement.unitString ?? 'Kg',
+                        lastEntryDateTime: weightSummary['lastTime'],
                       ),
-                      siUnit: weightMeasurement.unitString ?? 'Kg',
-                      lastEntryDateTime: weightSummary['lastTime'],
                     ),
-                  ),
-                ],
-              )
-            ],
-          ),
-          vGap2,
+                  ],
+                )
+              ],
+            ),
+          ],
         ],
       ),
     );

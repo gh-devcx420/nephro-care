@@ -32,7 +32,6 @@ class LogScreen<T> extends ConsumerStatefulWidget {
   final String? headerTitleString;
   final Widget Function(List<T> items)? headerActionButton;
   final FirestoreService firestoreService;
-  final IconData listItemIcon;
   final StreamProviderFamily<Cache<T>, (String, DateTime)> dataProvider;
   final Provider<Map<String, dynamic>> summaryProvider;
   final String firestoreCollection;
@@ -50,7 +49,6 @@ class LogScreen<T> extends ConsumerStatefulWidget {
     this.headerText,
     this.headerTitleString,
     required this.firestoreService,
-    required this.listItemIcon,
     required this.dataProvider,
     required this.summaryProvider,
     required this.firestoreCollection,
@@ -365,7 +363,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
               dateProvider: selectedDateProvider,
               dateFormatter: DateTimeUtils.formatDateDM,
               prefixIcon: Icons.calendar_month,
-              suffixNCIcon: const NephroCareIcon(NCIcons.cancel)),
+              suffixNCIcon: const NCIcon(NCIcons.cancel)),
           hGap4,
           InkWell(
             onTap: () async {
@@ -513,7 +511,8 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.surface,
+                                      color: theme
+                                          .colorScheme.surfaceContainerHighest,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
                                     child: UIUtils.createRichTextValueWithUnit(

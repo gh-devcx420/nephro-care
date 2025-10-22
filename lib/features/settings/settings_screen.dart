@@ -15,8 +15,6 @@ import 'package:nephro_care/main.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  static const double _radioButtonScale = 0.75;
-
   Widget _buildSettingTile({
     required BuildContext context,
     IconData? icon,
@@ -114,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
                   ? 'Past entries can be edited'
                   : 'Past entries can\'t be edited',
               trailing: Transform.scale(
-                scale: _radioButtonScale,
+                scale: UIConstants.switchButtonScale,
                 child: Switch(
                   value: allowEditPastEntries,
                   onChanged: (value) {
@@ -134,7 +132,7 @@ class SettingsScreen extends ConsumerWidget {
                   ? 'Past entries can be deleted'
                   : 'Past entries can\'t be deleted',
               trailing: Transform.scale(
-                scale: _radioButtonScale,
+                scale: UIConstants.switchButtonScale,
                 child: Switch(
                   value: allowDeletePastEntries,
                   onChanged: (value) {
@@ -154,7 +152,7 @@ class SettingsScreen extends ConsumerWidget {
                   ? 'Show delete all button in menu'
                   : 'Hide delete all button in menu',
               trailing: Transform.scale(
-                scale: _radioButtonScale,
+                scale: UIConstants.switchButtonScale,
                 child: Switch(
                   value: allowDeleteAll,
                   onChanged: (value) {
@@ -173,7 +171,7 @@ class SettingsScreen extends ConsumerWidget {
                   ? 'Reminder alerts are active'
                   : 'Reminder alerts are not active',
               trailing: Transform.scale(
-                scale: _radioButtonScale,
+                scale: UIConstants.switchButtonScale,
                 child: Switch(
                   value: isReminderActive,
                   onChanged: (newValue) {

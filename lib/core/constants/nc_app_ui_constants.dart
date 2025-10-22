@@ -22,6 +22,7 @@ class UIConstants {
   static const double buttonHorizontalPadding = 8.0;
   static const double buttonVerticalPadding = 8.0;
   static const Duration buttonTapDuration = Duration(milliseconds: 100);
+  static const double switchButtonScale = 0.75;
 
   // Font Constants
   static const double elevatedButtonFontSize = 16.0;

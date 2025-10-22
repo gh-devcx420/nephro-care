@@ -220,7 +220,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       onButtonTap: _handleGoogleSignIn,
       buttonPadding: const EdgeInsets.all(12),
       buttonBackgroundColor: colorScheme.primary,
-      ncButtonIcon: const NephroCareIcon(NCIcons.google),
+      ncButtonIcon: const NCIcon(NCIcons.google),
       iconSize: 20,
       iconColor: colorScheme.onPrimary,
       gap: hGap12,

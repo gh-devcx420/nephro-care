@@ -40,7 +40,7 @@ class NCIconButton extends StatefulWidget {
   final Color? buttonBackgroundColor;
   final EdgeInsets? buttonPadding;
   final IconData? buttonIcon;
-  final NephroCareIcon? ncButtonIcon;
+  final NCIcon? ncButtonIcon;
   final double? iconSize;
   final Color? iconColor;
   final SizedBox? gap;
@@ -68,7 +68,7 @@ class _NCIconButtonState extends State<NCIconButton> {
         color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
       );
     } else if (widget.ncButtonIcon != null) {
-      return NephroCareIcon(
+      return NCIcon(
         widget.ncButtonIcon!.icon,
         size: widget.iconSize ?? UIConstants.chipIconSize,
         color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,

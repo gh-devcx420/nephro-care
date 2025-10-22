@@ -4,6 +4,7 @@ import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
@@ -113,7 +114,6 @@ class FluidIntakeLogScreen extends ConsumerWidget {
           },
         );
       },
-      listItemIcon: Icons.local_drink,
       dataProvider: fluidIntakeDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: fluidIntakeSummaryProvider,
@@ -185,7 +185,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
                 width: 4,
                 height: 4,
                 decoration: const BoxDecoration(
-                  color: Colors.orange,
+                  color: AppColors.warningColor,
                   shape: BoxShape.circle,
                 ),
               ),

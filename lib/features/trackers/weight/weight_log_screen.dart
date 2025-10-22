@@ -33,7 +33,6 @@ class WeightTrackerLogScreen extends ConsumerWidget {
     return LogScreen<WeightModel>(
       appBarTitle: 'Weight Log',
       headerTitleString: 'weight',
-      listItemIcon: Icons.fitness_center,
       dataProvider: weightDataProvider,
       summaryProvider: weightSummaryProvider,
       firestoreService: FirestoreService(),
@@ -43,7 +42,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
         leading: Icon(
           Icons.fitness_center,
           size: 20,
-          color: colorScheme.onPrimaryContainer,
+          color: colorScheme.onSurface,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
@@ -53,7 +52,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
           child: Text(
             'Weight',
             style: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: 15,
               fontWeight: FontWeight.w800,
             ),
@@ -66,12 +65,12 @@ class WeightTrackerLogScreen extends ConsumerWidget {
             value: WeightUtils().format(item.weight).formattedValue!,
             unit: WeightUtils().format(item.weight).unitString!,
             valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.valueFontSize,
               fontWeight: FontWeight.w800,
             ),
             unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.siUnitFontSize,
               fontWeight: FontWeight.w600,
             ),
@@ -82,12 +81,12 @@ class WeightTrackerLogScreen extends ConsumerWidget {
           child: UIUtils.createRichTextTimestamp(
             timestamp: item.timestamp.toDate(),
             timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.timeFontSize,
               fontWeight: FontWeight.w800,
             ),
             meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onPrimaryContainer,
+              color: colorScheme.onSurface,
               fontSize: UIConstants.meridiemIndicatorFontSize,
               fontWeight: FontWeight.w600,
             ),

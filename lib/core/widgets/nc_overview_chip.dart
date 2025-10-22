@@ -53,11 +53,12 @@ class NCOverviewChipState extends ConsumerState<NCOverviewChip> {
         child: Container(
           padding: UIConstants.chipPadding,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 children: [
@@ -67,31 +68,30 @@ class NCOverviewChipState extends ConsumerState<NCOverviewChip> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelMedium!.copyWith(
-                      color: colorScheme.onPrimary,
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.w800,
                       height: 0,
                     ),
                   ),
                 ],
               ),
-              vGap8,
+              vGap10,
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                textBaseline: TextBaseline.alphabetic,
                 children: [
                   UIUtils.createRichTextValueWithUnit(
                     value: widget.dataValue,
                     valueStyle: theme.textTheme.labelMedium!.copyWith(
-                      color: colorScheme.onPrimary,
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.w800,
                       fontSize: 20,
-                      height: 0.8,
+                      height: 0.5,
                     ),
                     unit: widget.siUnit,
                     unitStyle: theme.textTheme.labelSmall!.copyWith(
-                      color: colorScheme.onPrimary.withValues(alpha: 0.7),
+                      color: colorScheme.onSurface.withValues(alpha: 0.7),
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      height: 1,
                     ),
                   ),
                 ],

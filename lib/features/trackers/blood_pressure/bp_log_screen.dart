@@ -106,7 +106,6 @@ class BPTrackerLogScreen extends ConsumerWidget {
           ),
         );
       },
-      listItemIcon: Icons.monitor_heart_sharp,
       dataProvider: bpTrackerDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: bpTrackerSummaryProvider,

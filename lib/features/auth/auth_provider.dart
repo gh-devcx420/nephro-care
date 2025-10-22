@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -45,6 +46,10 @@ class AuthNotifier extends StateNotifier<User?> {
 
   Future<void> signOut() async {
     try {
+      final userPhotoUrl = state?.photoURL;
+      if (userPhotoUrl != null) {
+        await CachedNetworkImage.evictFromCache(userPhotoUrl);
+      }
       await GoogleSignIn().signOut();
       await FirebaseAuth.instance.signOut();
       state = null;

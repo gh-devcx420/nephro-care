@@ -15,11 +15,11 @@ class NCDatePicker extends ConsumerStatefulWidget {
   final VoidCallback? onDateSelected;
   final ColorScheme? customColorScheme;
   final IconData? prefixIcon;
-  final NephroCareIcon? prefixNCIcon;
+  final NCIcon? prefixNCIcon;
   final double? prefixIconSize;
   final TextStyle? dateTextStyle;
   final IconData? suffixIcon;
-  final NephroCareIcon? suffixNCIcon;
+  final NCIcon? suffixNCIcon;
   final double? suffixIconSize;
 
   const NCDatePicker({
@@ -211,7 +211,7 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                             size: widget.prefixIconSize ?? _prefixIconSize,
                             color: widget.customColorScheme?.primary ??
                                 Theme.of(context).colorScheme.primary)
-                        : NephroCareIcon(
+                        : NCIcon(
                             widget.prefixNCIcon!.icon,
                             size: widget.prefixIconSize ?? _prefixIconSize,
                             color: widget.customColorScheme?.primary ??
@@ -262,7 +262,7 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
                               color: widget.customColorScheme?.primary ??
                                   Theme.of(context).colorScheme.primary,
                             )
-                          : NephroCareIcon(
+                          : NCIcon(
                               widget.suffixNCIcon!.icon,
                               size: widget.suffixIconSize ?? _suffixIconSize,
                               color: widget.customColorScheme?.primary ??

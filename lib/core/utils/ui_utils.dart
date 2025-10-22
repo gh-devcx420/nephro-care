@@ -91,11 +91,12 @@ class UIUtils {
             text: value,
             style: valueStyle,
           ),
-          if (unit.isNotEmpty)
+          if (unit.isNotEmpty) ...[
             TextSpan(
               text: ' $unit',
               style: unitStyle,
             ),
+          ]
         ],
       ),
       overflow: TextOverflow.ellipsis,

@@ -20,7 +20,6 @@ class HomeScreen extends ConsumerWidget {
                 NCAppbar(),
                 vGap10,
                 SummaryCard(),
-                vGap10,
               ],
             ),
           ),

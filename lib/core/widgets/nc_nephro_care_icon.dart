@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class NephroCareIcon extends StatelessWidget {
+class NCIcon extends StatelessWidget {
   final String icon;
   final Color? color;
   final double? size;
 
-  const NephroCareIcon(
+  const NCIcon(
     this.icon, {
     super.key,
     this.color,

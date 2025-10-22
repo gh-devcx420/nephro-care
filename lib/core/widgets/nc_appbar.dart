@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,15 +30,32 @@ class NCAppbar extends ConsumerWidget {
           CircleAvatar(
             radius: 16,
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            foregroundImage:
-                user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
-            child: user?.photoURL == null
-                ? Icon(
+            child: user?.photoURL != null
+                ? CachedNetworkImage(
+                    imageUrl: user!.photoURL!,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    placeholder: (context, url) => const SizedBox(),
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.person,
+                      size: 20,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                    maxHeightDiskCache: 100,
+                    maxWidthDiskCache: 100,
+                  )
+                : Icon(
                     Icons.person,
                     size: 20,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  )
-                : null,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
           ),
           hGap8,
           RichText(
@@ -55,8 +73,8 @@ class NCAppbar extends ConsumerWidget {
                   text: (user?.displayName?.split(' ').first) ?? '',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.w700,
-                        height: 0.8,
-                        color: Theme.of(context).colorScheme.primary,
+                        height: 0.9,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                 ),
               ],
@@ -68,7 +86,7 @@ class NCAppbar extends ConsumerWidget {
             dateProvider: selectedDateProvider,
             dateFormatter: DateTimeUtils.formatDateDM,
             prefixIcon: Icons.calendar_month,
-            suffixNCIcon: const NephroCareIcon(NCIcons.cancel),
+            suffixNCIcon: const NCIcon(NCIcons.cancel),
           ),
           hGap4,
           NCIconButton(

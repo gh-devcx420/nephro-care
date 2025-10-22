@@ -65,7 +65,6 @@ class UrineOutputLogScreen extends ConsumerWidget {
     return LogScreen<UrineModel>(
       appBarTitle: 'Urine Log',
       headerTitleString: 'urine output',
-      listItemIcon: Icons.water_drop,
       dataProvider: urineOutputDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: urineOutputSummaryProvider,
