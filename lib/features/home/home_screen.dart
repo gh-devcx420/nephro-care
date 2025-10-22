@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_appbar.dart';
+import 'package:nephro_care/features/home/overview_card.dart';
 import 'package:nephro_care/features/home/summary_card.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -18,6 +19,8 @@ class HomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NCAppbar(),
+                vGap10,
+                OverviewCard(),
                 vGap10,
                 SummaryCard(),
               ],

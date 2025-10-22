@@ -1,0 +1,1 @@
+enum ComparisonMode { lastDialysis, today }
