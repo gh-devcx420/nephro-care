@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_model.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
-
-import '../../../core/constants/nc_app_constants.dart';
 
 class BPMonitorStateNotifier
     extends StateNotifier<AsyncValue<Cache<BPTrackerModel>>> {
@@ -56,11 +55,6 @@ class BPMonitorStateNotifier
   }
 
   Stream<Cache<BPTrackerModel>> streamData() async* {
-    final currentUser = ref.read(authProvider);
-    if (currentUser == null || currentUser.uid != userId) {
-      return;
-    }
-
     if (state is AsyncData<Cache<BPTrackerModel>> &&
         DateTime.now()
                 .difference((state as AsyncData<Cache<BPTrackerModel>>)
@@ -69,37 +63,33 @@ class BPMonitorStateNotifier
                 .inMinutes <
             cacheDuration.inMinutes) {
       yield (state as AsyncData<Cache<BPTrackerModel>>).value;
-    } else {
-      final startOfDay =
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
+      return;
+    }
 
-      final stream = FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection(BloodPressureConstants.bpFirebaseCollectionName)
-          .where('timestamp',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-          .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
-          .orderBy('timestamp', descending: false)
-          .snapshots();
+    final startOfDay =
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      await for (final snapshot in stream) {
-        final user = ref.read(authProvider);
-        if (user == null || user.uid != userId) {
-          return;
-        }
+    final stream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection(BloodPressureConstants.bpFirebaseCollectionName)
+        .where('timestamp',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
+        .orderBy('timestamp', descending: false)
+        .snapshots(includeMetadataChanges: true);
 
-        final bpMonitors = snapshot.docs
-            .map((doc) => BPTrackerModel.fromJson(doc.data()))
-            .toList();
-        final cache = Cache<BPTrackerModel>(
-          items: bpMonitors,
-          lastFetched: DateTime.now(),
-        );
-        state = AsyncValue.data(cache);
-        yield cache;
-      }
+    await for (final snapshot in stream) {
+      final bpMonitors = snapshot.docs
+          .map((doc) => BPTrackerModel.fromJson(doc.data()))
+          .toList();
+      final cache = Cache<BPTrackerModel>(
+        items: bpMonitors,
+        lastFetched: DateTime.now(),
+      );
+      state = AsyncValue.data(cache);
+      yield cache;
     }
   }
 }

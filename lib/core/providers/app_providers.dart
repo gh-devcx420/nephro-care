@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final selectedDateProvider = StateProvider<DateTime>((ref) {
@@ -17,4 +18,15 @@ final allowDeletePastEntriesProvider = StateProvider<bool>((ref) {
 
 final remindersActiveProvider = StateProvider<bool>((ref) {
   return true;
+});
+
+final connectivityProvider = StreamProvider<bool>((ref) async* {
+  final connectivity = Connectivity();
+
+  final result = await connectivity.checkConnectivity();
+  yield !result.contains(ConnectivityResult.none);
+
+  await for (final result in connectivity.onConnectivityChanged) {
+    yield !result.contains(ConnectivityResult.none);
+  }
 });

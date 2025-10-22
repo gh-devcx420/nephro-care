@@ -39,7 +39,7 @@ class FluidIntakeStateNotifier
           .get();
 
       final fluidIntakes =
-          snapshot.docs.map((doc) => FluidsModel.fromJson(doc.data())).toList();
+          snapshot.docs.map((doc) => FluidsModel.fromFirestore(doc)).toList();
 
       state = AsyncValue.data(Cache<FluidsModel>(
         items: fluidIntakes,
@@ -51,12 +51,7 @@ class FluidIntakeStateNotifier
   }
 
   Stream<Cache<FluidsModel>> streamData() async* {
-    // Check authentication at the start
-    final currentUser = ref.read(authProvider);
-    if (currentUser == null || currentUser.uid != userId) {
-      return;
-    }
-
+    // Check if we have valid cache
     if (state is AsyncData<Cache<FluidsModel>> &&
         DateTime.now()
                 .difference(
@@ -64,38 +59,34 @@ class FluidIntakeStateNotifier
                 .inMinutes <
             cacheDuration.inMinutes) {
       yield (state as AsyncData<Cache<FluidsModel>>).value;
-    } else {
-      final startOfDay =
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
+      return;
+    }
 
-      final stream = FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection(FluidConstants.fluidFirebaseCollectionName)
-          .where('timestamp',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-          .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
-          .orderBy('timestamp', descending: false)
-          .snapshots();
+    final startOfDay =
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      await for (final snapshot in stream) {
-        // Verify user is still authenticated and matches the userId
-        final user = ref.read(authProvider);
-        if (user == null || user.uid != userId) {
-          return;
-        }
+    final stream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection(FluidConstants.fluidFirebaseCollectionName)
+        .where('timestamp',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
+        .orderBy('timestamp', descending: false)
+        .snapshots(includeMetadataChanges: true);
 
-        final fluidIntakes = snapshot.docs
-            .map((doc) => FluidsModel.fromJson(doc.data()))
-            .toList();
-        final cache = Cache<FluidsModel>(
-          items: fluidIntakes,
-          lastFetched: DateTime.now(),
-        );
-        state = AsyncValue.data(cache);
-        yield cache;
-      }
+    await for (final snapshot in stream) {
+      final fluidIntakes =
+          snapshot.docs.map((doc) => FluidsModel.fromFirestore(doc)).toList();
+
+      final cache = Cache<FluidsModel>(
+        items: fluidIntakes,
+        lastFetched: DateTime.now(),
+      );
+
+      state = AsyncValue.data(cache);
+      yield cache;
     }
   }
 }
@@ -107,6 +98,8 @@ final fluidIntakeDataProvider =
   final selectedDate = params.$2;
 
   final user = ref.watch(authProvider);
+
+  // Check auth HERE, before creating the notifier
   if (user == null || user.uid != userId) {
     return Stream.value(Cache<FluidsModel>(
       items: [],
@@ -114,6 +107,7 @@ final fluidIntakeDataProvider =
     ));
   }
 
+  // Only call streamData() if user is valid
   final notifier = FluidIntakeStateNotifier(ref, userId, selectedDate);
   return notifier.streamData();
 });

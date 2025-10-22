@@ -119,59 +119,78 @@ class FluidIntakeLogScreen extends ConsumerWidget {
       summaryProvider: fluidIntakeSummaryProvider,
       firestoreCollection: FluidConstants.fluidFirebaseCollectionName,
       inputModalSheet: (item) => FluidIntakeModalSheet(intake: item),
-      listItemBuilder: (context, item) => ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-        visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
-        dense: true,
-        leading: Icon(
-          Icons.local_drink,
-          size: 20,
-          color: colorScheme.onSurface,
-        ),
-        title: Semantics(
-          label: 'Intake type: ${item.fluidName}',
-          child: Text(
-            'Drank: ${item.fluidName}',
-            style: theme.textTheme.titleMedium!.copyWith(
+      listItemBuilder: (context, item) => Stack(
+        children: [
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+            dense: true,
+            leading: Icon(
+              Icons.local_drink,
+              size: 20,
               color: colorScheme.onSurface,
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
             ),
-            overflow: TextOverflow.ellipsis,
+            title: Semantics(
+              label: 'Intake type: ${item.fluidName}',
+              child: Text(
+                'Drank: ${item.fluidName}',
+                style: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            subtitle: Semantics(
+              label:
+                  'Quantity: ${item.quantity} ${FluidUnits.milliliters.siUnit}',
+              child: UIUtils.createRichTextValueWithUnit(
+                value: FluidUtils().format(item.quantity).formattedValue!,
+                unit: FluidUtils().format(item.quantity).unitString!,
+                valueStyle: _getValueStyle(
+                  context,
+                  shouldUseErrorColors: false,
+                ),
+                unitStyle: _getUnitStyle(
+                  context,
+                  shouldUseErrorColors: false,
+                ),
+              ),
+            ),
+            trailing: Semantics(
+              label:
+                  'Time: ${DateTimeUtils.formatTime(item.timestamp.toDate())}',
+              child: UIUtils.createRichTextTimestamp(
+                timestamp: item.timestamp.toDate(),
+                timeStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.timeFontSize,
+                  fontWeight: FontWeight.w800,
+                ),
+                meridiemStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.meridiemIndicatorFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+                isMeridiemUpperCase: false,
+              ),
+            ),
           ),
-        ),
-        subtitle: Semantics(
-          label: 'Quantity: ${item.quantity} ${FluidUnits.milliliters.siUnit}',
-          child: UIUtils.createRichTextValueWithUnit(
-            value: FluidUtils().format(item.quantity).formattedValue!,
-            unit: FluidUtils().format(item.quantity).unitString!,
-            valueStyle: _getValueStyle(
-              context,
-              shouldUseErrorColors: false,
+          if (item.isPendingSync)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+              ),
             ),
-            unitStyle: _getUnitStyle(
-              context,
-              shouldUseErrorColors: false,
-            ),
-          ),
-        ),
-        trailing: Semantics(
-          label: 'Time: ${DateTimeUtils.formatTime(item.timestamp.toDate())}',
-          child: UIUtils.createRichTextTimestamp(
-            timestamp: item.timestamp.toDate(),
-            timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.timeFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-            meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.meridiemIndicatorFontSize,
-              fontWeight: FontWeight.w600,
-            ),
-            isMeridiemUpperCase: false,
-          ),
-        ),
+        ],
       ),
       logDetailsDialogBuilder: (context, summary) {
         final lastDrinkTime = summary['lastTime'];

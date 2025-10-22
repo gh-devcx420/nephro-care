@@ -5,16 +5,25 @@ class Result {
   final bool isSuccess;
   final String message;
   final Color backgroundColor;
+  final bool isPendingSync;
 
   const Result({
     required this.isSuccess,
     required this.message,
     required this.backgroundColor,
+    this.isPendingSync = false,
   });
 }
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  FirestoreService() {
+    _firestore.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+  }
 
   Future<Result> saveEntry({
     required String userId,
@@ -25,24 +34,47 @@ class FirestoreService {
     required Color successMessageColor,
     required String errorMessagePrefix,
     required Color errorMessageColor,
+    required bool isOnline,
   }) async {
     try {
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection(collection)
-          .doc(docId)
-          .set(data);
-      return Result(
-        isSuccess: true,
-        message: successMessage,
-        backgroundColor: successMessageColor,
-      );
+      if (!isOnline) {
+        // Offline: Save without waiting
+        _firestore
+            .collection('users')
+            .doc(userId)
+            .collection(collection)
+            .doc(docId)
+            .set(data)
+            .ignore();
+
+        return Result(
+          isSuccess: true,
+          message: successMessage,
+          backgroundColor: successMessageColor,
+          isPendingSync: true,
+        );
+      } else {
+        // Online: Wait for completion
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection(collection)
+            .doc(docId)
+            .set(data);
+
+        return Result(
+          isSuccess: true,
+          message: successMessage,
+          backgroundColor: successMessageColor,
+          isPendingSync: false,
+        );
+      }
     } catch (e) {
       return Result(
         isSuccess: false,
         message: '$errorMessagePrefix$e',
         backgroundColor: errorMessageColor,
+        isPendingSync: false,
       );
     }
   }
@@ -55,24 +87,45 @@ class FirestoreService {
     required Color successColor,
     required String errorMessagePrefix,
     required Color errorColor,
+    required bool isOnline,
   }) async {
     try {
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection(collection)
-          .doc(docId)
-          .delete();
-      return Result(
-        isSuccess: true,
-        message: successMessage,
-        backgroundColor: Colors.green,
-      );
+      if (!isOnline) {
+        _firestore
+            .collection('users')
+            .doc(userId)
+            .collection(collection)
+            .doc(docId)
+            .delete()
+            .ignore();
+
+        return Result(
+          isSuccess: true,
+          message: successMessage,
+          backgroundColor: Colors.green,
+          isPendingSync: true,
+        );
+      } else {
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection(collection)
+            .doc(docId)
+            .delete();
+
+        return Result(
+          isSuccess: true,
+          message: successMessage,
+          backgroundColor: Colors.green,
+          isPendingSync: false,
+        );
+      }
     } catch (e) {
       return Result(
         isSuccess: false,
         message: '$errorMessagePrefix$e',
         backgroundColor: errorColor,
+        isPendingSync: false,
       );
     }
   }
@@ -85,6 +138,7 @@ class FirestoreService {
     required Color successMessageColor,
     required String errorMessagePrefix,
     required Color errorColor,
+    required bool isOnline,
   }) async {
     try {
       final batch = _firestore.batch();
@@ -97,17 +151,32 @@ class FirestoreService {
               .doc(docId),
         );
       }
-      await batch.commit();
-      return Result(
-        isSuccess: true,
-        message: successMessage,
-        backgroundColor: successMessageColor,
-      );
+
+      if (!isOnline) {
+        batch.commit().ignore();
+
+        return Result(
+          isSuccess: true,
+          message: successMessage,
+          backgroundColor: successMessageColor,
+          isPendingSync: true,
+        );
+      } else {
+        await batch.commit();
+
+        return Result(
+          isSuccess: true,
+          message: successMessage,
+          backgroundColor: successMessageColor,
+          isPendingSync: false,
+        );
+      }
     } catch (e) {
       return Result(
         isSuccess: false,
         message: '$errorMessagePrefix$e',
         backgroundColor: errorColor,
+        isPendingSync: false,
       );
     }
   }

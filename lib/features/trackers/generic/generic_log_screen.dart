@@ -273,6 +273,12 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       return;
     }
 
+    final isOnlineAsync = ref.watch(connectivityProvider);
+    final isOnline = isOnlineAsync.maybeWhen(
+      data: (online) => online,
+      orElse: () => true,
+    );
+
     final Result result;
 
     if (docIds.length == 1) {
@@ -284,6 +290,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
         successColor: successColor,
         errorMessagePrefix: AppStrings.failedToDeleteEntry,
         errorColor: errorColor,
+        isOnline: isOnline,
       );
     } else {
       result = await widget.firestoreService.deleteAllEntries(
@@ -295,6 +302,7 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
         successMessageColor: successColor,
         errorMessagePrefix: AppStrings.failedToDeleteEntry,
         errorColor: errorColor,
+        isOnline: isOnline,
       );
     }
 

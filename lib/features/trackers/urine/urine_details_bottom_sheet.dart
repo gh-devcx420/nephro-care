@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -73,6 +75,9 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
             if (quantity <= 0) {
               return 'Quantity cannot be 0 ${UrineUnits.milliliters.siUnit}.';
             }
+            if (quantity < 0) {
+              return 'Quantity cannot be negative.';
+            }
             if (quantity > 1500) {
               return 'Quantity won\'t usually exceed ${UrineConstants.urineBladderMaxCapacity.toInt()} ${UrineUnits.milliliters.siUnit}.';
             }
@@ -136,10 +141,19 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
             backgroundColor: errorColor,
           );
         }
+
+        // Check if online
+        final isOnlineAsync = ref.watch(connectivityProvider);
+        final isOnline = isOnlineAsync.maybeWhen(
+          data: (online) => online,
+          orElse: () => true,
+        );
+
         final dateTime = DateTime.now().copyWith(
           hour: selectedTime!.hour,
           minute: selectedTime!.minute,
         );
+
         final outputData = UrineModel(
           id: widget.output?.id ??
               DateTime.now().millisecondsSinceEpoch.toString(),
@@ -151,6 +165,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
           ),
           timestamp: Timestamp.fromDate(dateTime),
         );
+
         return await firestoreService.saveEntry(
           userId: user.uid,
           collection: UrineConstants.urineFirebaseCollectionName,
@@ -162,6 +177,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
           errorMessagePrefix: 'Failed to save entry: ',
           successMessageColor: successColor,
           errorMessageColor: errorColor,
+          isOnline: isOnline,
         );
       },
     );

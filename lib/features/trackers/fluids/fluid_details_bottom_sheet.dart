@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -94,8 +95,11 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
             if (quantity == null) {
               return 'Please enter a valid quantity.';
             }
-            if (quantity <= 0) {
+            if (quantity == 0) {
               return 'Quantity cannot be 0 ${FluidUnits.milliliters.siUnit} or less.';
+            }
+            if (quantity < 0) {
+              return 'Quantity cannot be negative.';
             }
             if (quantity > fluidDailyLimitProvider) {
               var limit = fluidDailyLimitProvider.toInt();
@@ -142,7 +146,7 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
           buildSubmitButton(context),
         ],
       ),
-      onSave: (values, ref, FirestoreService firestoreService) async {
+      onSave: (values, ref, firestoreService) async {
         const successColor = AppColors.successColor;
         final errorColor = colorScheme.error;
 
@@ -177,6 +181,12 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
           timestamp: Timestamp.fromDate(dateTime),
         );
 
+        final isOnlineAsync = ref.read(connectivityProvider);
+        final isOnline = isOnlineAsync.maybeWhen(
+          data: (online) => online,
+          orElse: () => true,
+        );
+
         return await firestoreService.saveEntry(
           userId: user.uid,
           collection: FluidConstants.fluidFirebaseCollectionName,
@@ -188,6 +198,7 @@ class _FluidIntakeModalSheetState extends ConsumerState<FluidIntakeModalSheet>
           successMessageColor: successColor,
           errorMessagePrefix: 'Failed to save entry: ',
           errorMessageColor: errorColor,
+          isOnline: isOnline,
         );
       },
     );

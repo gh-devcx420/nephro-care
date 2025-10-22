@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
@@ -159,9 +160,10 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
     super.dispose();
   }
 
-  Future<void> _submit(WidgetRef ref) async {
+  Future<void> _submit(WidgetRef ref, bool isOnline) async {
     final errorColor = Theme.of(context).colorScheme.error;
     final values = <String, String>{};
+
     for (var inputField in widget.inputFields) {
       final capturedInputValue = controllers[inputField.key]!.text.trim();
       if (inputField.validator != null) {
@@ -179,11 +181,27 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
       }
       values[inputField.key] = capturedInputValue;
     }
+
     setState(() => isLoading = true);
+
     final result = await widget.onSave(values, ref, widget.firestoreService);
-    if (!mounted) return;
+
+    if (!mounted) {
+      return;
+    }
+
     setState(() => isLoading = false);
+
     Navigator.of(context).pop(result);
+
+    if (!result.isSuccess || result.isPendingSync) {
+      UIUtils.showNCSnackBar(
+        context: context,
+        message: result.message,
+        backgroundColor: result.backgroundColor,
+        durationSeconds: 3,
+      );
+    }
   }
 
   Widget _buildTextField(NCTextFieldConfig ncTextFieldConfig) {
@@ -224,7 +242,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
     );
   }
 
-  Widget _buildSubmitButton(BuildContext context) {
+  Widget _buildSubmitButton(BuildContext context, bool isOnline) {
     return Consumer(
       builder: (context, ref, child) {
         return SizedBox(
@@ -234,7 +252,7 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
                 ? null
                 : () {
                     HapticFeedback.lightImpact();
-                    _submit(ref);
+                    _submit(ref, isOnline);
                   },
             style: ButtonStyle(
               padding: WidgetStateProperty.all(
@@ -268,48 +286,74 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
       for (var config in widget.inputFields) config.key: _buildTextField(config)
     };
 
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: UIConstants.bottomModalSheetPadding,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              NCDivider(
-                thickness: widget.dividerThickness,
-                color: widget.primaryColor,
-                widthFactor: widget.dividerWidthFactor,
-              ),
-              vGap4,
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 4,
+    return Consumer(
+      builder: (context, ref, child) {
+        final isOnlineAsync = ref.watch(connectivityProvider);
+
+        return isOnlineAsync.when(
+          data: (isOnline) {
+            print('DEBUG: isOnline = $isOnline');
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: UIConstants.bottomModalSheetPadding,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      NCDivider(
+                        thickness: widget.dividerThickness,
+                        color: widget.primaryColor,
+                        widthFactor: widget.dividerWidthFactor,
                       ),
-                      child: Text(
-                        widget.initialData != null
-                            ? widget.editingModeTitle
-                            : widget.addModeTitle,
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                              fontWeight: FontWeight.w800,
+                      vGap4,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              child: Text(
+                                widget.initialData != null
+                                    ? widget.editingModeTitle
+                                    : widget.addModeTitle,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                              ),
                             ),
+                          ),
+                        ],
                       ),
-                    ),
+                      vGap12,
+                      widget.layoutConfig(
+                        context,
+                        fields,
+                        (ctx) => _buildSubmitButton(ctx, isOnline),
+                      ),
+                      vGap16,
+                    ],
                   ),
-                ],
+                ),
               ),
-              vGap12,
-              widget.layoutConfig(context, fields, _buildSubmitButton),
-              vGap16,
-            ],
+            );
+          },
+          loading: () => const SizedBox(
+            height: 100,
+            child: Center(child: CircularProgressIndicator()),
           ),
-        ),
-      ),
+          error: (e, st) => SizedBox(
+            height: 100,
+            child: Center(child: Text('Error: $e')),
+          ),
+        );
+      },
     );
   }
 }

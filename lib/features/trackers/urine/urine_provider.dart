@@ -50,11 +50,6 @@ class UrineOutputStateNotifier
   }
 
   Stream<Cache<UrineModel>> streamData() async* {
-    final currentUser = ref.read(authProvider);
-    if (currentUser == null || currentUser.uid != userId) {
-      return;
-    }
-
     if (state is AsyncData<Cache<UrineModel>> &&
         DateTime.now()
                 .difference(
@@ -62,37 +57,32 @@ class UrineOutputStateNotifier
                 .inMinutes <
             cacheDuration.inMinutes) {
       yield (state as AsyncData<Cache<UrineModel>>).value;
-    } else {
-      final startOfDay =
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
+      return;
+    }
 
-      final stream = FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection(UrineConstants.urineFirebaseCollectionName)
-          .where('timestamp',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-          .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
-          .orderBy('timestamp', descending: false)
-          .snapshots();
+    final startOfDay =
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      await for (final snapshot in stream) {
-        final user = ref.read(authProvider);
-        if (user == null || user.uid != userId) {
-          return;
-        }
+    final stream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection(UrineConstants.urineFirebaseCollectionName)
+        .where('timestamp',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
+        .orderBy('timestamp', descending: false)
+        .snapshots(includeMetadataChanges: true);
 
-        final urineOutputs = snapshot.docs
-            .map((doc) => UrineModel.fromJson(doc.data()))
-            .toList();
-        final cache = Cache<UrineModel>(
-          items: urineOutputs,
-          lastFetched: DateTime.now(),
-        );
-        state = AsyncValue.data(cache);
-        yield cache;
-      }
+    await for (final snapshot in stream) {
+      final urineOutputs =
+          snapshot.docs.map((doc) => UrineModel.fromJson(doc.data())).toList();
+      final cache = Cache<UrineModel>(
+        items: urineOutputs,
+        lastFetched: DateTime.now(),
+      );
+      state = AsyncValue.data(cache);
+      yield cache;
     }
   }
 }

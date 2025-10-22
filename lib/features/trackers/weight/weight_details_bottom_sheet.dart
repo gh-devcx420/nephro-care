@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
@@ -134,6 +136,13 @@ class _WeightModalSheetState extends State<WeightModalSheet>
           );
         }
 
+        // Check if online
+        final isOnlineAsync = ref.watch(connectivityProvider);
+        final isOnline = isOnlineAsync.maybeWhen(
+          data: (online) => online,
+          orElse: () => true,
+        );
+
         final dateTime = DateTime.now().copyWith(
           hour: selectedTime!.hour,
           minute: selectedTime!.minute,
@@ -157,6 +166,7 @@ class _WeightModalSheetState extends State<WeightModalSheet>
           successMessageColor: successColor,
           errorMessagePrefix: 'Failed to save entry: ',
           errorMessageColor: errorColor,
+          isOnline: isOnline,
         );
       },
     );
