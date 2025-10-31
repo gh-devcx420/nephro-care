@@ -1,9 +1,8 @@
-import 'package:intl/intl.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
 import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
 import 'package:nephro_care/features/trackers/weight/weight_enums.dart';
 
-class WeightUtils implements TrackerUtils<WeightUnits> {
+class WeightUtils {
   static final _invalidWeightMeasure = Measurement.invalid<WeightUnits>();
 
   bool _isValidSource(Measurement<WeightUnits> source) {
@@ -14,19 +13,13 @@ class WeightUtils implements TrackerUtils<WeightUnits> {
         source.value! >= 0;
   }
 
-  @override
-  WeightUnits get baseUnit => WeightUnits.kilograms;
-
-  @override
-  NumberFormat get baseUnitFormat => WeightUnits.kilograms.valueFormat;
-
-  @override
   Measurement<WeightUnits> format(num value) {
     final processedValue = value.toDouble();
 
     if (processedValue < 0) return _invalidWeightMeasure;
 
-    final formattedValue = baseUnitFormat.format(processedValue);
+    final formattedValue =
+        WeightUnits.kilograms.valueFormat.format(processedValue);
 
     return Measurement<WeightUnits>(
       value: processedValue,

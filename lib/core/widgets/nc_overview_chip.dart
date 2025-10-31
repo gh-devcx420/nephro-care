@@ -5,8 +5,8 @@ import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 
-class NCOverviewChip extends ConsumerStatefulWidget {
-  const NCOverviewChip({
+class NCHealthMetricChip extends ConsumerStatefulWidget {
+  const NCHealthMetricChip({
     super.key,
     required this.chipTitle,
     required this.onChipTap,
@@ -25,7 +25,7 @@ class NCOverviewChip extends ConsumerStatefulWidget {
   NCOverviewChipState createState() => NCOverviewChipState();
 }
 
-class NCOverviewChipState extends ConsumerState<NCOverviewChip> {
+class NCOverviewChipState extends ConsumerState<NCHealthMetricChip> {
   bool _isPressed = false;
 
   @override
@@ -51,7 +51,7 @@ class NCOverviewChipState extends ConsumerState<NCOverviewChip> {
             : UIConstants.animationScaleMax,
         duration: UIConstants.buttonTapDuration,
         child: Container(
-          padding: UIConstants.chipPadding,
+          padding: UIConstants.overviewChipPadding,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
@@ -61,6 +61,7 @@ class NCOverviewChipState extends ConsumerState<NCOverviewChip> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     widget.chipTitle,
@@ -78,6 +79,7 @@ class NCOverviewChipState extends ConsumerState<NCOverviewChip> {
               vGap10,
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   UIUtils.createRichTextValueWithUnit(
                     value: widget.dataValue,

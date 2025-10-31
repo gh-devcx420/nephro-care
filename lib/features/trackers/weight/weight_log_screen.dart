@@ -4,11 +4,12 @@ import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
 import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
 import 'package:nephro_care/features/trackers/weight/weight_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/weight/weight_model.dart';
@@ -38,61 +39,79 @@ class WeightTrackerLogScreen extends ConsumerWidget {
       firestoreService: FirestoreService(),
       firestoreCollection: WeightConstants.weightFirebaseCollectionName,
       inputModalSheet: (item) => WeightModalSheet(weightInput: item),
-      listItemBuilder: (context, item) => ListTile(
-        leading: Icon(
-          Icons.fitness_center,
-          size: 20,
-          color: colorScheme.onSurface,
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-        visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
-        dense: true,
-        title: Semantics(
-          label: 'Weight',
-          child: Text(
-            'Weight',
-            style: theme.textTheme.titleMedium!.copyWith(
+      listItemBuilder: (context, item) => Stack(
+        children: [
+          ListTile(
+            leading: Icon(
+              Icons.fitness_center,
+              size: 20,
               color: colorScheme.onSurface,
-              fontSize: 15,
-              fontWeight: FontWeight.w800,
             ),
-            overflow: TextOverflow.ellipsis,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+            dense: true,
+            title: Semantics(
+              label: 'Weight',
+              child: Text(
+                'Weight',
+                style: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            subtitle: Semantics(
+              label: 'Weight: ',
+              child: UIUtils.createRichTextValueWithUnit(
+                value: WeightUtils().format(item.weight).formattedValue!,
+                unit: WeightUtils().format(item.weight).unitString!,
+                valueStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.valueFontSize,
+                  fontWeight: FontWeight.w800,
+                ),
+                unitStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.siUnitFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            trailing: Semantics(
+              label:
+                  'Time: ${DateTimeUtils.formatTime(item.timestamp.toDate())}',
+              child: UIUtils.createRichTextTimestamp(
+                timestamp: item.timestamp.toDate(),
+                timeStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.timeFontSize,
+                  fontWeight: FontWeight.w800,
+                ),
+                meridiemStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.meridiemIndicatorFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+                isMeridiemUpperCase: false,
+              ),
+            ),
           ),
-        ),
-        subtitle: Semantics(
-          label: 'Weight: ',
-          child: UIUtils.createRichTextValueWithUnit(
-            value: WeightUtils().format(item.weight).formattedValue!,
-            unit: WeightUtils().format(item.weight).unitString!,
-            valueStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.valueFontSize,
-              fontWeight: FontWeight.w800,
+          if (item.isPendingSync)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  color: AppColors.warningColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
             ),
-            unitStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.siUnitFontSize,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        trailing: Semantics(
-          label: 'Time: ${DateTimeUtils.formatTime(item.timestamp.toDate())}',
-          child: UIUtils.createRichTextTimestamp(
-            timestamp: item.timestamp.toDate(),
-            timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.timeFontSize,
-              fontWeight: FontWeight.w800,
-            ),
-            meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.meridiemIndicatorFontSize,
-              fontWeight: FontWeight.w600,
-            ),
-            isMeridiemUpperCase: false,
-          ),
-        ),
+        ],
       ),
       logDetailsDialogBuilder: (context, summary) {
         final lastWeightTime = summary['lastTime'];

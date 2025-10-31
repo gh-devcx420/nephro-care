@@ -1,9 +1,8 @@
-import 'package:intl/intl.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
 import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
 import 'package:nephro_care/features/trackers/urine/urine_enums.dart';
 
-class UrineUtils implements TrackerUtils<UrineUnits> {
+class UrineUtils {
   static final _invalidUrineMeasure = Measurement.invalid<UrineUnits>();
 
   bool _isValidSource(Measurement<UrineUnits> source) {
@@ -14,13 +13,6 @@ class UrineUtils implements TrackerUtils<UrineUnits> {
         source.value! >= 0;
   }
 
-  @override
-  UrineUnits get baseUnit => UrineUnits.milliliters;
-
-  @override
-  NumberFormat get baseUnitFormat => UrineUnits.milliliters.valueFormat;
-
-  @override
   Measurement<UrineUnits> format(num value) {
     final processedValue = value.toDouble();
 
@@ -28,7 +20,7 @@ class UrineUtils implements TrackerUtils<UrineUnits> {
 
     final baseMeasurement = Measurement<UrineUnits>(
       value: processedValue,
-      formattedValue: baseUnitFormat.format(processedValue),
+      formattedValue: UrineUnits.milliliters.valueFormat.format(processedValue),
       unit: UrineUnits.milliliters,
       unitString: UrineUnits.milliliters.siUnit,
       isValid: true,

@@ -6,8 +6,8 @@ import 'package:nephro_care/core/constants/nc_app_icons.dart';
 import 'package:nephro_care/core/themes/theme_provider.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/svg_utils.dart';
+import 'package:nephro_care/core/widgets/nc_icon.dart';
 import 'package:nephro_care/core/widgets/nc_icon_button.dart';
-import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {

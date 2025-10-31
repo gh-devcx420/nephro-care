@@ -5,7 +5,7 @@ import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
-import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
+import 'package:nephro_care/core/widgets/nc_icon.dart';
 
 class NCDatePicker extends ConsumerStatefulWidget {
   final DateTime? firstDate;

@@ -11,6 +11,7 @@ import 'package:nephro_care/features/trackers/blood_pressure/bp_log_screen.dart'
 import 'package:nephro_care/features/trackers/fluids/fluid_log_screen.dart';
 import 'package:nephro_care/features/trackers/urine/urine_log_screen.dart';
 import 'package:nephro_care/features/trackers/weight/weight_log_screen.dart';
+import 'package:nephro_care/features/user_profile/user_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingScreen extends StatelessWidget {
@@ -69,6 +70,7 @@ class NephroCare extends ConsumerWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
+        '/user_profile': (context) => const UserProfileScreen(),
         '/fluid_log': (context) => const FluidIntakeLogScreen(),
         '/urine_log': (context) => const UrineOutputLogScreen(),
         '/bp_tracker_log': (context) => const BPTrackerLogScreen(),

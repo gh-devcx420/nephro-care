@@ -38,7 +38,7 @@ class WeightStateNotifier
           .get();
 
       final weights =
-          snapshot.docs.map((doc) => WeightModel.fromJson(doc.data())).toList();
+          snapshot.docs.map((doc) => WeightModel.fromFirestore(doc)).toList();
 
       state = AsyncValue.data(
         Cache<WeightModel>(
@@ -78,7 +78,7 @@ class WeightStateNotifier
 
     await for (final snapshot in stream) {
       final weights =
-          snapshot.docs.map((doc) => WeightModel.fromJson(doc.data())).toList();
+          snapshot.docs.map((doc) => WeightModel.fromFirestore(doc)).toList();
       final cache = Cache<WeightModel>(
         items: weights,
         lastFetched: DateTime.now(),

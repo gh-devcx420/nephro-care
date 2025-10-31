@@ -9,7 +9,8 @@ class UIConstants {
 
   // Icon Constants
   static const double buttonIconSize = 20.0;
-  static const double chipIconSize = 28.0;
+  static const double overviewChipIconSize = 28.0;
+  static const double infoChipIconSize = 16.0;
 
   // Button Constants
   static const double minButtonHeight = 32.0;
@@ -23,6 +24,9 @@ class UIConstants {
   static const double buttonVerticalPadding = 8.0;
   static const Duration buttonTapDuration = Duration(milliseconds: 100);
   static const double switchButtonScale = 0.75;
+
+  // Chip Constants
+  static const Duration chipTapDuration = Duration(milliseconds: 100);
 
   // Font Constants
   static const double elevatedButtonFontSize = 16.0;
@@ -39,8 +43,10 @@ class UIConstants {
       EdgeInsets.symmetric(horizontal: 12);
   static const EdgeInsets cardPadding =
       EdgeInsets.symmetric(horizontal: 12, vertical: 12);
-  static const EdgeInsets chipPadding =
+  static const EdgeInsets overviewChipPadding =
       EdgeInsets.symmetric(horizontal: 10, vertical: 12);
+  static const EdgeInsets infoChipPadding =
+      EdgeInsets.symmetric(horizontal: 8, vertical: 8);
   static const EdgeInsets bottomModalSheetPadding =
       EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
   static const EdgeInsets elevatedButtonPadding =

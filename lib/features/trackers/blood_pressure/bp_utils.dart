@@ -1,9 +1,9 @@
-import 'package:intl/intl.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/blood_pressure/bp_model.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
 
-class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
+class BloodPressureUtils {
   static final _invalidBPMeasure = Measurement.invalid<BloodPressureField>();
 
   bool _isValidSource(Measurement<BloodPressureField> source) {
@@ -17,19 +17,6 @@ class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
   bool _isValidFieldValue(BloodPressureField field, double value) {
     return value >= BloodPressureConstants.getMinValue(field) &&
         value <= BloodPressureConstants.getMaxValue(field);
-  }
-
-  @override
-  BloodPressureField get baseUnit => BloodPressureField.systolic;
-
-  @override
-  NumberFormat get baseUnitFormat => BloodPressureField.systolic.valueFormat;
-
-  @override
-  Measurement<BloodPressureField> format(num value) {
-    throw UnimplementedError(
-      'Use formatField() instead. BP measurements require specifying both value and field type.',
-    );
   }
 
   /// Validates if systolic > diastolic
@@ -176,6 +163,69 @@ class BloodPressureUtils implements TrackerUtils<BloodPressureField> {
       return 'Moderate Hypoxemia';
     } else {
       return 'Severe Hypoxemia';
+    }
+  }
+
+  // ============ BP Comparison Methods ============
+
+  /// Checks for orthostatic hypotension between resting and standing BP readings
+  bool hasOrthostaticHypotension({
+    required BPTrackerModel? restingBP,
+    required BPTrackerModel? standingBP,
+  }) {
+    if (restingBP == null || standingBP == null) {
+      return false;
+    }
+
+    final systolicDrop = restingBP.systolic - standingBP.systolic;
+    final diastolicDrop = restingBP.diastolic - standingBP.diastolic;
+
+    return systolicDrop >= BloodPressureConstants.orthostaticSystolicDrop ||
+        diastolicDrop >= BloodPressureConstants.orthostaticDiastolicDrop;
+  }
+
+  /// Calculates systolic BP drop between two readings
+  int? calculateSystolicDrop({
+    required BPTrackerModel? beforeBP,
+    required BPTrackerModel? afterBP,
+  }) {
+    if (beforeBP == null || afterBP == null) {
+      return null;
+    }
+    return beforeBP.systolic - afterBP.systolic;
+  }
+
+  /// Calculates diastolic BP drop between two readings
+  int? calculateDiastolicDrop({
+    required BPTrackerModel? beforeBP,
+    required BPTrackerModel? afterBP,
+  }) {
+    if (beforeBP == null || afterBP == null) {
+      return null;
+    }
+    return beforeBP.diastolic - afterBP.diastolic;
+  }
+
+  /// Gets BP drop category based on systolic change
+  String getBPDropCategory({
+    required BPTrackerModel? beforeBP,
+    required BPTrackerModel? afterBP,
+  }) {
+    final drop = calculateSystolicDrop(beforeBP: beforeBP, afterBP: afterBP);
+    if (drop == null) {
+      return 'N/A';
+    }
+
+    if (drop < 0) {
+      return 'BP Increased';
+    } else if (drop < BloodPressureConstants.bpDropMild) {
+      return 'Minimal';
+    } else if (drop < BloodPressureConstants.bpDropModerate) {
+      return 'Mild';
+    } else if (drop < BloodPressureConstants.bpDropSevere) {
+      return 'Moderate';
+    } else {
+      return 'Severe';
     }
   }
 }

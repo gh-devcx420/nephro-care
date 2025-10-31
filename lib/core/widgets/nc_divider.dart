@@ -18,7 +18,7 @@ class NCDivider extends StatelessWidget {
       child: SizedBox(
         width: MediaQuery.of(context).size.width * (widthFactor ?? 0.9),
         child: Divider(
-          color: color ?? Theme.of(context).colorScheme.primary,
+          color: color ?? Theme.of(context).colorScheme.onSurface,
           endIndent: 0.5,
           thickness: thickness ?? 0.5,
           radius: BorderRadius.circular(thickness ?? 1),

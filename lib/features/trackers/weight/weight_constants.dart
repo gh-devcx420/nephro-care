@@ -1,8 +1,9 @@
 class WeightConstants {
+  static const String weightFirebaseCollectionName = 'Weight_Collection';
+
   static const double minWeightInKG = 10.0;
   static const double maxWeightInKG = 150.0;
   static const conversionThreshold = 100.0;
-  static const String weightFirebaseCollectionName = 'Weight_Collection';
 
   // Conversion constants
   static const double gramsPerKilogram = 1000.0;

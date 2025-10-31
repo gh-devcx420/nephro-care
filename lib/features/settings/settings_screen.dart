@@ -15,6 +15,26 @@ import 'package:nephro_care/main.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
+  Widget _buildSectionHeader({
+    required BuildContext context,
+    required String title,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.6),
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
+      ),
+    );
+  }
+
   Widget _buildSettingTile({
     required BuildContext context,
     IconData? icon,
@@ -39,6 +59,7 @@ class SettingsScreen extends ConsumerWidget {
                 )
               : null),
       title: Text(title),
+      tileColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       titleTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
             color:
                 titleColor ?? Theme.of(context).colorScheme.onPrimaryContainer,
@@ -102,172 +123,186 @@ class SettingsScreen extends ConsumerWidget {
       ),
       body: Padding(
         padding: UIConstants.scaffoldBodyPadding,
-        child: ListView(
-          children: [
-            _buildSettingTile(
-              context: context,
-              icon: Icons.edit,
-              title: 'Edit Past Entries',
-              subtitle: allowEditPastEntries
-                  ? 'Past entries can be edited'
-                  : 'Past entries can\'t be edited',
-              trailing: Transform.scale(
-                scale: UIConstants.switchButtonScale,
-                child: Switch(
-                  value: allowEditPastEntries,
-                  onChanged: (value) {
-                    HapticFeedback.lightImpact();
-                    ref.read(allowEditPastEntriesProvider.notifier).state =
-                        value;
-                  },
-                ),
-              ),
-            ),
-            vGap8,
-            _buildSettingTile(
-              context: context,
-              icon: Icons.delete,
-              title: 'Delete Past Entries',
-              subtitle: allowDeletePastEntries
-                  ? 'Past entries can be deleted'
-                  : 'Past entries can\'t be deleted',
-              trailing: Transform.scale(
-                scale: UIConstants.switchButtonScale,
-                child: Switch(
-                  value: allowDeletePastEntries,
-                  onChanged: (value) {
-                    HapticFeedback.lightImpact();
-                    ref.read(allowDeletePastEntriesProvider.notifier).state =
-                        value;
-                  },
-                ),
-              ),
-            ),
-            vGap8,
-            _buildSettingTile(
-              context: context,
-              icon: Icons.delete_forever,
-              title: 'Delete All',
-              subtitle: allowDeleteAll
-                  ? 'Show delete all button in menu'
-                  : 'Hide delete all button in menu',
-              trailing: Transform.scale(
-                scale: UIConstants.switchButtonScale,
-                child: Switch(
-                  value: allowDeleteAll,
-                  onChanged: (value) {
-                    HapticFeedback.lightImpact();
-                    ref.read(allowDeleteAllProvider.notifier).state = value;
-                  },
-                ),
-              ),
-            ),
-            vGap8,
-            _buildSettingTile(
-              context: context,
-              icon: Icons.notifications_active,
-              title: 'Reminder Alerts',
-              subtitle: isReminderActive
-                  ? 'Reminder alerts are active'
-                  : 'Reminder alerts are not active',
-              trailing: Transform.scale(
-                scale: UIConstants.switchButtonScale,
-                child: Switch(
-                  value: isReminderActive,
-                  onChanged: (newValue) {
-                    HapticFeedback.lightImpact();
-                    ref.read(remindersActiveProvider.notifier).state = newValue;
-                  },
-                ),
-              ),
-            ),
-            vGap8,
-            _buildSettingTile(
-              context: context,
-              icon: Icons.water_drop,
-              title: 'Fluid Limit',
-              subtitle: 'Per day (24 Hours)',
-              trailing: NCValueRange(
-                value: fluidLimit,
-                onValueChanged: (newValue) {
-                  ref.read(fluidLimitProvider.notifier).setFluidLimit(
-                        newValue.toDouble(),
-                      );
-                },
-                step: 50,
-                minValue: 50,
-              ),
-            ),
-            vGap8,
-            _buildSettingTile(
-              context: context,
-              icon: Icons.color_lens_rounded,
-              title: 'Change Accent Color',
-              subtitle: 'Available Colors: ${appThemes.length}',
-              titleColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ThemeSettingsScreen(),
-                  ),
-                );
-              },
-            ),
-            vGap8,
-            _buildSettingTile(
-              context: context,
-              icon: Icons.logout,
-              title: 'Logout',
-              subtitle: user?.displayName ?? 'User',
-              iconColor: Theme.of(context).colorScheme.error,
-              onTap: () async {
-                HapticFeedback.lightImpact();
-                final navigator = Navigator.of(context);
-                showNCAlertDialog(
-                  context: context,
-                  titleText: 'Logout User',
-                  content: Text(
-                    'Are you sure you want to logout ${user?.displayName ?? 'User'} ?',
-                  ),
-                  action1: TextButton(
-                    onPressed: () {
+        child: Container(
+          child: ListView(
+            children: [
+              _buildSectionHeader(
+                  context: context, title: 'Data & Permissions'),
+              vGap8,
+              _buildSettingTile(
+                context: context,
+                icon: Icons.edit,
+                title: 'Edit Past Entries',
+                subtitle: allowEditPastEntries
+                    ? 'Past entries can be edited'
+                    : 'Past entries can\'t be edited',
+                trailing: Transform.scale(
+                  scale: UIConstants.switchButtonScale,
+                  child: Switch(
+                    value: allowEditPastEntries,
+                    onChanged: (value) {
                       HapticFeedback.lightImpact();
-                      navigator.pop(false);
+                      ref.read(allowEditPastEntriesProvider.notifier).state =
+                          value;
                     },
-                    child: const Text(
-                      'Cancel',
-                    ),
                   ),
-                  action2: ElevatedButton(
-                    onPressed: () async {
+                ),
+              ),
+              vGap8,
+              _buildSettingTile(
+                context: context,
+                icon: Icons.delete,
+                title: 'Delete Past Entries',
+                subtitle: allowDeletePastEntries
+                    ? 'Past entries can be deleted'
+                    : 'Past entries can\'t be deleted',
+                trailing: Transform.scale(
+                  scale: UIConstants.switchButtonScale,
+                  child: Switch(
+                    value: allowDeletePastEntries,
+                    onChanged: (value) {
                       HapticFeedback.lightImpact();
-                      await authAsync.signOut();
-                      if (context.mounted) {
-                        navigator.pop(true);
-                        navigator.pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (context) => const AuthWrapper(),
-                          ),
-                          (route) => false,
+                      ref.read(allowDeletePastEntriesProvider.notifier).state =
+                          value;
+                    },
+                  ),
+                ),
+              ),
+              vGap8,
+              _buildSettingTile(
+                context: context,
+                icon: Icons.delete_forever,
+                title: 'Delete All',
+                subtitle: allowDeleteAll
+                    ? 'Show delete all button in menu'
+                    : 'Hide delete all button in menu',
+                trailing: Transform.scale(
+                  scale: UIConstants.switchButtonScale,
+                  child: Switch(
+                    value: allowDeleteAll,
+                    onChanged: (value) {
+                      HapticFeedback.lightImpact();
+                      ref.read(allowDeleteAllProvider.notifier).state = value;
+                    },
+                  ),
+                ),
+              ),
+              vGap16,
+              _buildSectionHeader(context: context, title: 'Notifications'),
+              vGap8,
+              _buildSettingTile(
+                context: context,
+                icon: Icons.notifications_active,
+                title: 'Reminder Alerts',
+                subtitle: isReminderActive
+                    ? 'Reminder alerts are active'
+                    : 'Reminder alerts are not active',
+                trailing: Transform.scale(
+                  scale: UIConstants.switchButtonScale,
+                  child: Switch(
+                    value: isReminderActive,
+                    onChanged: (newValue) {
+                      HapticFeedback.lightImpact();
+                      ref.read(remindersActiveProvider.notifier).state =
+                          newValue;
+                    },
+                  ),
+                ),
+              ),
+              vGap16,
+              _buildSectionHeader(context: context, title: 'Trackers'),
+              vGap8,
+              _buildSettingTile(
+                context: context,
+                icon: Icons.water_drop,
+                title: 'Fluid Limit',
+                subtitle: 'Per day (24 Hours)',
+                trailing: NCValueRange(
+                  value: fluidLimit,
+                  onValueChanged: (newValue) {
+                    ref.read(fluidLimitProvider.notifier).setFluidLimit(
+                          newValue.toDouble(),
                         );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.error,
+                  },
+                  step: 50,
+                  minValue: 50,
+                ),
+              ),
+              vGap16,
+              _buildSectionHeader(context: context, title: 'Appearance'),
+              vGap8,
+              _buildSettingTile(
+                context: context,
+                icon: Icons.color_lens_rounded,
+                title: 'Change Accent Color',
+                subtitle: 'Available Colors: ${appThemes.length}',
+                titleColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ThemeSettingsScreen(),
                     ),
-                    child: Text(
-                      'Logout',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surfaceBright,
+                  );
+                },
+              ),
+              vGap16,
+              _buildSectionHeader(context: context, title: 'Account'),
+              vGap8,
+              _buildSettingTile(
+                context: context,
+                icon: Icons.logout,
+                title: 'Logout',
+                subtitle: user?.displayName ?? 'User',
+                iconColor: Theme.of(context).colorScheme.error,
+                onTap: () async {
+                  HapticFeedback.lightImpact();
+                  final navigator = Navigator.of(context);
+                  showNCAlertDialog(
+                    context: context,
+                    titleText: 'Logout User',
+                    content: Text(
+                      'Are you sure you want to logout ${user?.displayName ?? 'User'} ?',
+                    ),
+                    action1: TextButton(
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        navigator.pop(false);
+                      },
+                      child: const Text(
+                        'Cancel',
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ],
+                    action2: ElevatedButton(
+                      onPressed: () async {
+                        HapticFeedback.lightImpact();
+                        await authAsync.signOut();
+                        if (context.mounted) {
+                          navigator.pop(true);
+                          navigator.pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const AuthWrapper(),
+                            ),
+                            (route) => false,
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                      child: Text(
+                        'Logout',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surfaceBright,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

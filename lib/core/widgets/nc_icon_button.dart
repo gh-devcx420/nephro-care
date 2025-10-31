@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/widgets/nc_nephro_care_icon.dart';
+import 'package:nephro_care/core/widgets/nc_icon.dart';
 
 class NCIconButton extends StatefulWidget {
   const NCIconButton({
@@ -64,19 +64,19 @@ class _NCIconButtonState extends State<NCIconButton> {
     if (widget.buttonIcon != null) {
       return Icon(
         widget.buttonIcon,
-        size: widget.iconSize ?? UIConstants.chipIconSize,
+        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
         color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
       );
     } else if (widget.ncButtonIcon != null) {
       return NCIcon(
         widget.ncButtonIcon!.icon,
-        size: widget.iconSize ?? UIConstants.chipIconSize,
+        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
         color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
       );
     } else {
       Icon(
         Icons.help_outline,
-        size: widget.iconSize ?? UIConstants.chipIconSize,
+        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
         color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
       );
     }

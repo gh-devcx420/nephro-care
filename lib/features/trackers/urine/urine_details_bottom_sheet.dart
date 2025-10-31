@@ -31,7 +31,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
     super.initState();
     _urineQuantityController = NCTextEditingController(
       suffix: UrineUnits.milliliters.siUnit,
-    )..text = widget.output?.quantity.toInt().toString() ?? '';
+    )..text = widget.output?.volume.toInt().toString() ?? '';
     initTimePicker(widget.output?.timestamp.toDate() ?? DateTime.now());
   }
 
@@ -65,7 +65,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
           activeIcon: Icons.water_drop,
           inactiveIcon: Icons.water_drop_outlined,
           semanticsLabel: Urine.quantity.hintText,
-          initialValue: widget.output?.quantity.toInt().toString() ?? '',
+          initialValue: widget.output?.volume.toInt().toString() ?? '',
           validator: (value) {
             final numericQuantity = _urineQuantityController.numericValue;
             final quantity = double.tryParse(numericQuantity);
@@ -158,7 +158,7 @@ class _UrineOutputModalSheetState extends State<UrineOutputModalSheet>
           id: widget.output?.id ??
               DateTime.now().millisecondsSinceEpoch.toString(),
           outputName: 'Urine',
-          quantity: double.parse(
+          volume: double.parse(
             _urineQuantityController.numericValue.isEmpty
                 ? '0'
                 : _urineQuantityController.numericValue,

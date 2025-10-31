@@ -38,7 +38,7 @@ class UrineOutputStateNotifier
           .get();
 
       final urineOutputs =
-          snapshot.docs.map((doc) => UrineModel.fromJson(doc.data())).toList();
+          snapshot.docs.map((doc) => UrineModel.fromFirestore(doc)).toList();
 
       state = AsyncValue.data(Cache<UrineModel>(
         items: urineOutputs,
@@ -76,7 +76,7 @@ class UrineOutputStateNotifier
 
     await for (final snapshot in stream) {
       final urineOutputs =
-          snapshot.docs.map((doc) => UrineModel.fromJson(doc.data())).toList();
+          snapshot.docs.map((doc) => UrineModel.fromFirestore(doc)).toList();
       final cache = Cache<UrineModel>(
         items: urineOutputs,
         lastFetched: DateTime.now(),
@@ -144,7 +144,7 @@ final urineOutputSummaryProvider = Provider<Map<String, dynamic>>((ref) {
       int totalUrineToday = urineOutputs.length;
 
       for (var output in urineOutputs) {
-        total += output.quantity;
+        total += output.volume;
         lastTime = output.timestamp.toDate();
       }
 

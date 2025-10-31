@@ -1,6 +1,9 @@
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
 
 class BloodPressureConstants {
+  // Firebase collection name
+  static const String bpFirebaseCollectionName = 'BloodPressure_Collection';
+
   // Systolic pressure ranges (mmHg)
   static const double systolicMin = 70.0;
   static const double systolicMax = 250.0;
@@ -48,8 +51,14 @@ class BloodPressureConstants {
   static const double mildHypoxemiaMin = 90.0;
   static const double moderateHypoxemiaMin = 85.0;
 
-  // Firebase collection name
-  static const String bpFirebaseCollectionName = 'BloodPressure_Collection';
+  // BP drop thresholds (mmHg) - for comparing two readings
+  static const double bpDropMild = 10.0;
+  static const double bpDropModerate = 20.0;
+  static const double bpDropSevere = 30.0;
+
+  // Orthostatic hypotension thresholds (mmHg)
+  static const double orthostaticSystolicDrop = 20.0;
+  static const double orthostaticDiastolicDrop = 10.0;
 
   // Time constraints
   static const double timeMin = 0.0;

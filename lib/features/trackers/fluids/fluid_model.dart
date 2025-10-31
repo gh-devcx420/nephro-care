@@ -15,7 +15,6 @@ class FluidsModel {
     this.isPendingSync = false,
   });
 
-  // ✅ NEW: This reads the Firestore metadata
   factory FluidsModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {

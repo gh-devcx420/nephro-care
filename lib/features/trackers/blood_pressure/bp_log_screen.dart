@@ -4,6 +4,7 @@ import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
@@ -96,8 +97,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
             unit: BloodPressureField.systolic.siUnit,
             valueStyle: _getValueStyle(
               context,
-              shouldUseErrorColors:
-                  false, //check for high or low bp and decide color
+              shouldUseErrorColors: false,
             ),
             unitStyle: _getUnitStyle(
               context,
@@ -111,102 +111,121 @@ class BPTrackerLogScreen extends ConsumerWidget {
       summaryProvider: bpTrackerSummaryProvider,
       firestoreCollection: BloodPressureConstants.bpFirebaseCollectionName,
       inputModalSheet: (item) => BPTrackerModalSheet(bpMeasure: item),
-      listItemBuilder: (context, item) => ListTile(
-        leading: Icon(
-          Icons.monitor_heart_sharp,
-          size: 20,
-          color: colorScheme.onSurface,
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-        visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
-        dense: true,
-        title: Semantics(
-          label: 'Blood Pressure: ${item.systolic}/${item.diastolic}',
-          child: UIUtils.createRichTextValueWithUnit(
-            prefixText: 'BP: ',
-            value: '${item.systolic}/${item.diastolic}',
-            unit: BloodPressureField.systolic.siUnit,
-            valueStyle: _getValueStyle(
-              context,
-              shouldUseErrorColors: false,
+      listItemBuilder: (context, item) => Stack(
+        children: [
+          ListTile(
+            leading: Icon(
+              Icons.monitor_heart_sharp,
+              size: 20,
+              color: colorScheme.onSurface,
             ),
-            unitStyle: _getUnitStyle(
-              context,
-              shouldUseErrorColors: false,
-            ),
-          ),
-        ),
-        subtitle: Semantics(
-          label:
-              '${BloodPressureField.pulse.hintText}: ${item.pulse} ${BloodPressureField.pulse.siUnit}, ${BloodPressureField.spo2.hintText}: ${item.spo2?.toInt() ?? 'N/A'} ${BloodPressureField.spo2.siUnit}',
-          child: RichText(
-            text: TextSpan(
-              style: theme.textTheme.titleMedium!.copyWith(
-                color: colorScheme.onSurface,
-                fontSize: UIConstants.valueFontSize,
-                fontWeight: FontWeight.w800,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+            dense: true,
+            title: Semantics(
+              label: 'Blood Pressure: ${item.systolic}/${item.diastolic}',
+              child: UIUtils.createRichTextValueWithUnit(
+                prefixText: 'BP: ',
+                value: '${item.systolic}/${item.diastolic}',
+                unit: BloodPressureField.systolic.siUnit,
+                valueStyle: _getValueStyle(
+                  context,
+                  shouldUseErrorColors: false,
+                ),
+                unitStyle: _getUnitStyle(
+                  context,
+                  shouldUseErrorColors: false,
+                ),
               ),
-              children: [
-                TextSpan(
-                  text: '${BloodPressureField.pulse.hintText}: ${item.pulse}',
-                  style: const TextStyle(
+            ),
+            subtitle: Semantics(
+              label:
+                  '${BloodPressureField.pulse.hintText}: ${item.pulse} ${BloodPressureField.pulse.siUnit}, ${BloodPressureField.spo2.hintText}: ${item.spo2?.toInt() ?? 'N/A'} ${BloodPressureField.spo2.siUnit}',
+              child: RichText(
+                text: TextSpan(
+                  style: theme.textTheme.titleMedium!.copyWith(
+                    color: colorScheme.onSurface,
                     fontSize: UIConstants.valueFontSize,
                     fontWeight: FontWeight.w800,
                   ),
+                  children: [
+                    TextSpan(
+                      text:
+                          '${BloodPressureField.pulse.hintText}: ${item.pulse}',
+                      style: const TextStyle(
+                        fontSize: UIConstants.valueFontSize,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' ${BloodPressureField.pulse.siUnit}',
+                      style: const TextStyle(
+                        fontSize: UIConstants.siUnitFontSize,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (item.spo2 != null) ...[
+                      const TextSpan(
+                        text: '  •  ',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            '${BloodPressureField.spo2.hintText}: ${item.spo2!.toInt()}',
+                        style: const TextStyle(
+                          fontSize: UIConstants.valueFontSize,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' ${BloodPressureField.spo2.siUnit}',
+                        style: const TextStyle(
+                          fontSize: UIConstants.siUnitFontSize,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                TextSpan(
-                  text: ' ${BloodPressureField.pulse.siUnit}',
-                  style: const TextStyle(
-                    fontSize: UIConstants.siUnitFontSize,
-                    fontWeight: FontWeight.w600,
-                  ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            trailing: Semantics(
+              label:
+                  'Time: ${DateTimeUtils.formatTime(item.timestamp.toDate())}',
+              child: UIUtils.createRichTextTimestamp(
+                timestamp: item.timestamp.toDate(),
+                timeStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.timeFontSize,
+                  fontWeight: FontWeight.w800,
                 ),
-                if (item.spo2 != null) ...[
-                  const TextSpan(
-                    text: '  •  ',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  TextSpan(
-                    text:
-                        '${BloodPressureField.spo2.hintText}: ${item.spo2!.toInt()}',
-                    style: const TextStyle(
-                      fontSize: UIConstants.valueFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  TextSpan(
-                    text: ' ${BloodPressureField.spo2.siUnit}',
-                    style: const TextStyle(
-                      fontSize: UIConstants.siUnitFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ],
+                meridiemStyle: theme.textTheme.titleMedium!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontSize: UIConstants.meridiemIndicatorFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+                isMeridiemUpperCase: false,
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-        trailing: Semantics(
-          label: 'Time: ${DateTimeUtils.formatTime(item.timestamp.toDate())}',
-          child: UIUtils.createRichTextTimestamp(
-            timestamp: item.timestamp.toDate(),
-            timeStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.timeFontSize,
-              fontWeight: FontWeight.w800,
+          if (item.isPendingSync)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  color: AppColors.warningColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
             ),
-            meridiemStyle: theme.textTheme.titleMedium!.copyWith(
-              color: colorScheme.onSurface,
-              fontSize: UIConstants.meridiemIndicatorFontSize,
-              fontWeight: FontWeight.w600,
-            ),
-            isMeridiemUpperCase: false,
-          ),
-        ),
+        ],
       ),
       logDetailsDialogBuilder: (context, summary) {
         final lastBpTime = summary['lastTime'];

@@ -1,9 +1,8 @@
-import 'package:intl/intl.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_constants.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_utils.dart';
+import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
 
-class FluidUtils implements TrackerUtils<FluidUnits> {
+class FluidUtils {
   static final _invalidFluidMeasure = Measurement.invalid<FluidUnits>();
 
   bool _isValidSource(Measurement<FluidUnits> source) {
@@ -14,13 +13,6 @@ class FluidUtils implements TrackerUtils<FluidUnits> {
         source.value! >= 0;
   }
 
-  @override
-  FluidUnits get baseUnit => FluidUnits.milliliters;
-
-  @override
-  NumberFormat get baseUnitFormat => FluidUnits.milliliters.valueFormat;
-
-  @override
   Measurement<FluidUnits> format(num value) {
     final processedValue = value.toDouble();
 
@@ -28,7 +20,7 @@ class FluidUtils implements TrackerUtils<FluidUnits> {
 
     final baseMeasurement = Measurement<FluidUnits>(
       value: processedValue,
-      formattedValue: baseUnitFormat.format(processedValue),
+      formattedValue: FluidUnits.milliliters.valueFormat.format(processedValue),
       unit: FluidUnits.milliliters,
       unitString: FluidUnits.milliliters.siUnit,
       isValid: true,

@@ -40,7 +40,7 @@ class BPMonitorStateNotifier
           .get();
 
       final bpMonitors = snapshot.docs
-          .map((doc) => BPTrackerModel.fromJson(doc.data()))
+          .map((doc) => BPTrackerModel.fromFirestore(doc))
           .toList();
 
       state = AsyncValue.data(
@@ -82,7 +82,8 @@ class BPMonitorStateNotifier
 
     await for (final snapshot in stream) {
       final bpMonitors = snapshot.docs
-          .map((doc) => BPTrackerModel.fromJson(doc.data()))
+          .map((doc) =>
+              BPTrackerModel.fromFirestore(doc)) // ✅ Use fromFirestore!
           .toList();
       final cache = Cache<BPTrackerModel>(
         items: bpMonitors,

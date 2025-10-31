@@ -292,7 +292,6 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
 
         return isOnlineAsync.when(
           data: (isOnline) {
-            print('DEBUG: isOnline = $isOnline');
             return Padding(
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom),

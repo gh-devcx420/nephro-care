@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class Measurement<T extends Enum> {
   final double? value;
   final String? formattedValue;
@@ -25,12 +23,4 @@ class Measurement<T extends Enum> {
         displayValue: null,
         isValid: false,
       );
-}
-
-abstract class TrackerUtils<T extends Enum> {
-  T get baseUnit;
-
-  NumberFormat get baseUnitFormat;
-
-  Measurement format(num value);
 }
