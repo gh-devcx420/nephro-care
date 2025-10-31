@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nephro_care/features/trackers/generic/generic_utils.dart';
 
 class UrineModel {
   final String id;
@@ -15,7 +16,6 @@ class UrineModel {
     this.isPendingSync = false,
   });
 
-  // ✅ NEW: This reads the Firestore metadata
   factory UrineModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
@@ -25,12 +25,10 @@ class UrineModel {
       outputName: data['outputName'] as String,
       volume: (data['quantity'] as num).toDouble(),
       timestamp: data['timestamp'] as Timestamp,
-      isPendingSync:
-          doc.metadata.hasPendingWrites, // 👈 Gets sync status from Firestore
+      isPendingSync: ModelUtils.getPendingSyncStatus(doc),
     );
   }
 
-  // Keep this for backward compatibility
   factory UrineModel.fromJson(Map<String, dynamic> json) {
     return UrineModel(
       id: json['id'] as String,

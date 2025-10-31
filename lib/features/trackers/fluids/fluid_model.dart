@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nephro_care/features/trackers/generic/generic_utils.dart';
 
 class FluidsModel {
   final String id;
@@ -24,12 +25,10 @@ class FluidsModel {
       fluidName: data['fluidName'] as String,
       quantity: (data['quantity'] as num).toDouble(),
       timestamp: data['timestamp'] as Timestamp,
-      isPendingSync:
-          doc.metadata.hasPendingWrites, // 👈 Gets sync status from Firestore
+      isPendingSync: ModelUtils.getPendingSyncStatus(doc),
     );
   }
 
-  // Keep this for backward compatibility
   factory FluidsModel.fromJson(Map<String, dynamic> json) {
     return FluidsModel(
       id: json['id'] as String,
@@ -46,7 +45,6 @@ class FluidsModel {
       'fluidName': fluidName,
       'quantity': quantity,
       'timestamp': timestamp,
-      // ❌ DON'T save isPendingSync - it comes from metadata now
     };
   }
 }

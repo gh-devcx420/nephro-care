@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nephro_care/features/trackers/generic/generic_utils.dart';
 
 class BPTrackerModel {
   final String id;
@@ -19,7 +20,6 @@ class BPTrackerModel {
     this.isPendingSync = false,
   });
 
-  // ✅ NEW: This reads the Firestore metadata
   factory BPTrackerModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
@@ -29,21 +29,19 @@ class BPTrackerModel {
       systolic: (data['systolic'] as num).toInt(),
       diastolic: (data['diastolic'] as num).toInt(),
       pulse: (data['pulse'] as num).toInt(),
-      spo2: data['spo2'] != null ? (data['spo2'] as num).toDouble() : null,
+      spo2: (data['spo2'] as num?)?.toDouble(),
       timestamp: data['timestamp'] as Timestamp,
-      isPendingSync:
-          doc.metadata.hasPendingWrites, // 👈 Gets sync status from Firestore
+      isPendingSync: ModelUtils.getPendingSyncStatus(doc),
     );
   }
 
-  // Keep this for backward compatibility
   factory BPTrackerModel.fromJson(Map<String, dynamic> json) {
     return BPTrackerModel(
       id: json['id'] as String,
       systolic: (json['systolic'] as num).toInt(),
       diastolic: (json['diastolic'] as num).toInt(),
       pulse: (json['pulse'] as num).toInt(),
-      spo2: json['spo2'] != null ? (json['spo2'] as num).toDouble() : null,
+      spo2: (json['spo2'] as num?)?.toDouble(),
       timestamp: json['timestamp'] as Timestamp,
       isPendingSync: false,
     );
@@ -57,7 +55,6 @@ class BPTrackerModel {
       'pulse': pulse,
       'spo2': spo2,
       'timestamp': timestamp,
-      // ❌ DON'T save isPendingSync - it comes from metadata now
     };
   }
 }

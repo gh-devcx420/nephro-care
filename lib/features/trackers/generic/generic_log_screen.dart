@@ -14,7 +14,7 @@ import 'package:nephro_care/core/widgets/nc_alert_dialogue.dart';
 import 'package:nephro_care/core/widgets/nc_date_picker.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
+import 'package:nephro_care/features/trackers/generic/generic_models.dart';
 
 class Cache<T> {
   final List<T> items;

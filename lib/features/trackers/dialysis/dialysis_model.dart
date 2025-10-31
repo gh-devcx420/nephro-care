@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_model.dart';
 import 'package:nephro_care/features/trackers/dialysis/dialysis_enums.dart';
+import 'package:nephro_care/features/trackers/generic/generic_utils.dart';
 import 'package:nephro_care/features/trackers/urine/urine_model.dart';
 import 'package:nephro_care/features/trackers/weight/weight_model.dart';
 
@@ -37,15 +38,14 @@ class DialysisModel {
     this.isPendingSync = false,
   });
 
-  /// Creates DialysisModel from Firestore document with metadata
   factory DialysisModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
     final data = doc.data()!;
     return DialysisModel(
       id: data['id'] as String,
-      type: DialysisType.values.byName(data['type'] as String),
-      access: DialysisAccess.values.byName(data['access'] as String),
+      type: DialysisType.values.parse(data['type']),
+      access: DialysisAccess.values.parse(data['access']),
       duration: (data['duration'] as num).toDouble(),
       preWeight: data['preWeight'] != null
           ? WeightModel.fromJson(data['preWeight'] as Map<String, dynamic>)
@@ -74,16 +74,15 @@ class DialysisModel {
           : null,
       notes: data['notes'] as String?,
       timestamp: data['timestamp'] as Timestamp,
-      isPendingSync: doc.metadata.hasPendingWrites,
+      isPendingSync: ModelUtils.getPendingSyncStatus(doc),
     );
   }
 
-  /// Creates DialysisModel from JSON map (backward compatibility)
   factory DialysisModel.fromJson(Map<String, dynamic> json) {
     return DialysisModel(
       id: json['id'] as String,
-      type: DialysisType.values.byName(json['type'] as String),
-      access: DialysisAccess.values.byName(json['access'] as String),
+      type: DialysisType.values.parse(json['type']),
+      access: DialysisAccess.values.parse(json['access']),
       duration: (json['duration'] as num).toDouble(),
       preWeight: json['preWeight'] != null
           ? WeightModel.fromJson(json['preWeight'] as Map<String, dynamic>)
@@ -116,7 +115,6 @@ class DialysisModel {
     );
   }
 
-  /// Converts DialysisModel to JSON map for Firestore storage
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -132,11 +130,9 @@ class DialysisModel {
       'ultrafiltration': ultrafiltration?.toJson(),
       'notes': notes,
       'timestamp': timestamp,
-      // Don't save isPendingSync - it comes from metadata
     };
   }
 
-  /// Creates a copy of this model with updated fields
   DialysisModel copyWith({
     String? id,
     DialysisType? type,

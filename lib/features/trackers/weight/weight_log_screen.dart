@@ -9,7 +9,7 @@ import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
+import 'package:nephro_care/features/trackers/generic/generic_models.dart';
 import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
 import 'package:nephro_care/features/trackers/weight/weight_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/weight/weight_model.dart';

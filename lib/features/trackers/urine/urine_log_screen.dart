@@ -10,7 +10,7 @@ import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_provider.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
-import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
+import 'package:nephro_care/features/trackers/generic/generic_models.dart';
 import 'package:nephro_care/features/trackers/urine/urine_constants.dart';
 import 'package:nephro_care/features/trackers/urine/urine_details_bottom_sheet.dart';
 import 'package:nephro_care/features/trackers/urine/urine_enums.dart';

@@ -1,4 +1,4 @@
-import 'package:nephro_care/features/trackers/generic/tracker_models.dart';
+import 'package:nephro_care/features/trackers/generic/generic_models.dart';
 import 'package:nephro_care/features/trackers/weight/weight_constants.dart';
 import 'package:nephro_care/features/trackers/weight/weight_enums.dart';
 
