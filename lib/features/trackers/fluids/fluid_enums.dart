@@ -65,3 +65,39 @@ extension FluidUnitsExtension on FluidUnits {
     }
   }
 }
+
+enum FluidRestrictionLevel {
+  //USe constants for lower and upper limits
+  none,
+  mild, // 2-3L/day
+  moderate, // 1-2L/day
+  severe, // <1L/day
+}
+
+extension FluidRestrictionLevelExtension on FluidRestrictionLevel {
+  String get displayName {
+    switch (this) {
+      case FluidRestrictionLevel.none:
+        return 'No restriction';
+      case FluidRestrictionLevel.mild:
+        return 'Mild (2-3L/day)';
+      case FluidRestrictionLevel.moderate:
+        return 'Moderate (1-2L/day)';
+      case FluidRestrictionLevel.severe:
+        return 'Severe (<1L/day)';
+    }
+  }
+
+  String get dailyLimit {
+    switch (this) {
+      case FluidRestrictionLevel.none:
+        return 'No limit';
+      case FluidRestrictionLevel.mild:
+        return '2-3 liters';
+      case FluidRestrictionLevel.moderate:
+        return '1-2 liters';
+      case FluidRestrictionLevel.severe:
+        return '<1 liter';
+    }
+  }
+}
