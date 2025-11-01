@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_constants.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_enums.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_model.dart';
@@ -227,5 +228,71 @@ class BloodPressureUtils {
     } else {
       return 'Severe';
     }
+  }
+
+  // ============ ✨ NEW: Reading Type Helpers ============
+
+  /// Get color for reading type (for UI)
+  static Color getReadingTypeColor(BPReadingType type) {
+    switch (type) {
+      case BPReadingType.normal:
+        return Colors.blue;
+      case BPReadingType.preDialysisResting:
+      case BPReadingType.preDialysisStanding:
+        return Colors.deepPurple;
+      case BPReadingType.postDialysisResting:
+      case BPReadingType.postDialysisStanding:
+        return Colors.teal;
+    }
+  }
+
+  /// Get icon for reading type
+  static IconData getReadingTypeIcon(BPReadingType type) {
+    switch (type) {
+      case BPReadingType.normal:
+        return Icons.monitor_heart_sharp;
+      case BPReadingType.preDialysisResting:
+        return Icons.health_and_safety;
+      case BPReadingType.preDialysisStanding:
+        return Icons.accessibility_new;
+      case BPReadingType.postDialysisResting:
+        return Icons.health_and_safety_outlined;
+      case BPReadingType.postDialysisStanding:
+        return Icons.accessibility;
+    }
+  }
+
+  /// Filter BP readings by type
+  static List<BPTrackerModel> filterByReadingType(
+    List<BPTrackerModel> readings,
+    BPReadingType type,
+  ) {
+    return readings.where((bp) => bp.readingType == type).toList();
+  }
+
+  /// Get all dialysis-related readings from a list
+  static List<BPTrackerModel> getDialysisReadings(
+      List<BPTrackerModel> readings) {
+    return readings.where((bp) => bp.isFromDialysis).toList();
+  }
+
+  /// Get all normal readings from a list
+  static List<BPTrackerModel> getNormalReadings(List<BPTrackerModel> readings) {
+    return readings.where((bp) => !bp.isFromDialysis).toList();
+  }
+
+  /// Group readings by dialysis session
+  static Map<String, List<BPTrackerModel>> groupByDialysisSession(
+    List<BPTrackerModel> readings,
+  ) {
+    final grouped = <String, List<BPTrackerModel>>{};
+
+    for (final bp in readings) {
+      if (bp.dialysisSessionId != null) {
+        grouped.putIfAbsent(bp.dialysisSessionId!, () => []).add(bp);
+      }
+    }
+
+    return grouped;
   }
 }

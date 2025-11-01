@@ -134,6 +134,7 @@ class _NCFoldableCardState extends State<NCFoldableCard>
         child: InkWell(
           onTap: _toggleExpanded,
           splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           borderRadius: BorderRadius.circular(UIConstants.borderRadius),
           child: Padding(
             padding: UIConstants.cardPadding,

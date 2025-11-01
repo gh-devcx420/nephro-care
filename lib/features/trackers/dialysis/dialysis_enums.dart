@@ -1,109 +1,5 @@
 import 'package:intl/intl.dart';
 
-enum DialysisSession {
-  type,
-  access,
-  duration,
-  preWeight,
-  postWeight,
-  preDialysisBPResting,
-  preDialysisBPStanding,
-  postDialysisBPResting,
-  postDialysisBPStanding,
-  ultrafiltration,
-  notes,
-  time,
-}
-
-extension DialysisSessionExtension on DialysisSession {
-  String get fieldName {
-    switch (this) {
-      case DialysisSession.type:
-        return 'Dialysis Type';
-      case DialysisSession.access:
-        return 'Access Type';
-      case DialysisSession.duration:
-        return 'Duration';
-      case DialysisSession.preWeight:
-        return 'Pre-Dialysis Weight';
-      case DialysisSession.postWeight:
-        return 'Post-Dialysis Weight';
-      case DialysisSession.preDialysisBPResting:
-        return 'Pre-Dialysis BP (Resting)';
-      case DialysisSession.preDialysisBPStanding:
-        return 'Pre-Dialysis BP (Standing)';
-      case DialysisSession.postDialysisBPResting:
-        return 'Post-Dialysis BP (Resting)';
-      case DialysisSession.postDialysisBPStanding:
-        return 'Post-Dialysis BP (Standing)';
-      case DialysisSession.ultrafiltration:
-        return 'Ultrafiltration';
-      case DialysisSession.notes:
-        return 'Notes';
-      case DialysisSession.time:
-        return 'Time';
-    }
-  }
-
-  String get hintText {
-    switch (this) {
-      case DialysisSession.type:
-        return 'Select dialysis type';
-      case DialysisSession.access:
-        return 'Select access type';
-      case DialysisSession.duration:
-        return 'Duration (hours)';
-      case DialysisSession.preWeight:
-        return 'Weight before dialysis';
-      case DialysisSession.postWeight:
-        return 'Weight after dialysis';
-      case DialysisSession.preDialysisBPResting:
-        return 'BP before dialysis (resting)';
-      case DialysisSession.preDialysisBPStanding:
-        return 'BP before dialysis (standing)';
-      case DialysisSession.postDialysisBPResting:
-        return 'BP after dialysis (resting)';
-      case DialysisSession.postDialysisBPStanding:
-        return 'BP after dialysis (standing)';
-      case DialysisSession.ultrafiltration:
-        return 'Fluid removed';
-      case DialysisSession.notes:
-        return 'Any additional notes';
-      case DialysisSession.time:
-        return 'Time';
-    }
-  }
-
-  String get fieldKey {
-    switch (this) {
-      case DialysisSession.type:
-        return 'type_key';
-      case DialysisSession.access:
-        return 'access_key';
-      case DialysisSession.duration:
-        return 'duration_key';
-      case DialysisSession.preWeight:
-        return 'pre_weight_key';
-      case DialysisSession.postWeight:
-        return 'post_weight_key';
-      case DialysisSession.preDialysisBPResting:
-        return 'pre_bp_resting_key';
-      case DialysisSession.preDialysisBPStanding:
-        return 'pre_bp_standing_key';
-      case DialysisSession.postDialysisBPResting:
-        return 'post_bp_resting_key';
-      case DialysisSession.postDialysisBPStanding:
-        return 'post_bp_standing_key';
-      case DialysisSession.ultrafiltration:
-        return 'ultrafiltration_key';
-      case DialysisSession.notes:
-        return 'notes_key';
-      case DialysisSession.time:
-        return 'time_key';
-    }
-  }
-}
-
 enum DialysisType {
   hemodialysis,
   peritonealDialysis,
@@ -235,6 +131,110 @@ extension DialysisAccessExtension on DialysisAccess {
       case DialysisAccess.none:
       case DialysisAccess.unknown:
         return 'N/A';
+    }
+  }
+}
+
+enum DialysisSession {
+  type,
+  access,
+  duration,
+  preWeight,
+  postWeight,
+  preDialysisBPResting,
+  preDialysisBPStanding,
+  postDialysisBPResting,
+  postDialysisBPStanding,
+  ultrafiltration,
+  notes,
+  time,
+}
+
+extension DialysisSessionExtension on DialysisSession {
+  String get fieldName {
+    switch (this) {
+      case DialysisSession.type:
+        return 'Dialysis Type';
+      case DialysisSession.access:
+        return 'Access Type';
+      case DialysisSession.duration:
+        return 'Duration';
+      case DialysisSession.preWeight:
+        return 'Pre-Dialysis Weight';
+      case DialysisSession.postWeight:
+        return 'Post-Dialysis Weight';
+      case DialysisSession.preDialysisBPResting:
+        return 'Pre-Dialysis BP (Resting)';
+      case DialysisSession.preDialysisBPStanding:
+        return 'Pre-Dialysis BP (Standing)';
+      case DialysisSession.postDialysisBPResting:
+        return 'Post-Dialysis BP (Resting)';
+      case DialysisSession.postDialysisBPStanding:
+        return 'Post-Dialysis BP (Standing)';
+      case DialysisSession.ultrafiltration:
+        return 'Ultrafiltration';
+      case DialysisSession.notes:
+        return 'Notes';
+      case DialysisSession.time:
+        return 'Time';
+    }
+  }
+
+  String get hintText {
+    switch (this) {
+      case DialysisSession.type:
+        return 'Select dialysis type';
+      case DialysisSession.access:
+        return 'Select access type';
+      case DialysisSession.duration:
+        return 'Duration (hours)';
+      case DialysisSession.preWeight:
+        return 'Weight before dialysis';
+      case DialysisSession.postWeight:
+        return 'Weight after dialysis';
+      case DialysisSession.preDialysisBPResting:
+        return 'BP before dialysis (resting)';
+      case DialysisSession.preDialysisBPStanding:
+        return 'BP before dialysis (standing)';
+      case DialysisSession.postDialysisBPResting:
+        return 'BP after dialysis (resting)';
+      case DialysisSession.postDialysisBPStanding:
+        return 'BP after dialysis (standing)';
+      case DialysisSession.ultrafiltration:
+        return 'Fluid removed';
+      case DialysisSession.notes:
+        return 'Any additional notes';
+      case DialysisSession.time:
+        return 'Time';
+    }
+  }
+
+  String get fieldKey {
+    switch (this) {
+      case DialysisSession.type:
+        return 'type_key';
+      case DialysisSession.access:
+        return 'access_key';
+      case DialysisSession.duration:
+        return 'duration_key';
+      case DialysisSession.preWeight:
+        return 'pre_weight_key';
+      case DialysisSession.postWeight:
+        return 'post_weight_key';
+      case DialysisSession.preDialysisBPResting:
+        return 'pre_bp_resting_key';
+      case DialysisSession.preDialysisBPStanding:
+        return 'pre_bp_standing_key';
+      case DialysisSession.postDialysisBPResting:
+        return 'post_bp_resting_key';
+      case DialysisSession.postDialysisBPStanding:
+        return 'post_bp_standing_key';
+      case DialysisSession.ultrafiltration:
+        return 'ultrafiltration_key';
+      case DialysisSession.notes:
+        return 'notes_key';
+      case DialysisSession.time:
+        return 'time_key';
     }
   }
 }

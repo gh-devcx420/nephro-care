@@ -9,7 +9,7 @@ class DialysisModel {
   final String id;
   final DialysisType type;
   final DialysisAccess access;
-  final double duration; // in hours
+  final double duration;
   final WeightModel? preWeight;
   final WeightModel? postWeight;
   final BPTrackerModel? preDialysisBPResting;
@@ -173,5 +173,68 @@ class DialysisModel {
   @override
   String toString() {
     return 'DialysisModel(id: $id, type: ${type.displayName}, access: ${access.displayName}, duration: $duration hrs)';
+  }
+}
+
+class DialysisCenterModel {
+  final String id;
+  final String name;
+  final GeoPoint? location;
+  final String phoneNumber;
+
+  DialysisCenterModel({
+    required this.id,
+    required this.name,
+    this.location,
+    required this.phoneNumber,
+  });
+
+  factory DialysisCenterModel.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final data = doc.data()!;
+    return DialysisCenterModel(
+      id: data['id'] as String,
+      name: data['name'] as String,
+      location: data['location'] as GeoPoint?,
+      phoneNumber: data['phoneNumber'] as String,
+    );
+  }
+
+  factory DialysisCenterModel.fromJson(Map<String, dynamic> json) {
+    return DialysisCenterModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      location: json['location'] as GeoPoint?,
+      phoneNumber: json['phoneNumber'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'location': location,
+      'phoneNumber': phoneNumber,
+    };
+  }
+
+  DialysisCenterModel copyWith({
+    String? id,
+    String? name,
+    GeoPoint? location,
+    String? phoneNumber,
+  }) {
+    return DialysisCenterModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      location: location ?? this.location,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'DialysisCenterModel(id: $id, name: $name, phone: $phoneNumber)';
   }
 }

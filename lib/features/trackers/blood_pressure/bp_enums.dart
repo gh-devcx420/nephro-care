@@ -84,3 +84,89 @@ extension BloodPressureFieldExtension on BloodPressureField {
     }
   }
 }
+
+enum BPReadingType {
+  normal,
+  preDialysisResting,
+  preDialysisStanding,
+  postDialysisResting,
+  postDialysisStanding,
+}
+
+extension BPReadingTypeExtension on BPReadingType {
+  String get displayName {
+    switch (this) {
+      case BPReadingType.normal:
+        return 'Normal Reading';
+      case BPReadingType.preDialysisResting:
+        return 'Pre-Dialysis (Resting)';
+      case BPReadingType.preDialysisStanding:
+        return 'Pre-Dialysis (Standing)';
+      case BPReadingType.postDialysisResting:
+        return 'Post-Dialysis (Resting)';
+      case BPReadingType.postDialysisStanding:
+        return 'Post-Dialysis (Standing)';
+    }
+  }
+
+  String get shortName {
+    switch (this) {
+      case BPReadingType.normal:
+        return 'Normal';
+      case BPReadingType.preDialysisResting:
+        return 'Pre-HD Rest';
+      case BPReadingType.preDialysisStanding:
+        return 'Pre-HD Stand';
+      case BPReadingType.postDialysisResting:
+        return 'Post-HD Rest';
+      case BPReadingType.postDialysisStanding:
+        return 'Post-HD Stand';
+    }
+  }
+
+  /// Icon to represent this reading type in UI
+  String get iconEmoji {
+    switch (this) {
+      case BPReadingType.normal:
+        return '🫀';
+      case BPReadingType.preDialysisResting:
+        return '🏥⬇️';
+      case BPReadingType.preDialysisStanding:
+        return '🏥🧍';
+      case BPReadingType.postDialysisResting:
+        return '🏥⬆️';
+      case BPReadingType.postDialysisStanding:
+        return '🏥🧍⬆️';
+    }
+  }
+
+  /// Check if this is a dialysis-related reading
+  bool get isFromDialysis {
+    return this != BPReadingType.normal;
+  }
+
+  /// Check if this is a pre-dialysis reading
+  bool get isPreDialysis {
+    return this == BPReadingType.preDialysisResting ||
+        this == BPReadingType.preDialysisStanding;
+  }
+
+  /// Check if this is a post-dialysis reading
+  bool get isPostDialysis {
+    return this == BPReadingType.postDialysisResting ||
+        this == BPReadingType.postDialysisStanding;
+  }
+
+  /// Check if this is a resting reading
+  bool get isResting {
+    return this == BPReadingType.normal ||
+        this == BPReadingType.preDialysisResting ||
+        this == BPReadingType.postDialysisResting;
+  }
+
+  /// Check if this is a standing reading
+  bool get isStanding {
+    return this == BPReadingType.preDialysisStanding ||
+        this == BPReadingType.postDialysisStanding;
+  }
+}
