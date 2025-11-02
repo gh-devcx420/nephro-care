@@ -30,6 +30,22 @@ extension DialysisTypeExtension on DialysisType {
   }
 }
 
+enum DialyserType {
+  singleUse,
+  multiUse,
+}
+
+extension DialyserTypeExtension on DialyserType {
+  String get displayName {
+    switch (this) {
+      case DialyserType.singleUse:
+        return 'Single Use';
+      case DialyserType.multiUse:
+        return 'Multi-Use';
+    }
+  }
+}
+
 enum DialysisAccess {
   // Arteriovenous Fistula
   avFistulaLeftArm,

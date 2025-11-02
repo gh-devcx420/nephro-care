@@ -3,7 +3,7 @@ import 'package:nephro_care/features/patient/patient_model.dart';
 
 class PatientUtils {
   // ============ Age Calculation ============
-
+  // TODO: Move all date related methods to dateTimeUtils
   /// Calculate age from date of birth
   static int calculateAge(DateTime dateOfBirth) {
     final now = DateTime.now();
@@ -78,11 +78,6 @@ class PatientUtils {
   }
 
   // ============ Formatting ============
-
-  /// Format date to readable string
-  static String formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-  }
 
   /// Get patient summary for display
   static String getPatientSummary(PatientModel patient) {
