@@ -4,7 +4,7 @@ import 'package:nephro_care/features/trackers/dialysis/dialysis_model.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
 import 'package:nephro_care/features/trackers/generic/generic_utils.dart';
 
-/// Comprehensive patient profile model for CKD tracking app
+/// Patient profile model
 class PatientModel {
   final String id;
   final String userId;

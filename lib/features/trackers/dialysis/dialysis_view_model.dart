@@ -18,6 +18,9 @@ class DialysisSessionViewModel {
   // final WeightModel? postWeight;
   // final UrineModel? ultraFiltrationTarget;
 
+  // ✅ BP Utils instance for calculations
+  final _bpUtils = BloodPressureUtils();
+
   DialysisSessionViewModel({
     required this.session,
     this.preDialysisBPResting,
@@ -25,9 +28,6 @@ class DialysisSessionViewModel {
     this.postDialysisBPResting,
     this.postDialysisBPStanding,
   });
-
-  // ✅ BP Utils instance for calculations
-  final _bpUtils = BloodPressureUtils();
 
   /// Check if all referenced BP data has been loaded
   bool get isFullyLoaded {

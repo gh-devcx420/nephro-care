@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-///Vertical Gaps
+/// Vertical Gaps using sized box
 const SizedBox vGap2 = SizedBox(
   height: 2,
 );
@@ -34,8 +34,11 @@ const SizedBox vGap24 = SizedBox(
 const SizedBox vGap30 = SizedBox(
   height: 30,
 );
+const SizedBox vGap48 = SizedBox(
+  height: 48,
+);
 
-///Horizontal Gaps
+/// Horizontal Gaps using sized box
 const SizedBox hGap2 = SizedBox(
   width: 2,
 );
@@ -66,6 +69,6 @@ const SizedBox hGap20 = SizedBox(
 const SizedBox hGap24 = SizedBox(
   width: 24,
 );
-const SizedBox hGap30 = SizedBox(
-  width: 30,
+const SizedBox hGap48 = SizedBox(
+  width: 48,
 );

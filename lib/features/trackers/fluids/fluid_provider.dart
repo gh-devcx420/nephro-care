@@ -15,39 +15,11 @@ class FluidIntakeStateNotifier
   final DateTime selectedDate;
   final Ref ref;
   static const cacheDuration =
-      Duration(minutes: AppConstants.cacheDurationMinutes);
+      Duration(minutes: AppConstants.firebaseDocsCacheDuration);
 
   FluidIntakeStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {
     _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    try {
-      final startOfDay =
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
-
-      final snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection(FluidConstants.fluidFirebaseCollectionName)
-          .where('timestamp',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-          .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
-          .orderBy('timestamp', descending: false)
-          .get();
-
-      final fluidIntakes =
-          snapshot.docs.map((doc) => FluidsModel.fromFirestore(doc)).toList();
-
-      state = AsyncValue.data(Cache<FluidsModel>(
-        items: fluidIntakes,
-        lastFetched: DateTime.now(),
-      ));
-    } catch (e, stackTrace) {
-      state = AsyncValue.error(e, stackTrace);
-    }
   }
 
   Stream<Cache<FluidsModel>> streamData() async* {
@@ -88,6 +60,53 @@ class FluidIntakeStateNotifier
       state = AsyncValue.data(cache);
       yield cache;
     }
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      final startOfDay =
+          DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+      final endOfDay = startOfDay.add(const Duration(days: 1));
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection(FluidConstants.fluidFirebaseCollectionName)
+          .where('timestamp',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+          .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
+          .orderBy('timestamp', descending: false)
+          .get();
+
+      final fluidIntakes =
+          snapshot.docs.map((doc) => FluidsModel.fromFirestore(doc)).toList();
+
+      state = AsyncValue.data(Cache<FluidsModel>(
+        items: fluidIntakes,
+        lastFetched: DateTime.now(),
+      ));
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+}
+
+class FluidLimitNotifier extends StateNotifier<double> {
+  FluidLimitNotifier() : super(FluidConstants.fluidDailyLimit) {
+    _loadFluidLimit();
+  }
+
+  Future<void> setFluidLimit(double newLimit) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('fluidLimit', newLimit);
+    state = newLimit;
+  }
+
+  Future<void> _loadFluidLimit() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLimit =
+        prefs.getDouble('fluidLimit') ?? FluidConstants.fluidDailyLimit;
+    state = savedLimit;
   }
 }
 
@@ -187,25 +206,6 @@ final fluidIntakeSummaryProvider = Provider<Map<String, dynamic>>((ref) {
     },
   );
 });
-
-class FluidLimitNotifier extends StateNotifier<double> {
-  FluidLimitNotifier() : super(FluidConstants.fluidDailyLimit) {
-    _loadFluidLimit();
-  }
-
-  Future<void> _loadFluidLimit() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedLimit =
-        prefs.getDouble('fluidLimit') ?? FluidConstants.fluidDailyLimit;
-    state = savedLimit;
-  }
-
-  Future<void> setFluidLimit(double newLimit) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('fluidLimit', newLimit);
-    state = newLimit;
-  }
-}
 
 final fluidLimitProvider =
     StateNotifierProvider<FluidLimitNotifier, double>((ref) {

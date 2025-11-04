@@ -14,7 +14,7 @@ class BPMonitorStateNotifier
   final DateTime selectedDate;
   final Ref ref;
   static const cacheDuration =
-      Duration(minutes: AppConstants.cacheDurationMinutes);
+      Duration(minutes: AppConstants.firebaseDocsCacheDuration);
 
   BPMonitorStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {

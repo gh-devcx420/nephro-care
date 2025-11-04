@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nephro_care/features/trackers/generic/generic_utils.dart';
-import 'package:nephro_care/features/trackers/lab_results/lab_result_enums.dart';
+import 'package:nephro_care/features/trackers/lab_tests/lab_test_enums.dart';
 
 class LabResultModel {
   final String id;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
@@ -62,34 +62,11 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
 
   bool _isPressed = false;
 
-  final today =
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-
-  void _showDateSelectedSnackbar(DateTime date) {
-    if (!context.mounted) return;
-
-    final isToday = date.year == DateTime.now().year &&
-        date.month == DateTime.now().month &&
-        date.day == DateTime.now().day;
-
-    final message = isToday
-        ? 'Showing Entries for Today'
-        : 'Showing Entries for ${DateTimeUtils.formatDateDM(date)}';
-
-    UIUtils.showNCSnackBar(
-      context: context,
-      message: message,
-      backgroundColor: widget.customColorScheme?.primary,
-      durationSeconds: 2,
-    );
-  }
-
-  void _updateSelectedDate(DateTime newDate) {
-    final updatedDate = DateTime(newDate.year, newDate.month, newDate.day);
-    ref.read(widget.dateProvider.notifier).state = updatedDate;
-    _showDateSelectedSnackbar(updatedDate);
-    widget.onDateSelected?.call();
-  }
+  final today = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -276,6 +253,32 @@ class _NCDatePickerState extends ConsumerState<NCDatePicker> {
           ),
         ),
       ),
+    );
+  }
+
+  void _updateSelectedDate(DateTime newDate) {
+    final updatedDate = DateTime(newDate.year, newDate.month, newDate.day);
+    ref.read(widget.dateProvider.notifier).state = updatedDate;
+    _showDateSelectedSnackbar(updatedDate);
+    widget.onDateSelected?.call();
+  }
+
+  void _showDateSelectedSnackbar(DateTime date) {
+    if (!context.mounted) return;
+
+    final isToday = date.year == DateTime.now().year &&
+        date.month == DateTime.now().month &&
+        date.day == DateTime.now().day;
+
+    final message = isToday
+        ? 'Showing Entries for Today'
+        : 'Showing Entries for ${DateTimeUtils.formatDateDM(date)}';
+
+    UIUtils.showNCSnackBar(
+      context: context,
+      message: message,
+      backgroundColor: widget.customColorScheme?.primary,
+      durationSeconds: 2,
     );
   }
 }

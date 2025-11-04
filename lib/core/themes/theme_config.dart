@@ -16,10 +16,11 @@ Map<ThemeName, AppThemeItem> get appThemes {
 }
 
 abstract class AppTheme {
+  /// Abstract method to create a theme for light theme.
   static ThemeData lightTheme(ColorScheme colorScheme) {
     return ThemeData(
-      colorScheme: colorScheme,
       useMaterial3: true,
+      colorScheme: colorScheme,
       appBarTheme: AppBarTheme(
         toolbarHeight: 48,
         leadingWidth: 48,
@@ -269,6 +270,7 @@ abstract class AppTheme {
     );
   }
 
+  /// Abstract method to create a theme for dark theme.
   static ThemeData darkTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
@@ -522,6 +524,7 @@ abstract class AppTheme {
     );
   }
 
+  /// Abstract method to create a text theme for the app.
   static TextTheme textTheme(Color fontColor) {
     return TextTheme(
       displayLarge: TextStyle(

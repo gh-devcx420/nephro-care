@@ -3,74 +3,55 @@ import 'package:flutter/services.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 
 class NCTextfield extends StatefulWidget {
-  // Identification & Core Control
-  final TextEditingController
-      textFieldController; // Controller managing the text field's state
-  final FocusNode? focusNode; // Focus management for the text field
-
-  // Content & Accessibility
-  final String hintText; // Hint text shown when the field is empty
-  final String?
-      semanticsLabel; // Accessibility label for assistive technologies
-  final Widget
-      activeFieldPrefixIcon; // Prefix icon displayed when the field is focused/active
-  final Widget
-      inactiveFieldPrefixIcon; // Prefix icon displayed when the field is unfocused/inactive
-  final IconData?
-      suffixIcon; // Suffix icon displayed to clear the field text when not empty.
-
-  // Input Behavior & Configuration
-  final bool? readOnly; // If true, disables text input
-  final TextInputType? keyboardType; // Type of keyboard to display
-  final TextCapitalization? textCapitalization; // Text capitalization behavior
-  final TextInputAction? textInputAction; // Keyboard action button type
-  final int? maxLength; // Maximum number of characters allowed
-
-  // Styling
-  final Color?
-      prefixIconColor; // Color applied to the prefix icon, typically used for theming or state indication
-  final Color?
-      enabledBorderColor; // Outline or underline border color when the text field is enabled but not focused
-  final Color?
-      focusedBorderColor; // Outline or underline border color when the text field is actively focused
-  final Color?
-      fillColor; // Background fill color inside the text field container
-  final Color? hintTextColor; // Color applied to the hint/placeholder text
-  final Color? textColor; // Color applied to the user-entered text content
-  final Color? cursorColor; // Color of the blinking cursor in the text field
-  final Color?
-      selectionHandleColor; // Color of the draggable selection handles for text selection
-  final Color? suffixIconColor; // Color applied to the suffix icon
-
-  // Event Callbacks
-  final VoidCallback? onTap; // Callback triggered on field tap
-  final Function(String)? onChanged; // Callback triggered on text change
-  final void Function(String)?
-      onSubmitted; // Callback triggered on submit action
-  final VoidCallback? onSuffixIconTap; // Callback triggered on suffix icon tap
   static bool isFirstFocus = true;
+
+  final TextEditingController textFieldController;
+  final FocusNode? focusNode;
+
+  final String hintText;
+  final String? semanticsLabel;
+  final Widget activeFieldPrefixIcon;
+  final Widget inactiveFieldPrefixIcon;
+  final IconData? suffixIcon;
+
+  final bool? readOnly;
+  final TextInputType? keyboardType;
+  final TextCapitalization? textCapitalization;
+  final TextInputAction? textInputAction;
+  final int? maxLength;
+
+  final Color? prefixIconColor;
+  final Color? enabledBorderColor;
+  final Color? focusedBorderColor;
+  final Color? fillColor;
+  final Color? hintTextColor;
+  final Color? textColor;
+  final Color? cursorColor;
+  final Color? selectionHandleColor;
+  final Color? suffixIconColor;
+
+  final VoidCallback? onTap;
+  final Function(String)? onChanged;
+  final void Function(String)? onSubmitted;
+  final VoidCallback? onSuffixIconTap;
 
   const NCTextfield({
     super.key,
-
     // Identification & Core Control
     required this.textFieldController,
     this.focusNode,
-
     // Content & Accessibility
     required this.hintText,
     this.semanticsLabel,
     required this.activeFieldPrefixIcon,
     required this.inactiveFieldPrefixIcon,
     this.suffixIcon,
-
     // Input Behavior & Configuration
     this.readOnly,
     this.keyboardType,
     this.textCapitalization,
     this.textInputAction,
     this.maxLength,
-
     // Styling
     this.prefixIconColor,
     this.enabledBorderColor,
@@ -81,7 +62,6 @@ class NCTextfield extends StatefulWidget {
     this.cursorColor,
     this.selectionHandleColor,
     this.suffixIconColor,
-
     // Event Callbacks
     this.onTap,
     this.onChanged,
@@ -99,35 +79,13 @@ class _NCTextfieldState extends State<NCTextfield> {
   @override
   void initState() {
     super.initState();
-    _focusNode = widget.focusNode ?? FocusNode();
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        if (widget.textFieldController.text.isNotEmpty) {
-          widget.textFieldController.selection = TextSelection.collapsed(
-            offset: widget.textFieldController.text.length,
-          );
-        }
-
-        if (NCTextfield.isFirstFocus == false) {
-          HapticFeedback.lightImpact();
-        }
-      }
-    });
-    widget.textFieldController.addListener(_onTextChanged);
-  }
-
-  void _onTextChanged() {
-    if (mounted) {
-      setState(() {});
-    }
+    _initializeFocusNode();
+    _setupListeners();
   }
 
   @override
   void dispose() {
-    widget.textFieldController.removeListener(_onTextChanged);
-    if (widget.focusNode == null) {
-      _focusNode.dispose();
-    }
+    _cleanupListeners();
     super.dispose();
   }
 
@@ -214,5 +172,45 @@ class _NCTextfieldState extends State<NCTextfield> {
         ),
       ),
     );
+  }
+
+  void _initializeFocusNode() {
+    _focusNode = widget.focusNode ?? FocusNode();
+  }
+
+  void _setupListeners() {
+    _focusNode.addListener(_onFocusChanged);
+    widget.textFieldController.addListener(_onTextChanged);
+  }
+
+  void _cleanupListeners() {
+    widget.textFieldController.removeListener(_onTextChanged);
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
+  }
+
+  void _onFocusChanged() {
+    if (_focusNode.hasFocus) {
+      _handleFocusGained();
+    }
+  }
+
+  void _handleFocusGained() {
+    if (widget.textFieldController.text.isNotEmpty) {
+      widget.textFieldController.selection = TextSelection.collapsed(
+        offset: widget.textFieldController.text.length,
+      );
+    }
+
+    if (NCTextfield.isFirstFocus == false) {
+      HapticFeedback.lightImpact();
+    }
+  }
+
+  void _onTextChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

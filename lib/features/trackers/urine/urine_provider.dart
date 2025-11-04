@@ -14,7 +14,7 @@ class UrineOutputStateNotifier
   final DateTime selectedDate;
   final Ref ref;
   static const cacheDuration =
-      Duration(minutes: AppConstants.cacheDurationMinutes);
+      Duration(minutes: AppConstants.firebaseDocsCacheDuration);
 
   UrineOutputStateNotifier(this.ref, this.userId, this.selectedDate)
       : super(const AsyncValue.loading()) {

@@ -5,14 +5,6 @@ import 'package:nephro_care/features/trackers/weight/weight_enums.dart';
 class WeightUtils {
   static final _invalidWeightMeasure = Measurement.invalid<WeightUnits>();
 
-  bool _isValidSource(Measurement<WeightUnits> source) {
-    return source.isValid &&
-        source.unit != null &&
-        source.value != null &&
-        source.unit is WeightUnits &&
-        source.value! >= 0;
-  }
-
   Measurement<WeightUnits> format(num value) {
     final processedValue = value.toDouble();
 
@@ -121,5 +113,13 @@ class WeightUtils {
       WeightUnits.kilograms => formatAsKilograms(source),
       WeightUnits.pounds => formatAsPounds(source),
     };
+  }
+
+  bool _isValidSource(Measurement<WeightUnits> source) {
+    return source.isValid &&
+        source.unit != null &&
+        source.value != null &&
+        source.unit is WeightUnits &&
+        source.value! >= 0;
   }
 }

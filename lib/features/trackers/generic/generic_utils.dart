@@ -70,7 +70,7 @@ class ModelUtils {
   static List<DateTime> timestampListToDateList(dynamic timestamps) {
     if (timestamps == null) return [];
     if (timestamps is! List) return [];
-    return (timestamps as List).map((t) => (t as Timestamp).toDate()).toList();
+    return (timestamps).map((t) => (t as Timestamp).toDate()).toList();
   }
 }
 

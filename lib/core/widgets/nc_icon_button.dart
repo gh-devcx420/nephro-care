@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
 
 class NCIconButton extends StatefulWidget {
@@ -59,29 +59,6 @@ class _NCIconButtonState extends State<NCIconButton> {
   static const double _defaultRadiusValue = (_minButtonHeight * 2);
 
   bool _isPressed = false;
-
-  Widget? _buildIcon(BuildContext context) {
-    if (widget.buttonIcon != null) {
-      return Icon(
-        widget.buttonIcon,
-        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
-        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
-      );
-    } else if (widget.ncButtonIcon != null) {
-      return NCIcon(
-        widget.ncButtonIcon!.icon,
-        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
-        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
-      );
-    } else {
-      Icon(
-        Icons.help_outline,
-        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
-        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
-      );
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,5 +125,28 @@ class _NCIconButtonState extends State<NCIconButton> {
         ),
       ),
     );
+  }
+
+  Widget? _buildIcon(BuildContext context) {
+    if (widget.buttonIcon != null) {
+      return Icon(
+        widget.buttonIcon,
+        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    } else if (widget.ncButtonIcon != null) {
+      return NCIcon(
+        widget.ncButtonIcon!.icon,
+        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    } else {
+      Icon(
+        Icons.help_outline,
+        size: widget.iconSize ?? UIConstants.overviewChipIconSize,
+        color: widget.iconColor ?? Theme.of(context).colorScheme.onPrimary,
+      );
+    }
+    return null;
   }
 }

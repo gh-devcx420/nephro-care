@@ -9,8 +9,6 @@ class NCTextEditingController extends TextEditingController {
   @override
   String get text => _numericValue.isEmpty ? '' : '$_numericValue $suffix';
 
-  String get numericValue => _numericValue;
-
   @override
   set text(String newValue) {
     _numericValue = newValue.replaceAll(' $suffix', '');
@@ -38,4 +36,6 @@ class NCTextEditingController extends TextEditingController {
       ),
     );
   }
+
+  String get numericValue => _numericValue;
 }

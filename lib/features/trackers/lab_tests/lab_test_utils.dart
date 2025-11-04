@@ -1,5 +1,5 @@
-import 'package:nephro_care/features/trackers/lab_results/lab_result_enums.dart';
-import 'package:nephro_care/features/trackers/lab_results/lab_result_model.dart';
+import 'package:nephro_care/features/trackers/lab_tests/lab_test_enums.dart';
+import 'package:nephro_care/features/trackers/lab_tests/lab_test_model.dart';
 
 class LabResultUtils {
   /// Check if the result is within normal range

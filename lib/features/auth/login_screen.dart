@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nephro_care/core/constants/nc_app_icons.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/themes/theme_provider.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/svg_utils.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
 import 'package:nephro_care/core/widgets/nc_icon_button.dart';
@@ -36,64 +36,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _processedSvgString = '';
       });
       _loadSvg();
-    }
-  }
-
-  Future<void> _loadSvg() async {
-    if (!mounted) return;
-
-    final colorSchemes = ref.read(colorSchemesProvider);
-    final brightness = Theme.of(context).brightness;
-
-    final colorScheme = brightness == Brightness.light
-        ? colorSchemes[ThemeMode.light]!
-        : colorSchemes[ThemeMode.dark]!;
-
-    final colorMap = {
-      '#3fbdf1': colorScheme.primary,
-      '#9fdef9': colorScheme.primaryContainer,
-    };
-
-    try {
-      final loadedString = await SVGUtils.loadMultiColorSvg(
-        context,
-        'assets/svg/nc_doctor.svg',
-        colorMap,
-      );
-
-      if (mounted) {
-        setState(() {
-          _processedSvgString = loadedString ?? '';
-          _isSvgLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isSvgLoading = false);
-      }
-    }
-  }
-
-  Future<void> _handleGoogleSignIn() async {
-    if (_isLoading) return;
-
-    setState(() => _isLoading = true);
-
-    try {
-      await ref.read(authProvider.notifier).signInWithGoogle();
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Sign-in failed: ${e.toString()}'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
     }
   }
 
@@ -269,5 +211,63 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      await ref.read(authProvider.notifier).signInWithGoogle();
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign-in failed: ${e.toString()}'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _loadSvg() async {
+    if (!mounted) return;
+
+    final colorSchemes = ref.read(colorSchemesProvider);
+    final brightness = Theme.of(context).brightness;
+
+    final colorScheme = brightness == Brightness.light
+        ? colorSchemes[ThemeMode.light]!
+        : colorSchemes[ThemeMode.dark]!;
+
+    final colorMap = {
+      '#3fbdf1': colorScheme.primary,
+      '#9fdef9': colorScheme.primaryContainer,
+    };
+
+    try {
+      final loadedString = await SVGUtils.loadMultiColorSvg(
+        context,
+        'assets/svg/nc_doctor.svg',
+        colorMap,
+      );
+
+      if (mounted) {
+        setState(() {
+          _processedSvgString = loadedString ?? '';
+          _isSvgLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSvgLoading = false);
+      }
+    }
   }
 }

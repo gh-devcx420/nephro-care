@@ -31,57 +31,8 @@ class _ShakingWidgetState extends State<ShakingWidget>
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      duration: widget.shakeDuration,
-      vsync: this,
-    );
-
-    _offsetAnimation = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.0, end: widget.shakeOffset)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 1,
-      ),
-      TweenSequenceItem(
-        tween:
-            Tween<double>(begin: widget.shakeOffset, end: -widget.shakeOffset)
-                .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 4,
-      ),
-      TweenSequenceItem(
-        tween:
-            Tween<double>(begin: -widget.shakeOffset, end: widget.shakeOffset)
-                .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 6,
-      ),
-      TweenSequenceItem(
-        tween:
-            Tween<double>(begin: widget.shakeOffset, end: -widget.shakeOffset)
-                .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 4,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: -widget.shakeOffset, end: 0.0)
-            .chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 1,
-      ),
-    ]).animate(_controller);
-
-    // Start the periodic shake
+    _initializeAnimation();
     _startShaking();
-  }
-
-  void _startShaking() {
-    // Shake immediately
-    _controller.forward();
-
-    // Then shake every interval
-    _intervalTimer = Timer.periodic(widget.shakeInterval, (timer) {
-      if (mounted) {
-        _controller.forward(from: 0.0);
-      }
-    });
   }
 
   @override
@@ -102,5 +53,56 @@ class _ShakingWidgetState extends State<ShakingWidget>
         );
       },
     );
+  }
+
+  void _initializeAnimation() {
+    _controller = AnimationController(
+      duration: widget.shakeDuration,
+      vsync: this,
+    );
+
+    _offsetAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.0, end: widget.shakeOffset)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 1,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: widget.shakeOffset,
+          end: -widget.shakeOffset,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 4,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: -widget.shakeOffset,
+          end: widget.shakeOffset,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 6,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: widget.shakeOffset,
+          end: -widget.shakeOffset,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 4,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: -widget.shakeOffset, end: 0.0)
+            .chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 1,
+      ),
+    ]).animate(_controller);
+  }
+
+  void _startShaking() {
+    _controller.forward();
+
+    _intervalTimer = Timer.periodic(widget.shakeInterval, (timer) {
+      if (mounted) {
+        _controller.forward(from: 0.0);
+      }
+    });
   }
 }

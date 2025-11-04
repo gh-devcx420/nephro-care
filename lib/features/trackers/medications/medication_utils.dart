@@ -23,22 +23,25 @@ class MedicationUtils {
 
   /// Validates instructions
   static bool isValidInstructions(String? instructions) {
-    if (instructions == null || instructions.trim().isEmpty)
+    if (instructions == null || instructions.trim().isEmpty) {
       return true; // Optional field
+    }
     return instructions.length <= MedicationConstants.instructionsMaxChars;
   }
 
   /// Validates prescribed by
   static bool isValidPrescribedBy(String? prescribedBy) {
-    if (prescribedBy == null || prescribedBy.trim().isEmpty)
+    if (prescribedBy == null || prescribedBy.trim().isEmpty) {
       return true; // Optional field
+    }
     return prescribedBy.length <= MedicationConstants.prescribedByMaxChars;
   }
 
   /// Validates pharmacy
   static bool isValidPharmacy(String? pharmacy) {
-    if (pharmacy == null || pharmacy.trim().isEmpty)
+    if (pharmacy == null || pharmacy.trim().isEmpty) {
       return true; // Optional field
+    }
     return pharmacy.length <= MedicationConstants.pharmacyMaxChars;
   }
 

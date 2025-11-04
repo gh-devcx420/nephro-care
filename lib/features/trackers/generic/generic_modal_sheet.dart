@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_divider.dart';
@@ -160,48 +160,80 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
     super.dispose();
   }
 
-  Future<void> _submit(WidgetRef ref, bool isOnline) async {
-    final errorColor = Theme.of(context).colorScheme.error;
-    final values = <String, String>{};
+  @override
+  Widget build(BuildContext context) {
+    final fields = {
+      for (var config in widget.inputFields) config.key: _buildTextField(config)
+    };
 
-    for (var inputField in widget.inputFields) {
-      final capturedInputValue = controllers[inputField.key]!.text.trim();
-      if (inputField.validator != null) {
-        final validationError = inputField.validator!(capturedInputValue);
-        if (validationError != null) {
-          Navigator.of(context).pop();
-          UIUtils.showNCSnackBar(
-            context: context,
-            message: validationError,
-            backgroundColor: errorColor,
-            durationSeconds: 4,
-          );
-          return;
-        }
-      }
-      values[inputField.key] = capturedInputValue;
-    }
+    return Consumer(
+      builder: (context, ref, child) {
+        final isOnlineAsync = ref.watch(connectivityProvider);
 
-    setState(() => isLoading = true);
-
-    final result = await widget.onSave(values, ref, widget.firestoreService);
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() => isLoading = false);
-
-    Navigator.of(context).pop(result);
-
-    if (!result.isSuccess || result.isPendingSync) {
-      UIUtils.showNCSnackBar(
-        context: context,
-        message: result.message,
-        backgroundColor: result.backgroundColor,
-        durationSeconds: 3,
-      );
-    }
+        return isOnlineAsync.when(
+          data: (isOnline) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: UIConstants.bottomModalSheetPadding,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      NCDivider(
+                        thickness: widget.dividerThickness,
+                        color: widget.primaryColor,
+                        widthFactor: widget.dividerWidthFactor,
+                      ),
+                      vGap4,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              child: Text(
+                                widget.initialData != null
+                                    ? widget.editingModeTitle
+                                    : widget.addModeTitle,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      vGap12,
+                      widget.layoutConfig(
+                        context,
+                        fields,
+                        (ctx) => _buildSubmitButton(ctx, isOnline),
+                      ),
+                      vGap16,
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+          loading: () => const SizedBox(
+            height: 100,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (e, st) => SizedBox(
+            height: 100,
+            child: Center(child: Text('Error: $e')),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildTextField(NCTextFieldConfig ncTextFieldConfig) {
@@ -280,79 +312,47 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final fields = {
-      for (var config in widget.inputFields) config.key: _buildTextField(config)
-    };
+  Future<void> _submit(WidgetRef ref, bool isOnline) async {
+    final errorColor = Theme.of(context).colorScheme.error;
+    final values = <String, String>{};
 
-    return Consumer(
-      builder: (context, ref, child) {
-        final isOnlineAsync = ref.watch(connectivityProvider);
+    for (var inputField in widget.inputFields) {
+      final capturedInputValue = controllers[inputField.key]!.text.trim();
+      if (inputField.validator != null) {
+        final validationError = inputField.validator!(capturedInputValue);
+        if (validationError != null) {
+          Navigator.of(context).pop();
+          UIUtils.showNCSnackBar(
+            context: context,
+            message: validationError,
+            backgroundColor: errorColor,
+            durationSeconds: 4,
+          );
+          return;
+        }
+      }
+      values[inputField.key] = capturedInputValue;
+    }
 
-        return isOnlineAsync.when(
-          data: (isOnline) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: UIConstants.bottomModalSheetPadding,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      NCDivider(
-                        thickness: widget.dividerThickness,
-                        color: widget.primaryColor,
-                        widthFactor: widget.dividerWidthFactor,
-                      ),
-                      vGap4,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 4,
-                              ),
-                              child: Text(
-                                widget.initialData != null
-                                    ? widget.editingModeTitle
-                                    : widget.addModeTitle,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      vGap12,
-                      widget.layoutConfig(
-                        context,
-                        fields,
-                        (ctx) => _buildSubmitButton(ctx, isOnline),
-                      ),
-                      vGap16,
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-          loading: () => const SizedBox(
-            height: 100,
-            child: Center(child: CircularProgressIndicator()),
-          ),
-          error: (e, st) => SizedBox(
-            height: 100,
-            child: Center(child: Text('Error: $e')),
-          ),
-        );
-      },
-    );
+    setState(() => isLoading = true);
+
+    final result = await widget.onSave(values, ref, widget.firestoreService);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => isLoading = false);
+
+    Navigator.of(context).pop(result);
+
+    if (!result.isSuccess || result.isPendingSync) {
+      UIUtils.showNCSnackBar(
+        context: context,
+        message: result.message,
+        backgroundColor: result.backgroundColor,
+        durationSeconds: 3,
+      );
+    }
   }
 }

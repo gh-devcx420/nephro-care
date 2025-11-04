@@ -1,4 +1,4 @@
-import 'package:nephro_care/features/trackers/lab_results/lab_result_enums.dart';
+import 'package:nephro_care/features/trackers/lab_tests/lab_test_enums.dart';
 
 class LabResultConstants {
   // Collection name in Firebase

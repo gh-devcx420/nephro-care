@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 enum ThemeName {
   warmTeal,
   limeGreen,
-  yellow,
-  pink,
-  violet,
-  brown,
+  brightYellow,
+  activePink,
+  royalViolet,
+  cozyBrown,
 }
 
 extension ThemeNameExtension on ThemeName {
@@ -16,13 +16,13 @@ extension ThemeNameExtension on ThemeName {
         return 'Warm Teal';
       case ThemeName.limeGreen:
         return 'Lime Green';
-      case ThemeName.yellow:
+      case ThemeName.brightYellow:
         return 'Yellow';
-      case ThemeName.pink:
+      case ThemeName.activePink:
         return 'Pink';
-      case ThemeName.violet:
+      case ThemeName.royalViolet:
         return 'Violet';
-      case ThemeName.brown:
+      case ThemeName.cozyBrown:
         return 'Brown';
     }
   }
@@ -33,30 +33,31 @@ extension ThemeNameExtension on ThemeName {
         return 'Modern, calm, and inviting.';
       case ThemeName.limeGreen:
         return 'Fresh, vibrant, and energizing.';
-      case ThemeName.yellow:
+      case ThemeName.brightYellow:
         return 'Bright, cheerful, and optimistic.';
-      case ThemeName.pink:
+      case ThemeName.activePink:
         return 'Playful, warm, and approachable.';
-      case ThemeName.violet:
+      case ThemeName.royalViolet:
         return 'Peaceful, mindful, and supportive.';
-      case ThemeName.brown:
+      case ThemeName.cozyBrown:
         return 'Earthy, stable, and grounded.';
     }
   }
 
+  //Todo: Move these icons to nc_app_icons.dart
   IconData get iconData {
     switch (this) {
       case ThemeName.warmTeal:
         return Icons.spa;
       case ThemeName.limeGreen:
         return Icons.local_florist;
-      case ThemeName.yellow:
+      case ThemeName.brightYellow:
         return Icons.wb_sunny;
-      case ThemeName.pink:
+      case ThemeName.activePink:
         return Icons.favorite;
-      case ThemeName.violet:
+      case ThemeName.royalViolet:
         return Icons.self_improvement;
-      case ThemeName.brown:
+      case ThemeName.cozyBrown:
         return Icons.terrain;
     }
   }
@@ -67,13 +68,13 @@ extension ThemeNameExtension on ThemeName {
         return 'Modern wellness apps, spa-like experience';
       case ThemeName.limeGreen:
         return 'Youthful energy, fitness apps';
-      case ThemeName.yellow:
+      case ThemeName.brightYellow:
         return 'Motivational tools, positive interfaces';
-      case ThemeName.pink:
+      case ThemeName.activePink:
         return 'Social apps, community engagement';
-      case ThemeName.violet:
+      case ThemeName.royalViolet:
         return 'Stress reduction, mental health focus';
-      case ThemeName.brown:
+      case ThemeName.cozyBrown:
         return 'Natural themes, eco-friendly apps';
     }
   }

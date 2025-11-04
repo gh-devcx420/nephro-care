@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
 
 class NCFoldableCard extends StatefulWidget {
@@ -78,43 +78,6 @@ class _NCFoldableCardState extends State<NCFoldableCard>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  void _toggleExpanded() {
-    HapticFeedback.lightImpact();
-    setState(() {
-      _isExpanded = !_isExpanded;
-      if (_isExpanded) {
-        _animationController.forward();
-      } else {
-        _animationController.reverse();
-      }
-    });
-  }
-
-  Widget _buildIcon(ThemeData theme) {
-    final effectiveColor = theme.colorScheme.primary;
-    const effectiveSize = 20.0;
-
-    if (widget.materialIcon != null) {
-      return Icon(
-        widget.materialIcon,
-        size: effectiveSize,
-        color: effectiveColor,
-      );
-    } else if (widget.ncIcon != null) {
-      return NCIcon(
-        widget.ncIcon!,
-        size: effectiveSize,
-        color: effectiveColor,
-      );
-    } else {
-      return Icon(
-        Icons.help_outline,
-        size: effectiveSize,
-        color: effectiveColor,
-      );
-    }
   }
 
   @override
@@ -197,5 +160,42 @@ class _NCFoldableCardState extends State<NCFoldableCard>
         ),
       ),
     );
+  }
+
+  Widget _buildIcon(ThemeData theme) {
+    final effectiveColor = theme.colorScheme.primary;
+    const effectiveSize = 20.0;
+
+    if (widget.materialIcon != null) {
+      return Icon(
+        widget.materialIcon,
+        size: effectiveSize,
+        color: effectiveColor,
+      );
+    } else if (widget.ncIcon != null) {
+      return NCIcon(
+        widget.ncIcon!,
+        size: effectiveSize,
+        color: effectiveColor,
+      );
+    } else {
+      return Icon(
+        Icons.help_outline,
+        size: effectiveSize,
+        color: effectiveColor,
+      );
+    }
+  }
+
+  void _toggleExpanded() {
+    HapticFeedback.lightImpact();
+    setState(() {
+      _isExpanded = !_isExpanded;
+      if (_isExpanded) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    });
   }
 }

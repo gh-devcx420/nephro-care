@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/constants/nc_app_icons.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
-import 'package:nephro_care/core/widgets/nc_alert_dialogue.dart';
 import 'package:nephro_care/core/widgets/nc_date_picker.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
@@ -69,247 +68,6 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
   static const double _defaultPaddingValue = 4.0;
   static const double _defaultRoundness = _defaultPaddingValue * 4;
   bool _isPressed = false;
-
-  void _showSnackBar({
-    required String message,
-    required Color backgroundColor,
-    int? snackbarDuration,
-  }) {
-    UIUtils.showNCSnackBar(
-      context: context,
-      message: message,
-      backgroundColor: backgroundColor,
-      durationSeconds: snackbarDuration,
-    );
-  }
-
-  PopupMenuItem<String> buildPopupMenuItem({
-    required String value,
-    required IconData icon,
-    required String text,
-  }) {
-    return PopupMenuItem<String>(
-      value: value,
-      padding: EdgeInsets.zero,
-      child: Material(
-        type: MaterialType.transparency,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.pop(context, value);
-              },
-              borderRadius: BorderRadius.circular(8),
-              splashColor:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-              highlightColor: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 6,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      icon,
-                      size: 26,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    hGap8,
-                    Text(
-                      text,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<bool> _showLogDetailsDialog() async {
-    final dataAsync = ref.watch(
-      widget.dataProvider(
-        (
-          ref.watch(authProvider)!.uid,
-          ref.watch(selectedDateProvider),
-        ),
-      ),
-    );
-
-    return dataAsync.when(
-      data: (cache) async {
-        final summary = ref.read(widget.summaryProvider);
-        final result = await showNCAlertDialog(
-          context: context,
-          titleText: AppStrings.logDetails,
-          content: widget.logDetailsDialogBuilder(context, summary),
-          action1: const SizedBox(),
-          action2: ElevatedButton(
-            onPressed: () {
-              HapticFeedback.selectionClick();
-              Navigator.of(context).pop(true);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-            child: const Text(
-              AppStrings.ok,
-            ),
-          ),
-        );
-        return result ?? false;
-      },
-      loading: () {
-        _showSnackBar(
-          message: 'Loading summary...',
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        );
-        return false;
-      },
-      error: (e, _) {
-        _showSnackBar(
-          message: 'Failed to load summary: $e',
-          backgroundColor: Theme.of(context).colorScheme.error,
-        );
-        return false;
-      },
-    );
-  }
-
-  Future<void> _showAddInputModalSheet() async {
-    final result = await showModalBottomSheet<Result>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => widget.inputModalSheet(null),
-    );
-
-    if (result != null) {
-      _showSnackBar(
-        message: result.message,
-        backgroundColor: result.backgroundColor,
-        snackbarDuration: 2,
-      );
-    }
-  }
-
-  Future<bool> _showEditConfirmationDialog() async {
-    return UIUtils.showNCConfirmationDialog(
-      context: context,
-      title: AppStrings.editEntryTitle,
-      content: AppStrings.editEntryContent(widget.appBarTitle.toLowerCase()),
-      confirmText: AppStrings.editConfirm,
-      confirmColor: Theme.of(context).colorScheme.primary,
-    );
-  }
-
-  void _showEditModalSheet({required T logItem}) async {
-    final result = await showModalBottomSheet<Result>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => widget.inputModalSheet(logItem),
-    );
-
-    if (result != null) {
-      _showSnackBar(
-        message: result.message,
-        backgroundColor: Colors.green,
-        snackbarDuration: 2,
-      );
-    }
-  }
-
-  Future<bool> _showDeleteConfirmationDialog() async {
-    return UIUtils.showNCConfirmationDialog(
-      context: context,
-      title: AppStrings.deleteEntryTitle,
-      content: AppStrings.deleteEntryContent(widget.appBarTitle.toLowerCase()),
-      confirmText: AppStrings.deleteConfirm,
-    );
-  }
-
-  Future<bool> _showDeleteAllConfirmationDialog() async {
-    final selectedDate = ref.watch(selectedDateProvider);
-    final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
-
-    return UIUtils.showNCConfirmationDialog(
-      context: context,
-      title: AppStrings.deleteAllEntriesTitle,
-      content: isToday
-          ? '${AppStrings.deleteAllEntriesPrompt}for today?'
-          : '${AppStrings.deleteAllEntriesPrompt}for ${DateTimeUtils.formatDateDM(selectedDate)}?',
-      confirmText: AppStrings.deleteAllConfirm,
-    );
-  }
-
-  Future<void> _deleteEntries({
-    required List<String> docIds,
-    required Color errorColor,
-    required Color successColor,
-    String? successMessage,
-  }) async {
-    final user = ref.read(authProvider);
-
-    if (user == null) {
-      _showSnackBar(
-        message: AppStrings.userNotAuthenticated,
-        backgroundColor: errorColor,
-      );
-      return;
-    }
-
-    final isOnlineAsync = ref.watch(connectivityProvider);
-    final isOnline = isOnlineAsync.maybeWhen(
-      data: (online) => online,
-      orElse: () => true,
-    );
-
-    final Result result;
-
-    if (docIds.length == 1) {
-      result = await widget.firestoreService.deleteEntry(
-        userId: user.uid,
-        collection: widget.firestoreCollection,
-        docId: docIds.first,
-        successMessage: successMessage ?? AppStrings.entryDeletedSuccess,
-        successColor: successColor,
-        errorMessagePrefix: AppStrings.failedToDeleteEntry,
-        errorColor: errorColor,
-        isOnline: isOnline,
-      );
-    } else {
-      result = await widget.firestoreService.deleteAllEntries(
-        userId: user.uid,
-        collection: widget.firestoreCollection,
-        docIds: docIds,
-        successMessage: successMessage ??
-            AppStrings.allEntriesDeleted(widget.appBarTitle.toLowerCase()),
-        successMessageColor: successColor,
-        errorMessagePrefix: AppStrings.failedToDeleteEntry,
-        errorColor: errorColor,
-        isOnline: isOnline,
-      );
-    }
-
-    _showSnackBar(
-      message: result.message,
-      backgroundColor: result.backgroundColor,
-      snackbarDuration: 2,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -754,6 +512,251 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
               ),
             )
           : null,
+    );
+  }
+
+  // UI Builders
+  PopupMenuItem<String> buildPopupMenuItem({
+    required String value,
+    required IconData icon,
+    required String text,
+  }) {
+    return PopupMenuItem<String>(
+      value: value,
+      padding: EdgeInsets.zero,
+      child: Material(
+        type: MaterialType.transparency,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: InkWell(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.pop(context, value);
+              },
+              borderRadius: BorderRadius.circular(8),
+              splashColor:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+              highlightColor: Colors.transparent,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 6,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 26,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    hGap8,
+                    Text(
+                      text,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Dialogs & Modals
+  Future<bool> _showLogDetailsDialog() async {
+    final dataAsync = ref.watch(
+      widget.dataProvider(
+        (
+          ref.watch(authProvider)!.uid,
+          ref.watch(selectedDateProvider),
+        ),
+      ),
+    );
+
+    return dataAsync.when(
+      data: (cache) async {
+        final summary = ref.read(widget.summaryProvider);
+        final result = await UIUtils.showNCAlertDialog(
+          context: context,
+          titleText: AppStrings.logDetails,
+          content: widget.logDetailsDialogBuilder(context, summary),
+          action1: const SizedBox(),
+          action2: ElevatedButton(
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              Navigator.of(context).pop(true);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            child: const Text(
+              AppStrings.ok,
+            ),
+          ),
+        );
+        return result ?? false;
+      },
+      loading: () {
+        _showSnackBar(
+          message: 'Loading summary...',
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        );
+        return false;
+      },
+      error: (e, _) {
+        _showSnackBar(
+          message: 'Failed to load summary: $e',
+          backgroundColor: Theme.of(context).colorScheme.error,
+        );
+        return false;
+      },
+    );
+  }
+
+  Future<void> _showAddInputModalSheet() async {
+    final result = await showModalBottomSheet<Result>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => widget.inputModalSheet(null),
+    );
+
+    if (result != null) {
+      _showSnackBar(
+        message: result.message,
+        backgroundColor: result.backgroundColor,
+        snackbarDuration: 2,
+      );
+    }
+  }
+
+  Future<bool> _showEditConfirmationDialog() async {
+    return UIUtils.showNCConfirmationDialog(
+      context: context,
+      title: AppStrings.editEntryTitle,
+      content: AppStrings.editEntryContent(widget.appBarTitle.toLowerCase()),
+      confirmText: AppStrings.editConfirm,
+      confirmColor: Theme.of(context).colorScheme.primary,
+    );
+  }
+
+  void _showEditModalSheet({required T logItem}) async {
+    final result = await showModalBottomSheet<Result>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => widget.inputModalSheet(logItem),
+    );
+
+    if (result != null) {
+      _showSnackBar(
+        message: result.message,
+        backgroundColor: Colors.green,
+        snackbarDuration: 2,
+      );
+    }
+  }
+
+  Future<bool> _showDeleteConfirmationDialog() async {
+    return UIUtils.showNCConfirmationDialog(
+      context: context,
+      title: AppStrings.deleteEntryTitle,
+      content: AppStrings.deleteEntryContent(widget.appBarTitle.toLowerCase()),
+      confirmText: AppStrings.deleteConfirm,
+    );
+  }
+
+  Future<bool> _showDeleteAllConfirmationDialog() async {
+    final selectedDate = ref.watch(selectedDateProvider);
+    final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
+
+    return UIUtils.showNCConfirmationDialog(
+      context: context,
+      title: AppStrings.deleteAllEntriesTitle,
+      content: isToday
+          ? '${AppStrings.deleteAllEntriesPrompt}for today?'
+          : '${AppStrings.deleteAllEntriesPrompt}for ${DateTimeUtils.formatDateDM(selectedDate)}?',
+      confirmText: AppStrings.deleteAllConfirm,
+    );
+  }
+
+  // Actions
+  Future<void> _deleteEntries({
+    required List<String> docIds,
+    required Color errorColor,
+    required Color successColor,
+    String? successMessage,
+  }) async {
+    final user = ref.read(authProvider);
+
+    if (user == null) {
+      _showSnackBar(
+        message: AppStrings.userNotAuthenticated,
+        backgroundColor: errorColor,
+      );
+      return;
+    }
+
+    final isOnlineAsync = ref.watch(connectivityProvider);
+    final isOnline = isOnlineAsync.maybeWhen(
+      data: (online) => online,
+      orElse: () => true,
+    );
+
+    final Result result;
+
+    if (docIds.length == 1) {
+      result = await widget.firestoreService.deleteEntry(
+        userId: user.uid,
+        collection: widget.firestoreCollection,
+        docId: docIds.first,
+        successMessage: successMessage ?? AppStrings.entryDeletedSuccess,
+        successColor: successColor,
+        errorMessagePrefix: AppStrings.failedToDeleteEntry,
+        errorColor: errorColor,
+        isOnline: isOnline,
+      );
+    } else {
+      result = await widget.firestoreService.deleteAllEntries(
+        userId: user.uid,
+        collection: widget.firestoreCollection,
+        docIds: docIds,
+        successMessage: successMessage ??
+            AppStrings.allEntriesDeleted(widget.appBarTitle.toLowerCase()),
+        successMessageColor: successColor,
+        errorMessagePrefix: AppStrings.failedToDeleteEntry,
+        errorColor: errorColor,
+        isOnline: isOnline,
+      );
+    }
+
+    _showSnackBar(
+      message: result.message,
+      backgroundColor: result.backgroundColor,
+      snackbarDuration: 2,
+    );
+  }
+
+  // Utilities
+  void _showSnackBar({
+    required String message,
+    required Color backgroundColor,
+    int? snackbarDuration,
+  }) {
+    UIUtils.showNCSnackBar(
+      context: context,
+      message: message,
+      backgroundColor: backgroundColor,
+      durationSeconds: snackbarDuration,
     );
   }
 }

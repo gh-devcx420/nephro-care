@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/trackers/generic/generic_log_screen.dart';
@@ -113,74 +113,74 @@ class WeightTrackerLogScreen extends ConsumerWidget {
             ),
         ],
       ),
-      logDetailsDialogBuilder: (context, summary) {
-        final lastWeightTime = summary['lastTime'];
-        final totalMeasurements = summary['totalMeasurements'] ?? 0;
-        final averageWeight = summary['averageWeight'] ?? 0;
-        final selectedDate = ref.watch(selectedDateProvider);
-        final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
-
-        return totalMeasurements == 0
-            ? Text(
-                AppStrings.noEntriesMessage(isToday
-                    ? 'today'
-                    : DateTimeUtils.formatDateDMY(selectedDate)),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  vGap8,
-                  UIUtils.createRichTextValueWithUnit(
-                    prefixText: '• Number of measurements: ',
-                    prefixStyle: theme.textTheme.bodySmall,
-                    value: '$totalMeasurements',
-                    unit: '',
-                    valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.valueFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.siUnitFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  vGap16,
-                  UIUtils.createRichTextValueWithUnit(
-                    prefixText: '• Average weight: ',
-                    prefixStyle: theme.textTheme.bodySmall,
-                    value: WeightUtils().format(averageWeight).formattedValue!,
-                    unit: WeightUtils().format(averageWeight).unitString!,
-                    valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.valueFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.siUnitFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  vGap16,
-                  UIUtils.createRichTextTimestamp(
-                    prefixText: '• Last measured at: ',
-                    prefixStyle: theme.textTheme.bodySmall,
-                    timestamp: lastWeightTime,
-                    timeStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.timeFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.meridiemIndicatorFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    isMeridiemUpperCase: false,
-                  ),
-                  vGap16,
-                ],
-              );
-      },
+      logDetailsDialogBuilder: (context, summary) =>
+          _buildSummaryDialog(context, ref, summary),
       itemsExtractor: (cache) => cache.items,
       headerValue: totalFormatter,
+    );
+  }
+
+  Widget _buildSummaryDialog(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> summary) {
+    final theme = Theme.of(context);
+    final lastWeightTime = summary['lastTime'];
+    final totalMeasurements = summary['totalMeasurements'] ?? 0;
+    final averageWeight = summary['averageWeight'] ?? 0;
+    final selectedDate = ref.watch(selectedDateProvider);
+    final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
+    return totalMeasurements == 0
+        ? Text(AppStrings.noEntriesMessage(
+            isToday ? 'today' : DateTimeUtils.formatDateDMY(selectedDate),
+          ))
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              vGap8,
+              _summaryRow(context, 'Number of measurements: ',
+                  '$totalMeasurements', ''),
+              vGap16,
+              () {
+                final formatted = WeightUtils().format(averageWeight);
+                return _summaryRow(
+                  context,
+                  'Average weight: ',
+                  formatted.formattedValue!,
+                  formatted.unitString!,
+                );
+              }(),
+              vGap16,
+              UIUtils.createRichTextTimestamp(
+                prefixText: '• Last measured at: ',
+                prefixStyle: theme.textTheme.bodySmall,
+                timestamp: lastWeightTime,
+                timeStyle: theme.textTheme.bodyMedium!.copyWith(
+                  fontSize: UIConstants.timeFontSize,
+                  fontWeight: FontWeight.w800,
+                ),
+                meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
+                  fontSize: UIConstants.meridiemIndicatorFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+                isMeridiemUpperCase: false,
+              ),
+              vGap16,
+            ],
+          );
+  }
+
+  Widget _summaryRow(
+      BuildContext context, String label, String value, String unit) {
+    final theme = Theme.of(context);
+    return UIUtils.createRichTextValueWithUnit(
+      prefixText: '• $label',
+      prefixStyle: theme.textTheme.bodySmall,
+      value: value,
+      unit: unit,
+      valueStyle: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: UIConstants.valueFontSize, fontWeight: FontWeight.w800),
+      unitStyle: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: UIConstants.siUnitFontSize, fontWeight: FontWeight.w600),
     );
   }
 }

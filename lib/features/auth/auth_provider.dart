@@ -3,21 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
-  return AuthNotifier();
-});
-
 class AuthNotifier extends StateNotifier<User?> {
+  // Constructor
   AuthNotifier() : super(FirebaseAuth.instance.currentUser) {
     _initializeAuthState();
   }
 
-  void _initializeAuthState() {
-    FirebaseAuth.instance.idTokenChanges().listen((user) {
-      state = user;
-    });
-  }
-
+  // Public business logic methods
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -58,7 +50,19 @@ class AuthNotifier extends StateNotifier<User?> {
     }
   }
 
+  // Initialization methods (like lifecycle methods)
+  void _initializeAuthState() {
+    FirebaseAuth.instance.idTokenChanges().listen((user) {
+      state = user;
+    });
+  }
+
+  // Getters at the end
   bool get isAuthenticated => state != null;
 
   String? get currentUserId => state?.uid;
 }
+
+final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
+  return AuthNotifier();
+});

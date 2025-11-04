@@ -47,4 +47,9 @@ class FluidsModel {
       'timestamp': timestamp,
     };
   }
+
+  @override
+  String toString() {
+    return 'FluidsModel(id: $id, fluidName: $fluidName, quantity: $quantity)';
+  }
 }

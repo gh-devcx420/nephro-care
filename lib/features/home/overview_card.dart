@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/constants/nc_app_enums.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 
 class OverviewCard extends ConsumerStatefulWidget {
   const OverviewCard({super.key});
@@ -15,45 +15,9 @@ class OverviewCard extends ConsumerStatefulWidget {
 class _OverviewCardState extends ConsumerState<OverviewCard> {
   ComparisonMode _comparisonMode = ComparisonMode.today;
 
-  String get _comparisonText {
-    return _comparisonMode == ComparisonMode.lastDialysis
-        ? 'Last Dialysis'
-        : 'Today';
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    Widget buildToggleOption(String label, ComparisonMode mode) {
-      final isSelected = _comparisonMode == mode;
-
-      return InkWell(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          setState(() {
-            _comparisonMode = mode;
-          });
-        },
-        borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
-          ),
-          child: Text(
-            label,
-            style: theme.textTheme.labelSmall!.copyWith(
-              color: isSelected
-                  ? theme.colorScheme.onPrimary
-                  : theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      );
-    }
 
     return Container(
       padding: UIConstants.cardPadding,
@@ -128,5 +92,42 @@ class _OverviewCardState extends ConsumerState<OverviewCard> {
         ],
       ),
     );
+  }
+
+  Widget buildToggleOption(String label, ComparisonMode mode) {
+    final theme = Theme.of(context);
+    final isSelected = _comparisonMode == mode;
+
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        setState(() {
+          _comparisonMode = mode;
+        });
+      },
+      borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.labelSmall!.copyWith(
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String get _comparisonText {
+    return _comparisonMode == ComparisonMode.lastDialysis
+        ? 'Last Dialysis'
+        : 'Today';
   }
 }

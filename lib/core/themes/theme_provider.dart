@@ -6,11 +6,6 @@ import 'package:nephro_care/core/themes/theme_enums.dart';
 import 'package:nephro_care/core/themes/theme_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError(
-      'sharedPreferencesProvider must be overridden in ProviderScope');
-});
-
 class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
   final SharedPreferences prefs;
   static const String _themePreferenceKey = 'SelectedTheme';
@@ -52,6 +47,11 @@ class ThemeSettingsNotifier extends StateNotifier<ThemeName> {
     _storeThemePreferences(newTheme);
   }
 }
+
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError(
+      'sharedPreferencesProvider must be overridden in ProviderScope');
+});
 
 final themeProvider = StateNotifierProvider<ThemeSettingsNotifier, ThemeName>(
   (ref) {

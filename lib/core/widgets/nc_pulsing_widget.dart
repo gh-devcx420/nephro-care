@@ -26,15 +26,7 @@ class _PulsingWidgetState extends State<PulsingWidget>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _colorAnimation = ColorTween(
-      begin: widget.errorColor,
-      end: widget.normalColor,
-    ).animate(_controller);
+    _initializeAnimation();
   }
 
   @override
@@ -51,5 +43,17 @@ class _PulsingWidgetState extends State<PulsingWidget>
         return widget.builder(_colorAnimation.value ?? widget.normalColor);
       },
     );
+  }
+
+  void _initializeAnimation() {
+    _controller = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    )..repeat(reverse: true);
+
+    _colorAnimation = ColorTween(
+      begin: widget.errorColor,
+      end: widget.normalColor,
+    ).animate(_controller);
   }
 }

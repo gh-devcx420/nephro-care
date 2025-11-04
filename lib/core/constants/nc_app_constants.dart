@@ -1,6 +1,6 @@
 class AppConstants {
   AppConstants._();
 
-  // Cache Configuration
-  static const int cacheDurationMinutes = 30;
+  /// Cache duration of firebase documents in minutes
+  static const int firebaseDocsCacheDuration = 30;
 }

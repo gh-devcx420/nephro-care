@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class SeedColors {
   static const Color warmTeal = Color(0xFF00695C);
-  static const Color limeGreen = Color(0xFF32CD32);
-  static const Color yellow = Color(0xFFFFEB3B);
-  static const Color pink = Color(0xFFFF69B4);
-  static const Color violet = Color(0xFF7B1FA2);
-  static const Color brown = Color(0xFF8B4513);
+  static const Color limeGreen = Color(0xFF37A437);
+  static const Color brightYellow = Color(0xFFA29737);
+  static const Color activePink = Color(0xFF963566);
+  static const Color royalViolet = Color(0xFF712791);
+  static const Color cozyBrown = Color(0xFF733E19);
 }

@@ -1,3 +1,30 @@
+//Todo: Create separate folders for CBC , RFT & others while keeping generics separate
+
+enum LabTestType {
+  rft,
+  cbc,
+}
+
+extension LabTestTypeExtension on LabTestType {
+  String get labTestTypeAsString {
+    switch (this) {
+      case LabTestType.rft:
+        return "renal_function_test";
+      case LabTestType.cbc:
+        return "CBC";
+    }
+  }
+
+  String get labTestFullName {
+    switch (this) {
+      case LabTestType.rft:
+        return "Renal Function Test";
+      case LabTestType.cbc:
+        return "Complete Blood Count";
+    }
+  }
+}
+
 /// Status of a Lab Result (covers both quantitative and qualitative outcomes)
 enum LabResultStatus {
   // ===== Quantitative Status =====
@@ -102,6 +129,7 @@ extension LabResultStatusExtension on LabResultStatus {
 
 /// Specific Lab Tests Relevant to CKD Patients
 /// Tests are organized in clinical groupings for easier management
+/// Todo: Move these to separate folders for each clinical grouping
 enum CKDLabTest {
   // ========== KIDNEY FUNCTION ==========
   creatinine,

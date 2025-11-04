@@ -1,41 +1,63 @@
 import 'package:flutter/material.dart';
 
 class NCTextFieldConfig {
-  // Identification & Core Control
-  final String key; // Unique identifier for the widget instance
-  final TextEditingController?
-      controller; // Controller managing the text field's state
-  final FocusNode?
-      focusNode; // Focus Node for managing the text field's focus state
-  final String?
-      initialValue; // Initial text value when the field is first displayed
+  final String key;
 
-  // Content & Accessibility
-  final String hintText; // Hint text shown when the field is empty
-  final String semanticsLabel; // Accessibility label for assistive technologies
-  final IconData activeIcon; // Icon displayed when the field is focused/active
-  final IconData
-      inactiveIcon; // Icon displayed when the field is unfocused/inactive
+  /// Controller managing the text field's state
+  final TextEditingController? controller;
 
-  // Input Behavior & Configuration
-  final bool? readOnly; // If true, disables text input
+  /// Focus Node for managing the text field's focus state
+  final FocusNode? focusNode;
+
+  /// Initial text value when the field is first displayed
+  final String? initialValue;
+
+  /// Hint text shown when the field is empty
+  final String hintText;
+
+  /// Accessibility label for assistive technologies
+  final String semanticsLabel;
+
+  /// Icon displayed when the field is focused/active
+  final IconData activeIcon;
+
+  /// Icon displayed when the field is unfocused/inactive
+  final IconData inactiveIcon;
+
+  /// If true, disables text input
+  final bool? readOnly;
+
+  /// Color for the input widget
   final Color? inputWidgetColor;
-  final TextInputType? keyboardType; // Type of keyboard to display
-  final TextInputAction? textInputAction; // Keyboard action button type
-  final String? errorText; // Field validation error message
 
-  // Event Callbacks
-  final VoidCallback? onTap; // Callback triggered on field tap
-  final void Function(String)? onChanged; // Callback triggered on text change
-  final String? Function(String?)? validator; // Validation logic callback
-  final void Function(String)?
-      onSubmitted; // Callback triggered on submit action
-  final VoidCallback? onSuffixIconTap; // Callback triggered on suffix icon tap
+  /// Type of keyboard to display
+  final TextInputType? keyboardType;
 
-  // Navigation & Field Chaining
-  final String? nextFieldKey; // Identifier for the next input field to focus
+  /// Keyboard action button type
+  final TextInputAction? textInputAction;
 
-  NCTextFieldConfig({
+  /// Field validation error message
+  final String? errorText;
+
+  /// Callback triggered on field tap
+  final VoidCallback? onTap;
+
+  /// Callback triggered on text change
+  final void Function(String)? onChanged;
+
+  /// Validation logic callback
+  final String? Function(String?)? validator;
+
+  /// Callback triggered on submit action
+  final void Function(String)? onSubmitted;
+
+  /// Callback triggered on suffix icon tap
+  final VoidCallback? onSuffixIconTap;
+
+  /// Identifier for the next input field to focus
+  final String? nextFieldKey;
+
+  const NCTextFieldConfig({
     // Identification & Core Control
     required this.key,
     this.controller,
@@ -65,4 +87,66 @@ class NCTextFieldConfig {
     // Navigation & Field Chaining
     this.nextFieldKey,
   });
+
+  /// Creates a copy of this config with some fields replaced
+  NCTextFieldConfig copyWith({
+    String? key,
+    TextEditingController? controller,
+    FocusNode? focusNode,
+    String? initialValue,
+    String? hintText,
+    String? semanticsLabel,
+    IconData? activeIcon,
+    IconData? inactiveIcon,
+    bool? readOnly,
+    Color? inputWidgetColor,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    String? errorText,
+    VoidCallback? onTap,
+    void Function(String)? onChanged,
+    String? Function(String?)? validator,
+    void Function(String)? onSubmitted,
+    VoidCallback? onSuffixIconTap,
+    String? nextFieldKey,
+  }) {
+    return NCTextFieldConfig(
+      key: key ?? this.key,
+      controller: controller ?? this.controller,
+      focusNode: focusNode ?? this.focusNode,
+      initialValue: initialValue ?? this.initialValue,
+      hintText: hintText ?? this.hintText,
+      semanticsLabel: semanticsLabel ?? this.semanticsLabel,
+      activeIcon: activeIcon ?? this.activeIcon,
+      inactiveIcon: inactiveIcon ?? this.inactiveIcon,
+      readOnly: readOnly ?? this.readOnly,
+      inputWidgetColor: inputWidgetColor ?? this.inputWidgetColor,
+      keyboardType: keyboardType ?? this.keyboardType,
+      textInputAction: textInputAction ?? this.textInputAction,
+      errorText: errorText ?? this.errorText,
+      onTap: onTap ?? this.onTap,
+      onChanged: onChanged ?? this.onChanged,
+      validator: validator ?? this.validator,
+      onSubmitted: onSubmitted ?? this.onSubmitted,
+      onSuffixIconTap: onSuffixIconTap ?? this.onSuffixIconTap,
+      nextFieldKey: nextFieldKey ?? this.nextFieldKey,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'NCTextFieldConfig(key: $key, hintText: $hintText)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is NCTextFieldConfig &&
+        other.key == key &&
+        other.hintText == hintText &&
+        other.semanticsLabel == semanticsLabel;
+  }
+
+  @override
+  int get hashCode => Object.hash(key, hintText, semanticsLabel);
 }

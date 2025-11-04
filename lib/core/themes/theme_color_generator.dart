@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ColorGenerator {
+  /// Generate a color scheme based on a HSL seed color.
   static ColorScheme generateColorScheme({
     required Color seedColor,
     required Brightness brightness,
@@ -14,6 +15,7 @@ class ColorGenerator {
     }
   }
 
+  /// Private method to generate a light color scheme based on a HSL seed color.
   static ColorScheme _generateLightScheme(HSLColor seedHsl) {
     return ColorScheme(
       brightness: Brightness.light,
@@ -128,6 +130,7 @@ class ColorGenerator {
     );
   }
 
+  /// Private method to generate a dark color scheme based on a HSL seed color.
   static ColorScheme _generateDarkScheme(HSLColor seedHsl) {
     return ColorScheme(
       brightness: Brightness.dark,

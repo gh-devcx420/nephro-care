@@ -5,6 +5,7 @@ import 'package:nephro_care/core/themes/theme_model.dart';
 import 'package:nephro_care/core/themes/theme_seed_colors.dart';
 
 abstract class AppColorScheme {
+  /// Returns a [ThemeColorScheme] for the given [themeName].
   static ThemeColorScheme getThemeColors(ThemeName themeName) {
     final seedColor = _getSeedColor(themeName);
 
@@ -20,36 +21,47 @@ abstract class AppColorScheme {
     );
   }
 
+  /// Returns the seed color for the given [themeName].
   static Color _getSeedColor(ThemeName themeName) {
     switch (themeName) {
       case ThemeName.warmTeal:
         return SeedColors.warmTeal;
       case ThemeName.limeGreen:
         return SeedColors.limeGreen;
-      case ThemeName.yellow:
-        return SeedColors.yellow;
-      case ThemeName.pink:
-        return SeedColors.pink;
-      case ThemeName.violet:
-        return SeedColors.violet;
-      case ThemeName.brown:
-        return SeedColors.brown;
+      case ThemeName.brightYellow:
+        return SeedColors.brightYellow;
+      case ThemeName.activePink:
+        return SeedColors.activePink;
+      case ThemeName.royalViolet:
+        return SeedColors.royalViolet;
+      case ThemeName.cozyBrown:
+        return SeedColors.cozyBrown;
     }
   }
 
+  /// Returns a [ThemeColorScheme] for warmTeal seed color.
   static ThemeColorScheme get warmTeal => getThemeColors(ThemeName.warmTeal);
 
+  /// Returns a [ThemeColorScheme] for limeGreen seed color.
   static ThemeColorScheme get limeGreen => getThemeColors(ThemeName.limeGreen);
 
-  static ThemeColorScheme get yellow => getThemeColors(ThemeName.yellow);
+  /// Returns a [ThemeColorScheme] for brightYellow seed color.
+  static ThemeColorScheme get brightYellow =>
+      getThemeColors(ThemeName.brightYellow);
 
-  static ThemeColorScheme get pink => getThemeColors(ThemeName.pink);
+  /// Returns a [ThemeColorScheme] for activePink seed color.
+  static ThemeColorScheme get activePink =>
+      getThemeColors(ThemeName.activePink);
 
-  static ThemeColorScheme get violet => getThemeColors(ThemeName.violet);
+  /// Returns a [ThemeColorScheme] for royalViolet seed color.
+  static ThemeColorScheme get royalViolet =>
+      getThemeColors(ThemeName.royalViolet);
 
-  static ThemeColorScheme get brown => getThemeColors(ThemeName.brown);
+  /// Returns a [ThemeColorScheme] for cozyBrown seed color.
+  static ThemeColorScheme get cozyBrown => getThemeColors(ThemeName.cozyBrown);
 }
 
+/// Abstract class for app colors.
 abstract class AppColors {
   static const Color successColor =
       Color(0xFF2E7D32); // Medical green for success

@@ -5,14 +5,6 @@ import 'package:nephro_care/features/trackers/urine/urine_enums.dart';
 class UrineUtils {
   static final _invalidUrineMeasure = Measurement.invalid<UrineUnits>();
 
-  bool _isValidSource(Measurement<UrineUnits> source) {
-    return source.isValid &&
-        source.unit != null &&
-        source.value != null &&
-        source.unit is UrineUnits &&
-        source.value! >= 0;
-  }
-
   Measurement<UrineUnits> format(num value) {
     final processedValue = value.toDouble();
 
@@ -112,5 +104,13 @@ class UrineUtils {
       UrineUnits.milliliters => formatAsMilliliters(source),
       UrineUnits.litres => formatAsLitres(source),
     };
+  }
+
+  bool _isValidSource(Measurement<UrineUnits> source) {
+    return source.isValid &&
+        source.unit != null &&
+        source.value != null &&
+        source.unit is UrineUnits &&
+        source.value! >= 0;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:nephro_care/core/constants/nc_app_icons.dart';
 
+///Patient enums
 enum Patient {
   name,
   age,
@@ -22,6 +23,7 @@ extension PatientExtension on Patient {
   }
 }
 
+///Gender enums
 enum Gender {
   male,
   female,
@@ -41,7 +43,7 @@ extension GenderExtension on Gender {
   }
 }
 
-// Blood Group Enums
+///Blood Group Enums
 enum BloodGroup {
   aPositive,
   aNegative,
@@ -97,7 +99,7 @@ extension BloodGroupExtension on BloodGroup {
   }
 }
 
-/// Primary cause of CKD
+///Primary cause of CKD
 enum CKDCause {
   diabeticNephropathy,
   hypertensiveNephropathy,
@@ -138,7 +140,7 @@ extension CKDCauseExtension on CKDCause {
   }
 }
 
-/// Chronic Kidney Disease stages based on GFR
+///Chronic Kidney Disease stages based on GFR
 enum CKDStage {
   stage1, // GFR ≥90
   stage2, // GFR 60-89
@@ -234,7 +236,7 @@ extension CKDStageExtension on CKDStage {
   }
 }
 
-/// Kidney transplant status
+///Kidney transplant status
 enum TransplantStatus {
   notListed,
   underEvaluation,
@@ -263,7 +265,7 @@ extension TransplantStatusExtension on TransplantStatus {
   }
 }
 
-/// Dietary restrictions for CKD patients
+///Dietary restrictions for CKD patients
 enum DietRestriction {
   lowSodium,
   lowPotassium,
@@ -298,7 +300,7 @@ extension DietRestrictionExtension on DietRestriction {
   }
 }
 
-/// Physical activity level
+///Physical activity level
 enum ActivityLevel {
   sedentary,
   light,
@@ -339,7 +341,7 @@ extension ActivityLevelExtension on ActivityLevel {
   }
 }
 
-/// Smoking status
+///Smoking status
 enum SmokingStatus {
   never,
   former,
@@ -359,6 +361,7 @@ extension SmokingStatusExtension on SmokingStatus {
   }
 }
 
+///Smoking Frequency
 enum SmokingFrequency {
   never,
   occasional,
@@ -381,7 +384,7 @@ extension SmokingFrequencyExtension on SmokingFrequency {
   }
 }
 
-/// Smoking status
+///Smoking status
 enum AlcoholStatus {
   never,
   former,
@@ -401,7 +404,7 @@ extension AlcoholStatusExtension on AlcoholStatus {
   }
 }
 
-/// Alcohol consumption frequency
+///Alcohol consumption frequency
 enum AlcoholConsumption {
   none,
   occasional, // <1 drink/week

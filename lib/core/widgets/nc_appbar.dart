@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/constants/nc_app_icons.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/widgets/nc_date_picker.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
@@ -22,52 +22,6 @@ class NCAppbar extends ConsumerWidget {
     final currentDateTime = DateTime.now();
     final theme = Theme.of(context);
 
-    Widget buildCircleAvatarWithBorder({
-      required double radius,
-      required double borderWidth,
-    }) {
-      return Container(
-        padding: EdgeInsets.all(borderWidth),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: theme.colorScheme.primary,
-            width: borderWidth,
-          ),
-        ),
-        child: CircleAvatar(
-          radius: radius,
-          backgroundColor: theme.colorScheme.primaryContainer,
-          child: user?.photoURL != null
-              ? CachedNetworkImage(
-                  imageUrl: user!.photoURL!,
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  placeholder: (context, url) => const SizedBox(),
-                  errorWidget: (context, url, error) => Icon(
-                    Icons.person,
-                    size: radius * 0.8,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                  maxHeightDiskCache: 100,
-                  maxWidthDiskCache: 100,
-                )
-              : Icon(
-                  Icons.person,
-                  size: radius * 0.8,
-                  color: theme.colorScheme.onPrimaryContainer,
-                ),
-        ),
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
@@ -77,38 +31,16 @@ class NCAppbar extends ConsumerWidget {
           InkWell(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
-            onTap: () {
-              Navigator.pushNamed(context, '/user_profile');
-            },
-            child: buildCircleAvatarWithBorder(
+            onTap: () => Navigator.pushNamed(context, '/user_profile'),
+            child: _buildCircleAvatarWithBorder(
+              theme: theme,
+              user: user,
               radius: 14,
               borderWidth: 2,
             ),
           ),
           hGap8,
-          RichText(
-            text: TextSpan(
-              style: theme.textTheme.labelMedium!.copyWith(
-                fontWeight: FontWeight.w700,
-                height: 1.2,
-                color: theme.colorScheme.onSurface,
-              ),
-              children: [
-                TextSpan(
-                  text: 'Good ${DateTimeUtils.getTimeOfDay(currentDateTime)}\n',
-                ),
-                TextSpan(
-                  text: (user?.displayName?.split(' ').first) ?? '',
-                  style: theme.textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.w700,
-                    height: 0.8,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-              ],
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
+          _buildGreeting(theme, currentDateTime, user),
           const Spacer(),
           NCDatePicker(
             dateProvider: selectedDateProvider,
@@ -118,17 +50,97 @@ class NCAppbar extends ConsumerWidget {
           ),
           hGap4,
           NCIconButton(
-            onButtonTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
-              );
-            },
+            onButtonTap: () => _navigateToSettings(context),
             buttonIcon: Icons.settings,
             iconSize: UIConstants.buttonIconSize,
           ),
         ],
+      ),
+    );
+  }
+
+  /// Circle avatar with border.
+  Widget _buildCircleAvatarWithBorder({
+    required ThemeData theme,
+    required User? user,
+    required double radius,
+    required double borderWidth,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(borderWidth),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: theme.colorScheme.primary,
+          width: borderWidth,
+        ),
+      ),
+      child: CircleAvatar(
+        radius: radius,
+        backgroundColor: theme.colorScheme.primaryContainer,
+        child: user?.photoURL != null
+            ? CachedNetworkImage(
+                imageUrl: user!.photoURL!,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                placeholder: (context, url) => const SizedBox(),
+                errorWidget: (context, url, error) => Icon(
+                  Icons.person,
+                  size: radius * 0.8,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
+                maxHeightDiskCache: 100,
+                maxWidthDiskCache: 100,
+              )
+            : Icon(
+                Icons.person,
+                size: radius * 0.8,
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
+      ),
+    );
+  }
+
+  /// Greeting widget (User Name with time of day)
+  Widget _buildGreeting(ThemeData theme, DateTime currentDateTime, User? user) {
+    return RichText(
+      text: TextSpan(
+        style: theme.textTheme.labelMedium!.copyWith(
+          fontWeight: FontWeight.w700,
+          height: 1.2,
+          color: theme.colorScheme.onSurface,
+        ),
+        children: [
+          TextSpan(
+            text: 'Good ${DateTimeUtils.getTimeOfDay(currentDateTime)}\n',
+          ),
+          TextSpan(
+            text: (user?.displayName?.split(' ').first) ?? '',
+            style: theme.textTheme.titleLarge!.copyWith(
+              fontWeight: FontWeight.w700,
+              height: 0.8,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  /// Navigate to settings screen.
+  void _navigateToSettings(BuildContext context) {
+    // Todo: Add named route for settings in main.
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const SettingsScreen(),
       ),
     );
   }

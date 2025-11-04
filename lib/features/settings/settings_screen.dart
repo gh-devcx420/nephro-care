@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/themes/theme_config.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
-import 'package:nephro_care/core/widgets/nc_alert_dialogue.dart';
+import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_value_range_chooser.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/change_theme_screen.dart';
@@ -14,84 +14,6 @@ import 'package:nephro_care/main.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
-
-  Widget _buildSectionHeader({
-    required BuildContext context,
-    required String title,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.6),
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-            ),
-      ),
-    );
-  }
-
-  Widget _buildSettingTile({
-    required BuildContext context,
-    IconData? icon,
-    Widget? leading,
-    required String title,
-    String? subtitle,
-    IconData? trailingIcon,
-    Widget? trailing,
-    VoidCallback? onTap,
-    Color? iconColor,
-    Color? titleColor,
-  }) {
-    final tile = ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      visualDensity: const VisualDensity(vertical: -4, horizontal: -2),
-      leading: leading ??
-          (icon != null
-              ? Icon(
-                  icon,
-                  size: 24,
-                  color: iconColor,
-                )
-              : null),
-      title: Text(title),
-      tileColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      titleTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-            color:
-                titleColor ?? Theme.of(context).colorScheme.onPrimaryContainer,
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-          ),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      subtitleTextStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
-            color:
-                titleColor ?? Theme.of(context).colorScheme.onPrimaryContainer,
-            fontWeight: FontWeight.w800,
-          ),
-      trailing: trailing ??
-          (trailingIcon != null
-              ? Icon(
-                  trailingIcon,
-                  size: 24,
-                  color: iconColor,
-                )
-              : null),
-    );
-
-    if (onTap != null) {
-      return InkWell(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onTap: onTap,
-        child: tile,
-      );
-    }
-    return tile;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -259,7 +181,7 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () async {
                   HapticFeedback.lightImpact();
                   final navigator = Navigator.of(context);
-                  showNCAlertDialog(
+                  UIUtils.showNCAlertDialog(
                     context: context,
                     titleText: 'Logout User',
                     content: Text(
@@ -306,5 +228,83 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildSectionHeader({
+    required BuildContext context,
+    required String title,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.6),
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
+      ),
+    );
+  }
+
+  Widget _buildSettingTile({
+    required BuildContext context,
+    IconData? icon,
+    Widget? leading,
+    required String title,
+    String? subtitle,
+    IconData? trailingIcon,
+    Widget? trailing,
+    VoidCallback? onTap,
+    Color? iconColor,
+    Color? titleColor,
+  }) {
+    final tile = ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      visualDensity: const VisualDensity(vertical: -4, horizontal: -2),
+      leading: leading ??
+          (icon != null
+              ? Icon(
+                  icon,
+                  size: 24,
+                  color: iconColor,
+                )
+              : null),
+      title: Text(title),
+      tileColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      titleTextStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+            color:
+                titleColor ?? Theme.of(context).colorScheme.onPrimaryContainer,
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+          ),
+      subtitle: subtitle != null ? Text(subtitle) : null,
+      subtitleTextStyle: Theme.of(context).textTheme.titleSmall!.copyWith(
+            color:
+                titleColor ?? Theme.of(context).colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.w800,
+          ),
+      trailing: trailing ??
+          (trailingIcon != null
+              ? Icon(
+                  trailingIcon,
+                  size: 24,
+                  color: iconColor,
+                )
+              : null),
+    );
+
+    if (onTap != null) {
+      return InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: onTap,
+        child: tile,
+      );
+    }
+    return tile;
   }
 }

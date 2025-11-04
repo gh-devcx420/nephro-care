@@ -5,14 +5,6 @@ import 'package:nephro_care/features/trackers/generic/generic_models.dart';
 class FluidUtils {
   static final _invalidFluidMeasure = Measurement.invalid<FluidUnits>();
 
-  bool _isValidSource(Measurement<FluidUnits> source) {
-    return source.isValid &&
-        source.unit != null &&
-        source.value != null &&
-        source.unit is FluidUnits &&
-        source.value! >= 0;
-  }
-
   Measurement<FluidUnits> format(num value) {
     final processedValue = value.toDouble();
 
@@ -107,5 +99,13 @@ class FluidUtils {
       FluidUnits.milliliters => formatAsMilliliters(source),
       FluidUnits.litres => formatAsLitres(source),
     };
+  }
+
+  bool _isValidSource(Measurement<FluidUnits> source) {
+    return source.isValid &&
+        source.unit != null &&
+        source.value != null &&
+        source.unit is FluidUnits &&
+        source.value! >= 0;
   }
 }

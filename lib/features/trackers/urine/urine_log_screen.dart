@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
-import 'package:nephro_care/core/utils/app_spacing.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_provider.dart';
@@ -20,38 +20,6 @@ import 'package:nephro_care/features/trackers/urine/urine_utils.dart';
 
 class UrineOutputLogScreen extends ConsumerWidget {
   const UrineOutputLogScreen({super.key});
-
-  TextStyle _getValueStyle(
-    BuildContext context, {
-    Color? errorColor,
-    required bool shouldUseErrorColors,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return theme.textTheme.titleMedium!.copyWith(
-      color: shouldUseErrorColors
-          ? errorColor ?? colorScheme.error
-          : colorScheme.onSurface,
-      fontSize: UIConstants.valueFontSize,
-      fontWeight: FontWeight.w800,
-    );
-  }
-
-  TextStyle _getUnitStyle(
-    BuildContext context, {
-    Color? errorColor,
-    required bool shouldUseErrorColors,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return theme.textTheme.titleMedium!.copyWith(
-      color: shouldUseErrorColors
-          ? errorColor ?? colorScheme.error
-          : colorScheme.onSurface,
-      fontSize: UIConstants.siUnitFontSize,
-      fontWeight: FontWeight.w600,
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -100,14 +68,8 @@ class UrineOutputLogScreen extends ConsumerWidget {
               child: UIUtils.createRichTextValueWithUnit(
                 value: UrineUtils().format(item.volume).formattedValue!,
                 unit: UrineUtils().format(item.volume).unitString!,
-                valueStyle: _getValueStyle(
-                  context,
-                  shouldUseErrorColors: false,
-                ),
-                unitStyle: _getUnitStyle(
-                  context,
-                  shouldUseErrorColors: false,
-                ),
+                valueStyle: UIUtils.valueStyle(context),
+                unitStyle: UIUtils.unitStyle(context),
               ),
             ),
             trailing: Semantics(
@@ -144,80 +106,77 @@ class UrineOutputLogScreen extends ConsumerWidget {
             ),
         ],
       ),
-      logDetailsDialogBuilder: (context, summary) {
-        final lastUrineTime = summary['lastTime'];
-        final totalUrineTimes = summary['totalUrineToday'] ?? 0;
-        final fluidSummary = ref.read(fluidIntakeSummaryProvider);
-        final selectedDate = ref.watch(selectedDateProvider);
-        final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
-        double? outputPercent;
-        if (fluidSummary['total'] != 0) {
-          outputPercent = (summary['total'] / fluidSummary['total']) * 100;
-        }
-        return totalUrineTimes == 0
-            ? Text(
-                AppStrings.noEntriesMessage(isToday
-                    ? 'today'
-                    : DateTimeUtils.formatDateDMY(selectedDate)),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  vGap8,
-                  UIUtils.createRichTextValueWithUnit(
-                    prefixText: '• Number of urine outputs: ',
-                    prefixStyle: theme.textTheme.bodySmall,
-                    value: '$totalUrineTimes',
-                    unit: '',
-                    valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.valueFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.siUnitFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  vGap16,
-                  UIUtils.createRichTextValueWithUnit(
-                    prefixText:
-                        outputPercent != null ? '• Urine output ratio: ' : '• ',
-                    prefixStyle: theme.textTheme.bodySmall,
-                    value: outputPercent != null
-                        ? '${outputPercent.toInt()}'
-                        : 'No data available for output ratio',
-                    unit: outputPercent != null ? '%' : '',
-                    valueStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.valueFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    unitStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.siUnitFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  vGap16,
-                  UIUtils.createRichTextTimestamp(
-                    prefixText: '• Last urine output at: ',
-                    prefixStyle: theme.textTheme.bodySmall,
-                    timestamp: lastUrineTime,
-                    timeStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.timeFontSize,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
-                      fontSize: UIConstants.meridiemIndicatorFontSize,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    isMeridiemUpperCase: false,
-                  ),
-                  vGap16,
-                ],
-              );
-      },
+      logDetailsDialogBuilder: (context, summary) =>
+          _buildSummaryDialog(context, ref, summary),
       itemsExtractor: (cache) => cache.items,
       headerValue: totalFormatter,
+    );
+  }
+
+  Widget _buildSummaryDialog(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> summary) {
+    final theme = Theme.of(context);
+    final lastUrineTime = summary['lastTime'];
+    final totalUrineTimes = summary['totalUrineToday'] ?? 0;
+    final fluidSummary = ref.read(fluidIntakeSummaryProvider);
+    final selectedDate = ref.watch(selectedDateProvider);
+    final isToday = DateTimeUtils.isSameDay(selectedDate, DateTime.now());
+    double? outputPercent;
+    if (fluidSummary['total'] != 0) {
+      outputPercent = (summary['total'] / fluidSummary['total']) * 100;
+    }
+    return totalUrineTimes == 0
+        ? Text(AppStrings.noEntriesMessage(
+            isToday ? 'today' : DateTimeUtils.formatDateDMY(selectedDate),
+          ))
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              vGap8,
+              _summaryRow(
+                  context, 'Number of urine outputs: ', '$totalUrineTimes', ''),
+              vGap16,
+              _summaryRow(
+                context,
+                outputPercent != null ? 'Urine output ratio: ' : '',
+                outputPercent != null
+                    ? '${outputPercent.toInt()}'
+                    : 'No data available for output ratio',
+                outputPercent != null ? '%' : '',
+              ),
+              vGap16,
+              UIUtils.createRichTextTimestamp(
+                prefixText: '• Last urine output at: ',
+                prefixStyle: theme.textTheme.bodySmall,
+                timestamp: lastUrineTime,
+                timeStyle: theme.textTheme.bodyMedium!.copyWith(
+                  fontSize: UIConstants.timeFontSize,
+                  fontWeight: FontWeight.w800,
+                ),
+                meridiemStyle: theme.textTheme.bodyMedium!.copyWith(
+                  fontSize: UIConstants.meridiemIndicatorFontSize,
+                  fontWeight: FontWeight.w600,
+                ),
+                isMeridiemUpperCase: false,
+              ),
+              vGap16,
+            ],
+          );
+  }
+
+  Widget _summaryRow(
+      BuildContext context, String label, String value, String unit) {
+    final theme = Theme.of(context);
+    return UIUtils.createRichTextValueWithUnit(
+      prefixText: '• $label',
+      prefixStyle: theme.textTheme.bodySmall,
+      value: value,
+      unit: unit,
+      valueStyle: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: UIConstants.valueFontSize, fontWeight: FontWeight.w800),
+      unitStyle: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: UIConstants.siUnitFontSize, fontWeight: FontWeight.w600),
     );
   }
 }
