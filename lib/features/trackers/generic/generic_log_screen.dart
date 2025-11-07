@@ -29,6 +29,7 @@ class LogScreen<T> extends ConsumerStatefulWidget {
   final String appBarTitle;
   final String? headerText;
   final String? headerTitleString;
+  final String? logItemIcon;
   final Widget Function(List<T> items)? headerActionButton;
   final FirestoreService firestoreService;
   final StreamProviderFamily<Cache<T>, (String, DateTime)> dataProvider;
@@ -47,6 +48,7 @@ class LogScreen<T> extends ConsumerStatefulWidget {
     this.headerActionButton,
     this.headerText,
     this.headerTitleString,
+    this.logItemIcon,
     required this.firestoreService,
     required this.dataProvider,
     required this.summaryProvider,
@@ -495,21 +497,66 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
         ),
       ),
       floatingActionButton: isToday
-          ? FloatingActionButton(
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                _showAddInputModalSheet();
-              },
-              elevation: 10,
-              backgroundColor: colorScheme.primary,
-              tooltip: 'Add ${widget.appBarTitle} Entry',
-              child: Semantics(
-                label: 'Add new ${widget.appBarTitle.toLowerCase()} entry',
-                child: Icon(
-                  Icons.add,
-                  color: colorScheme.onPrimary,
+          ? Stack(
+              alignment: Alignment.center,
+              clipBehavior:
+                  Clip.none, // Important: allows positioning outside bounds
+              children: [
+                // Main FAB with the log item icon
+                FloatingActionButton(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    _showAddInputModalSheet();
+                  },
+                  backgroundColor: colorScheme.primary,
+                  tooltip: 'Add ${widget.appBarTitle} Entry',
+                  elevation: 6,
+                  child: Semantics(
+                    label: 'Add new ${widget.appBarTitle.toLowerCase()} entry',
+                    child: _buildFabIcon(
+                      context: context,
+                      iconData: widget.logItemIcon is IconData
+                          ? widget.logItemIcon as IconData
+                          : null,
+                      ncIcon: widget.logItemIcon is String
+                          ? widget.logItemIcon as String
+                          : null,
+                      color: colorScheme.onPrimary,
+                      size: 28,
+                    ),
+                  ),
                 ),
-              ),
+                // Small circular plus button overlay - pushed further out
+                Positioned(
+                  right: -6,
+                  bottom: -6,
+                  child: InkWell(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _showAddInputModalSheet();
+                    },
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: colorScheme.surface,
+                          width: 2.5,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        size: 16,
+                        color: colorScheme.onSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             )
           : null,
     );
@@ -625,10 +672,14 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
   }
 
   Future<void> _showAddInputModalSheet() async {
-    final result = await showModalBottomSheet<Result>(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final result = await UIUtils.showNCBottomModalSheet<Result>(
       context: context,
-      isScrollControlled: true,
-      builder: (_) => widget.inputModalSheet(null),
+      title: 'Add ${widget.appBarTitle} Entry',
+      primaryColor: colorScheme.primary,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      content: widget.inputModalSheet(null),
     );
 
     if (result != null) {
@@ -651,16 +702,20 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
   }
 
   void _showEditModalSheet({required T logItem}) async {
-    final result = await showModalBottomSheet<Result>(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final result = await UIUtils.showNCBottomModalSheet<Result>(
       context: context,
-      isScrollControlled: true,
-      builder: (_) => widget.inputModalSheet(logItem),
+      title: 'Edit ${widget.appBarTitle} Entry',
+      primaryColor: colorScheme.primary,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      content: widget.inputModalSheet(logItem),
     );
 
     if (result != null) {
       _showSnackBar(
         message: result.message,
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.successColor,
         snackbarDuration: 2,
       );
     }
@@ -744,6 +799,34 @@ class _LogScreenState<T> extends ConsumerState<LogScreen<T>> {
       backgroundColor: result.backgroundColor,
       snackbarDuration: 2,
     );
+  }
+
+  Widget _buildFabIcon({
+    required BuildContext context,
+    IconData? iconData,
+    String? ncIcon,
+    required Color color,
+    required double size,
+  }) {
+    if (iconData != null) {
+      return Icon(
+        iconData,
+        size: size,
+        color: color,
+      );
+    } else if (ncIcon != null) {
+      return NCIcon(
+        ncIcon,
+        size: size,
+        color: color,
+      );
+    } else {
+      return Icon(
+        Icons.question_mark,
+        size: size,
+        color: color,
+      );
+    }
   }
 
   // Utilities

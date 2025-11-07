@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_icons.dart';
 import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
@@ -34,6 +35,7 @@ class WeightTrackerLogScreen extends ConsumerWidget {
     return LogScreen<WeightModel>(
       appBarTitle: 'Weight Log',
       headerTitleString: 'weight',
+      logItemIcon: NCIcons.weighingScale,
       dataProvider: weightDataProvider,
       summaryProvider: weightSummaryProvider,
       firestoreService: FirestoreService(),

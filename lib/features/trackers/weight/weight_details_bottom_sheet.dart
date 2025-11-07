@@ -5,6 +5,7 @@ import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/themes/theme_color_schemes.dart';
+import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_text_controller.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
@@ -20,6 +21,21 @@ class WeightModalSheet extends StatefulWidget {
 
   @override
   State<WeightModalSheet> createState() => _WeightModalSheetState();
+
+  /// Helper method to show the modal sheet
+  static Future<T?> show<T>(BuildContext context, {WeightModel? weightInput}) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return UIUtils.showNCBottomModalSheet<T>(
+      context: context,
+      title: weightInput == null ? 'Enter Weight Details:' : 'Edit Weight',
+      primaryColor: colorScheme.primary,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      dividerThickness: 2.0,
+      dividerWidthFactor: 0.15,
+      content: WeightModalSheet(weightInput: weightInput),
+    );
+  }
 }
 
 class _WeightModalSheetState extends State<WeightModalSheet>

@@ -4,32 +4,34 @@ import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
 
-class NCIconButton extends StatefulWidget {
-  const NCIconButton({
+class NCButton extends StatefulWidget {
+  const NCButton({
     super.key,
     required this.onButtonTap,
     this.buttonBackgroundColor,
     this.buttonPadding,
+    this.borderRadius,
     this.buttonIcon,
     this.ncButtonIcon,
     this.iconSize,
     this.iconColor,
-    this.gap,
+    this.iconGap,
     this.buttonText,
     this.buttonTextStyle,
     this.buttonChild,
   });
 
-  const NCIconButton.icon({
+  const NCButton.icon({
     super.key,
     required this.onButtonTap,
     this.buttonBackgroundColor,
     this.buttonPadding,
+    this.borderRadius,
     this.buttonIcon,
     this.ncButtonIcon,
     this.iconSize,
     this.iconColor,
-    this.gap,
+    this.iconGap,
     this.buttonText,
     this.buttonTextStyle,
     this.buttonChild,
@@ -39,20 +41,21 @@ class NCIconButton extends StatefulWidget {
   final VoidCallback onButtonTap;
   final Color? buttonBackgroundColor;
   final EdgeInsets? buttonPadding;
+  final double? borderRadius;
   final IconData? buttonIcon;
   final NCIcon? ncButtonIcon;
   final double? iconSize;
   final Color? iconColor;
-  final SizedBox? gap;
+  final SizedBox? iconGap;
   final String? buttonText;
   final TextStyle? buttonTextStyle;
   final Widget? buttonChild;
 
   @override
-  State<NCIconButton> createState() => _NCIconButtonState();
+  State<NCButton> createState() => _NCButtonState();
 }
 
-class _NCIconButtonState extends State<NCIconButton> {
+class _NCButtonState extends State<NCButton> {
   static const double _minButtonHeight = UIConstants.minButtonHeight;
   static const double _minButtonWidth = UIConstants.minButtonWidth;
   static const double _defaultPaddingValue = 4.0;
@@ -88,7 +91,8 @@ class _NCIconButtonState extends State<NCIconButton> {
           padding: widget.buttonPadding ??
               const EdgeInsets.all(_defaultPaddingValue),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(_defaultRadiusValue),
+            borderRadius: BorderRadius.circular(
+                widget.borderRadius ?? _defaultRadiusValue),
             color: widget.buttonBackgroundColor ??
                 Theme.of(context).colorScheme.primary,
           ),
@@ -110,7 +114,7 @@ class _NCIconButtonState extends State<NCIconButton> {
                       _buildIcon(context)!,
                     ],
                     if (widget.buttonText != null) ...[
-                      widget.gap ?? hGap6,
+                      widget.iconGap ?? hGap6,
                       Text(
                         widget.buttonText!,
                         style: widget.buttonTextStyle ??

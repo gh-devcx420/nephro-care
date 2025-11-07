@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_icons.dart';
 import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
@@ -25,6 +26,7 @@ class BPTrackerLogScreen extends ConsumerWidget {
       headerText:
           'Average BP for ${DateTimeUtils.isSameDay(ref.watch(selectedDateProvider), DateTime.now()) ? 'today :' : 'on ${DateTimeUtils.formatDateDM(ref.watch(selectedDateProvider))}'}',
       headerActionButton: (items) => _buildHeaderAction(context, items),
+      logItemIcon: NCIcons.heartBeat,
       dataProvider: bpTrackerDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: bpTrackerSummaryProvider,

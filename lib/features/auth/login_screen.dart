@@ -6,8 +6,8 @@ import 'package:nephro_care/core/constants/nc_app_icons.dart';
 import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/themes/theme_provider.dart';
 import 'package:nephro_care/core/utils/svg_utils.dart';
+import 'package:nephro_care/core/widgets/nc_button.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
-import 'package:nephro_care/core/widgets/nc_icon_button.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -158,14 +158,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildSignInButton(ThemeData theme, ColorScheme colorScheme) {
-    return NCIconButton(
+    return NCButton(
       onButtonTap: _handleGoogleSignIn,
       buttonPadding: const EdgeInsets.all(12),
       buttonBackgroundColor: colorScheme.primary,
       ncButtonIcon: const NCIcon(NCIcons.google),
       iconSize: 20,
       iconColor: colorScheme.onPrimary,
-      gap: hGap12,
+      iconGap: hGap12,
       buttonText: 'Sign in with Google',
       buttonTextStyle: theme.textTheme.titleMedium?.copyWith(
         color: colorScheme.onPrimary,

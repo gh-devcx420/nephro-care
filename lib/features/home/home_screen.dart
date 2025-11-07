@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/widgets/nc_appbar.dart';
-import 'package:nephro_care/features/home/health_metrics_card.dart';
-import 'package:nephro_care/features/home/overview_card.dart';
+import 'package:nephro_care/features/home/homescreen_widgets/nc_health_metrics_card.dart';
+import 'package:nephro_care/features/home/homescreen_widgets/nc_overview_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -22,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
                 vGap10,
                 OverviewCard(),
                 vGap10,
-                HealthMetrics(),
+                HealthMetricsCard(),
               ],
             ),
           ),

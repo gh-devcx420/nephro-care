@@ -68,7 +68,7 @@ class DateTimeUtils {
   static String formatTime(DateTime? pickedTime) {
     final formatter = DateFormat('h:mm a');
     if (pickedTime != null) {
-      return formatter.format(pickedTime);
+      return formatter.format(pickedTime).toLowerCase();
     } else {
       return 'No Time Picked';
     }

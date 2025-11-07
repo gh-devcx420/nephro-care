@@ -4,9 +4,9 @@ import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
-import 'package:nephro_care/core/utils/ui_utils.dart';
 import 'package:nephro_care/core/widgets/nc_foldable_card.dart';
-import 'package:nephro_care/core/widgets/nc_overview_chip.dart';
+import 'package:nephro_care/features/home/homescreen_widgets/nc_health_metric_animated_display.dart';
+import 'package:nephro_care/features/home/homescreen_widgets/nc_health_metric_chip.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_provider.dart';
 import 'package:nephro_care/features/trackers/blood_pressure/bp_utils.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_provider.dart';
@@ -16,11 +16,18 @@ import 'package:nephro_care/features/trackers/urine/urine_utils.dart';
 import 'package:nephro_care/features/trackers/weight/weight_provider.dart';
 import 'package:nephro_care/features/trackers/weight/weight_utils.dart';
 
-class HealthMetrics extends ConsumerWidget {
-  const HealthMetrics({super.key});
+class HealthMetricsCard extends ConsumerStatefulWidget {
+  const HealthMetricsCard({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  HealthMetricsCardState createState() => HealthMetricsCardState();
+}
+
+class HealthMetricsCardState extends ConsumerState<HealthMetricsCard> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
     final selectedDate = ref.watch(selectedDateProvider);
     final fluidSummary = ref.watch(fluidIntakeSummaryProvider);
     final urineSummary = ref.watch(urineOutputSummaryProvider);
@@ -55,11 +62,36 @@ class HealthMetrics extends ConsumerWidget {
     final theme = Theme.of(context);
     final dateLabel = _getDateLabel(selectedDate);
 
+    const initiallyExpanded = false;
+
     return NCFoldableCard(
       title: '',
-      initiallyExpanded: hasData,
-      customHeader:
-          _buildCustomHeader(theme, selectedDate, lastUpdated, dateLabel),
+      initiallyExpanded: initiallyExpanded,
+      onExpansionChanged: (isExpanded) {
+        setState(() {
+          _isExpanded = isExpanded;
+        });
+      },
+      customHeader: _buildCustomCardHeader(
+        theme,
+        selectedDate,
+        lastUpdated,
+        dateLabel,
+        hasData,
+        fluidMeasurement.formattedValue,
+        fluidMeasurement.unitString,
+        fluidSummary['lastTime'],
+        urineMeasurement.formattedValue,
+        urineMeasurement.unitString,
+        urineSummary['lastTime'],
+        bpMeasurement.displayValue,
+        bpMeasurement.unitString,
+        bpSummary['lastTime'],
+        weightMeasurement.formattedValue,
+        weightMeasurement.unitString,
+        weightSummary['lastTime'],
+        _isExpanded,
+      ),
       backgroundColor: theme.colorScheme.surfaceContainerHighest,
       child: Column(
         children: [
@@ -135,73 +167,6 @@ class HealthMetrics extends ConsumerWidget {
     );
   }
 
-  Widget _buildCustomHeader(ThemeData theme, DateTime selectedDate,
-      DateTime? lastUpdated, String dateLabel) {
-    return Row(
-      children: [
-        Container(
-          height: 35,
-          width: 35,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
-          ),
-          child: Icon(
-            Icons.bar_chart,
-            size: 24,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        hGap12,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Health Metrics',
-                style: theme.textTheme.titleMedium!.copyWith(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              if (lastUpdated != null)
-                UIUtils.createRichTextTimestamp(
-                  prefixText: '$dateLabel • ',
-                  timestamp: lastUpdated,
-                  timeStyle: theme.textTheme.titleSmall!.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    fontWeight: FontWeight.w800,
-                    height: 0.9,
-                  ),
-                  meridiemStyle: theme.textTheme.titleSmall!.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    fontWeight: FontWeight.w800,
-                    height: 0.9,
-                  ),
-                  isMeridiemUpperCase: false,
-                )
-              else
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: dateLabel,
-                        style: theme.textTheme.titleSmall!.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                            fontWeight: FontWeight.w800,
-                            height: 0.9),
-                      ),
-                    ],
-                  ),
-                )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   DateTime? _getLatestUpdateTime(List<DateTime?> times) {
     final validTimes = times.whereType<DateTime>().toList();
     if (validTimes.isEmpty) {
@@ -218,7 +183,7 @@ class HealthMetrics extends ConsumerWidget {
         formattedValue == '--' ||
         unitString == null ||
         unitString.isEmpty) {
-      return '--';
+      return '--/--';
     }
     return formattedValue;
   }
@@ -229,6 +194,127 @@ class HealthMetrics extends ConsumerWidget {
     } else {
       return DateTimeUtils.formatWeekday(selectedDate);
     }
+  }
+
+  Widget _buildCustomCardHeader(
+    ThemeData theme,
+    DateTime selectedDate,
+    DateTime? lastUpdated,
+    String dateLabel,
+    bool hasData,
+    String? fluidValue,
+    String? fluidUnit,
+    DateTime? fluidTime,
+    String? urineValue,
+    String? urineUnit,
+    DateTime? urineTime,
+    String? bpValue,
+    String? bpUnit,
+    DateTime? bpTime,
+    String? weightValue,
+    String? weightUnit,
+    DateTime? weightTime,
+    bool isExpanded,
+  ) {
+    final animatedDisplayBaseTextStyle = theme.textTheme.titleSmall!.copyWith(
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+      fontWeight: FontWeight.w800,
+      height: 1.0,
+    );
+
+    return Row(
+      children: [
+        Container(
+          height: 35,
+          width: 35,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(UIConstants.borderRadius * 0.5),
+          ),
+          child: Icon(
+            Icons.bar_chart,
+            size: 24,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        hGap8,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Health Metrics',
+                style: theme.textTheme.titleMedium!.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              if (hasData && !isExpanded)
+                Row(
+                  children: [
+                    Text(
+                      dateLabel,
+                      style: theme.textTheme.titleSmall!.copyWith(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w800,
+                        height: 1.2,
+                      ),
+                    ),
+                    hGap4,
+                    // Static bullet with fixed width
+                    Text(
+                      '•',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleSmall!.copyWith(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w800,
+                        height: 1.2,
+                      ),
+                    ),
+                    hGap4,
+
+                    NCHealthMetricAnimatedDisplay(
+                      fluidValue: _getDisplayValue(fluidValue, fluidUnit),
+                      fluidUnit: fluidUnit,
+                      fluidTime: fluidTime,
+                      urineValue: _getDisplayValue(urineValue, urineUnit),
+                      urineUnit: urineUnit,
+                      urineTime: urineTime,
+                      bpValue: _getDisplayValue(bpValue, bpUnit),
+                      bpUnit: bpUnit,
+                      bpTime: bpTime,
+                      weightValue: _getDisplayValue(weightValue, weightUnit),
+                      weightUnit: weightUnit,
+                      weightTime: weightTime,
+                      textStyle: animatedDisplayBaseTextStyle,
+                    ),
+                  ],
+                )
+              else if (hasData && isExpanded)
+                Text(
+                  dateLabel,
+                  style: theme.textTheme.titleSmall!.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w800,
+                    height: 1.2,
+                  ),
+                )
+              else
+                Text(
+                  '$dateLabel • No Data',
+                  style: theme.textTheme.titleSmall!.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w800,
+                    height: 1.2,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   bool _hasAnyData(

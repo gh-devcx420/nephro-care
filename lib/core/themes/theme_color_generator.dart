@@ -19,89 +19,89 @@ class ColorGenerator {
   static ColorScheme _generateLightScheme(HSLColor seedHsl) {
     return ColorScheme(
       brightness: Brightness.light,
-      primary: seedHsl.withSaturation(0.85).withLightness(0.38).toColor(),
+      primary: seedHsl.withSaturation(0.75).withLightness(0.38).toColor(),
       onPrimary: Colors.white,
       primaryContainer:
-          seedHsl.withSaturation(0.85).withLightness(0.85).toColor(),
+          seedHsl.withSaturation(0.75).withLightness(0.85).toColor(),
       onPrimaryContainer:
-          seedHsl.withSaturation(0.90).withLightness(0.15).toColor(),
-      primaryFixed: seedHsl.withSaturation(0.80).withLightness(0.88).toColor(),
+          seedHsl.withSaturation(0.80).withLightness(0.15).toColor(),
+      primaryFixed: seedHsl.withSaturation(0.70).withLightness(0.88).toColor(),
       primaryFixedDim:
-          seedHsl.withSaturation(0.85).withLightness(0.72).toColor(),
+          seedHsl.withSaturation(0.75).withLightness(0.72).toColor(),
       onPrimaryFixed:
-          seedHsl.withSaturation(0.90).withLightness(0.18).toColor(),
+          seedHsl.withSaturation(0.80).withLightness(0.18).toColor(),
       onPrimaryFixedVariant:
-          seedHsl.withSaturation(0.85).withLightness(0.32).toColor(),
+          seedHsl.withSaturation(0.75).withLightness(0.32).toColor(),
       secondary: seedHsl
           .withHue((seedHsl.hue + 30) % 360)
-          .withSaturation(0.80)
+          .withSaturation(0.70)
           .withLightness(0.42)
           .toColor(),
       onSecondary: Colors.white,
       secondaryContainer: seedHsl
           .withHue((seedHsl.hue + 30) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.83)
           .toColor(),
       onSecondaryContainer: seedHsl
           .withHue((seedHsl.hue + 30) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.18)
           .toColor(),
       secondaryFixed: seedHsl
           .withHue((seedHsl.hue + 30) % 360)
-          .withSaturation(0.80)
+          .withSaturation(0.70)
           .withLightness(0.86)
           .toColor(),
       secondaryFixedDim: seedHsl
           .withHue((seedHsl.hue + 30) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.70)
           .toColor(),
       onSecondaryFixed: seedHsl
           .withHue((seedHsl.hue + 30) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.21)
           .toColor(),
       onSecondaryFixedVariant: seedHsl
           .withHue((seedHsl.hue + 30) % 360)
-          .withSaturation(0.80)
+          .withSaturation(0.70)
           .withLightness(0.35)
           .toColor(),
       tertiary: seedHsl
           .withHue((seedHsl.hue + 120) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.40)
           .toColor(),
       onTertiary: Colors.white,
       tertiaryContainer: seedHsl
           .withHue((seedHsl.hue + 120) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.81)
           .toColor(),
       onTertiaryContainer: seedHsl
           .withHue((seedHsl.hue + 120) % 360)
-          .withSaturation(0.90)
+          .withSaturation(0.80)
           .withLightness(0.16)
           .toColor(),
       tertiaryFixed: seedHsl
           .withHue((seedHsl.hue + 120) % 360)
-          .withSaturation(0.80)
+          .withSaturation(0.70)
           .withLightness(0.85)
           .toColor(),
       tertiaryFixedDim: seedHsl
           .withHue((seedHsl.hue + 120) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.68)
           .toColor(),
       onTertiaryFixed: seedHsl
           .withHue((seedHsl.hue + 120) % 360)
-          .withSaturation(0.90)
+          .withSaturation(0.80)
           .withLightness(0.19)
           .toColor(),
       onTertiaryFixedVariant: seedHsl
           .withHue((seedHsl.hue + 120) % 360)
-          .withSaturation(0.85)
+          .withSaturation(0.75)
           .withLightness(0.33)
           .toColor(),
       error: const Color(0xFFBA1A1A),
@@ -125,8 +125,8 @@ class ColorGenerator {
       inverseSurface: const Color(0xFF2E2E2E),
       onInverseSurface: const Color(0xFFF5F5F5),
       inversePrimary:
-          seedHsl.withSaturation(0.65).withLightness(0.75).toColor(),
-      surfaceTint: seedHsl.withSaturation(0.85).withLightness(0.38).toColor(),
+          seedHsl.withSaturation(0.55).withLightness(0.75).toColor(),
+      surfaceTint: seedHsl.withSaturation(0.75).withLightness(0.38).toColor(),
     );
   }
 

@@ -3,14 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 
+import '../constants/nc_app_spacing_constants.dart';
+import '../widgets/nc_divider.dart';
+
 class UIUtils {
-  /// Shows a Generic alert dialog with custom content and custom action widgets.
+  /// Shows a Generic alert dialog with custom content and custom action homescreen_widgets.
   static Future<dynamic> showNCAlertDialog({
     required context,
     required titleText,
     required Widget content,
-    required Widget action1,
-    required Widget action2,
+    Widget? action1,
+    Widget? action2,
     Color? titleColor,
   }) {
     return showDialog(
@@ -32,7 +35,10 @@ class UIUtils {
                 fontWeight: FontWeight.w600,
               ),
           contentPadding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-          actions: [action1, action2],
+          actions: [
+            if (action1 != null) action1,
+            if (action2 != null) action2,
+          ],
           actionsPadding: const EdgeInsets.fromLTRB(16, 4, 12, 12),
         );
       },
@@ -83,6 +89,75 @@ class UIUtils {
       ),
     );
     return result ?? false;
+  }
+
+  /// Shows a Pre-styled Bottom Modal Sheet with consistent styling.
+  static Future<T?> showNCBottomModalSheet<T>({
+    required BuildContext context,
+    required String title,
+    required Widget content,
+    Color? primaryColor,
+    Color? backgroundColor,
+    double dividerThickness = 2.0,
+    double dividerWidthFactor = 0.15,
+    bool isScrollControlled = true,
+    EdgeInsets? contentPadding,
+  }) {
+    return showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: isScrollControlled,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: BoxDecoration(
+          color: backgroundColor ?? Theme.of(ctx).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(16),
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: contentPadding ?? UIConstants.bottomModalSheetPadding,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  NCDivider(
+                    thickness: dividerThickness,
+                    color: primaryColor,
+                    widthFactor: dividerWidthFactor,
+                  ),
+                  vGap4,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
+                          child: Text(
+                            title,
+                            style: Theme.of(ctx).textTheme.titleLarge!.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  vGap12,
+                  content,
+                  vGap16,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Shows a snackbar with the given message.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/themes/theme_color_schemes.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
 
 class NCFoldableCard extends StatefulWidget {
@@ -12,7 +13,9 @@ class NCFoldableCard extends StatefulWidget {
   final bool isCritical;
   final bool initiallyExpanded;
   final Widget? customHeader;
+  final Widget? quickLookWidget;
   final Color? backgroundColor;
+  final ValueChanged<bool>? onExpansionChanged;
 
   const NCFoldableCard({
     super.key,
@@ -23,7 +26,9 @@ class NCFoldableCard extends StatefulWidget {
     this.isCritical = false,
     this.initiallyExpanded = false,
     this.customHeader,
+    this.quickLookWidget,
     this.backgroundColor,
+    this.onExpansionChanged,
   });
 
   @override
@@ -89,7 +94,10 @@ class _NCFoldableCardState extends State<NCFoldableCard>
         color: widget.backgroundColor ?? theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(UIConstants.borderRadius),
         border: widget.isCritical
-            ? Border.all(color: Colors.red.shade300, width: 1.5)
+            ? Border.all(
+                color: AppColors.dangerColor.withValues(alpha: 0.3),
+                width: 1.5,
+              )
             : null,
       ),
       child: Material(
@@ -150,6 +158,10 @@ class _NCFoldableCardState extends State<NCFoldableCard>
                       ),
                     ],
                   ),
+                if (!_isExpanded && widget.quickLookWidget != null) ...[
+                  vGap12,
+                  widget.quickLookWidget!,
+                ],
                 if (_isExpanded) ...[
                   vGap12,
                   widget.child,
@@ -197,5 +209,6 @@ class _NCFoldableCardState extends State<NCFoldableCard>
         _animationController.reverse();
       }
     });
+    widget.onExpansionChanged?.call(_isExpanded);
   }
 }

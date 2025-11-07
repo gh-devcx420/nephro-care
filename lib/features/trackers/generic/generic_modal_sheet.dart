@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
-import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/services/firestore_service.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
 import 'package:nephro_care/core/utils/ui_utils.dart';
-import 'package:nephro_care/core/widgets/nc_divider.dart';
 import 'package:nephro_care/core/widgets/nc_textfield.dart';
 import 'package:nephro_care/core/widgets/nc_textfield_config.dart';
 
@@ -172,55 +169,15 @@ class _GenericInputModalSheetState<T> extends State<GenericInputModalSheet<T>> {
 
         return isOnlineAsync.when(
           data: (isOnline) {
-            return Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: UIConstants.bottomModalSheetPadding,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      NCDivider(
-                        thickness: widget.dividerThickness,
-                        color: widget.primaryColor,
-                        widthFactor: widget.dividerWidthFactor,
-                      ),
-                      vGap4,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 4,
-                              ),
-                              child: Text(
-                                widget.initialData != null
-                                    ? widget.editingModeTitle
-                                    : widget.addModeTitle,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      vGap12,
-                      widget.layoutConfig(
-                        context,
-                        fields,
-                        (ctx) => _buildSubmitButton(ctx, isOnline),
-                      ),
-                      vGap16,
-                    ],
-                  ),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                widget.layoutConfig(
+                  context,
+                  fields,
+                  (ctx) => _buildSubmitButton(ctx, isOnline),
                 ),
-              ),
+              ],
             );
           },
           loading: () => const SizedBox(

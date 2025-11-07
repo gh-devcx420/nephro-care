@@ -45,7 +45,7 @@ class _OverviewCardState extends ConsumerState<OverviewCard> {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              hGap6,
+              hGap8,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -56,19 +56,12 @@ class _OverviewCardState extends ConsumerState<OverviewCard> {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: _comparisonText,
-                          style: theme.textTheme.titleSmall!.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                            fontWeight: FontWeight.w800,
-                            height: 0.9,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    _comparisonText,
+                    style: theme.textTheme.titleSmall!.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontWeight: FontWeight.w800,
+                      height: 1.2,
                     ),
                   )
                 ],

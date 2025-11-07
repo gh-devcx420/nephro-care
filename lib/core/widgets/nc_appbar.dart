@@ -7,9 +7,9 @@ import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
 import 'package:nephro_care/core/providers/app_providers.dart';
 import 'package:nephro_care/core/utils/date_time_utils.dart';
+import 'package:nephro_care/core/widgets/nc_button.dart';
 import 'package:nephro_care/core/widgets/nc_date_picker.dart';
 import 'package:nephro_care/core/widgets/nc_icon.dart';
-import 'package:nephro_care/core/widgets/nc_icon_button.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 import 'package:nephro_care/features/settings/settings_screen.dart';
 
@@ -49,7 +49,7 @@ class NCAppbar extends ConsumerWidget {
             suffixNCIcon: const NCIcon(NCIcons.cancel),
           ),
           hGap4,
-          NCIconButton(
+          NCButton(
             onButtonTap: () => _navigateToSettings(context),
             buttonIcon: Icons.settings,
             iconSize: UIConstants.buttonIconSize,

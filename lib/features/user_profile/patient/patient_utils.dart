@@ -1,6 +1,6 @@
 import 'package:nephro_care/core/utils/date_time_utils.dart';
-import 'package:nephro_care/features/patient/patient_enums.dart';
-import 'package:nephro_care/features/patient/patient_model.dart';
+import 'package:nephro_care/features/user_profile/patient/patient_enums.dart';
+import 'package:nephro_care/features/user_profile/patient/patient_model.dart';
 
 class PatientUtils {
   /// Calculate age from date of birth.
@@ -56,7 +56,8 @@ class PatientUtils {
   /// Get patient summary for display.
   static String getPatientSummary(PatientModel patient) {
     final age = calculateAge(patient.dateOfBirth);
-    return '${patient.fullName}, $age yrs, ${patient.gender.displayName}, CKD ${patient.ckdStage.displayName}';
+    return '${patient.fullName}, $age yrs, ${patient.gender
+        .displayName}, CKD ${patient.ckdStage.displayName}';
   }
 
   /// Get formatted duration since a particular date.

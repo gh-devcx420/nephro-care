@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:nephro_care/features/patient/patient_enums.dart';
 import 'package:nephro_care/features/trackers/dialysis/dialysis_model.dart';
 import 'package:nephro_care/features/trackers/fluids/fluid_enums.dart';
 import 'package:nephro_care/features/trackers/generic/generic_utils.dart';
+import 'package:nephro_care/features/user_profile/patient/patient_enums.dart';
 
 /// Patient profile model
 class PatientModel {

@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nephro_care/core/constants/nc_app_icons.dart';
 import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
+import 'package:nephro_care/core/widgets/nc_button.dart';
 import 'package:nephro_care/core/widgets/nc_divider.dart';
 import 'package:nephro_care/core/widgets/nc_foldable_card.dart';
-import 'package:nephro_care/core/widgets/nc_icon_button.dart';
 import 'package:nephro_care/core/widgets/nc_info_chip.dart';
 import 'package:nephro_care/features/auth/auth_provider.dart';
 
@@ -176,7 +176,7 @@ class UserProfileScreenState extends ConsumerState<UserProfileScreen> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 12.0),
-          child: NCIconButton(
+          child: NCButton(
             onButtonTap: () {},
             buttonIcon: Icons.edit,
             iconSize: 14,

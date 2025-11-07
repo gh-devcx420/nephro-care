@@ -17,21 +17,22 @@ class NCHealthMetricChip extends ConsumerStatefulWidget {
 
   final String chipTitle;
   final Function() onChipTap;
-  final String dataValue;
+  final String? dataValue; // Now nullable
   final String siUnit;
   final DateTime? lastEntryDateTime;
 
   @override
-  NCOverviewChipState createState() => NCOverviewChipState();
+  NCHealthMetricChipState createState() => NCHealthMetricChipState();
 }
 
-class NCOverviewChipState extends ConsumerState<NCHealthMetricChip> {
+class NCHealthMetricChipState extends ConsumerState<NCHealthMetricChip> {
   bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final hasData = widget.dataValue != null && widget.dataValue != '--';
 
     return InkWell(
       splashColor: Colors.transparent,
@@ -60,38 +61,35 @@ class NCOverviewChipState extends ConsumerState<NCHealthMetricChip> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.chipTitle,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelMedium!.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w800,
-                      height: 0,
-                    ),
-                  ),
-                ],
+              Text(
+                widget.chipTitle,
+                textAlign: TextAlign.start,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelLarge!.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-              vGap10,
+              vGap4,
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   UIUtils.createRichTextValueWithUnit(
-                    value: widget.dataValue,
+                    value: hasData ? widget.dataValue! : '--',
                     valueStyle: theme.textTheme.labelMedium!.copyWith(
-                      color: colorScheme.onSurface,
+                      color: colorScheme.primary.withValues(
+                        alpha: 1.0,
+                      ),
                       fontWeight: FontWeight.w800,
                       fontSize: 20,
-                      height: 0.5,
                     ),
                     unit: widget.siUnit,
                     unitStyle: theme.textTheme.labelSmall!.copyWith(
-                      color: colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: colorScheme.onSurface.withValues(
+                        alpha: hasData ? 0.7 : 0.3,
+                      ),
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),

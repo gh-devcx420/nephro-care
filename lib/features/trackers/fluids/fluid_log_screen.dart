@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nephro_care/core/constants/nc_app_icons.dart';
 import 'package:nephro_care/core/constants/nc_app_spacing_constants.dart';
 import 'package:nephro_care/core/constants/nc_app_strings.dart';
 import 'package:nephro_care/core/constants/nc_app_ui_constants.dart';
@@ -30,6 +31,7 @@ class FluidIntakeLogScreen extends ConsumerWidget {
       appBarTitle: 'Fluid Log',
       headerTitleString: 'fluid intake',
       headerActionButton: (items) => _buildHeaderAction(context, items, ref),
+      logItemIcon: NCIcons.waterGlass,
       dataProvider: fluidIntakeDataProvider,
       firestoreService: FirestoreService(),
       summaryProvider: fluidIntakeSummaryProvider,
